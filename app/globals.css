@@ -1,25 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1A56DB;
-  --color-primary-dark: #1E40AF;
-  --color-secondary: #10B981;
+  --color-primary: #114fd1;
+  --color-primary-dark: #0f3fb0;
+  --color-secondary: #10b981;
   --color-secondary-dark: #059669;
-  --color-background: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-surface-hover: #F1F5F9;
-  --color-text-main: #0F172A;
-  --color-text-muted: #64748B;
-  --color-border: #E2E8F0;
-  --color-status-success: #DCFCE7;
-  --color-status-booked: #E0F2FE;
-  --color-status-working: #FEF08A;
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f0f5ff; /* أزرق فاتح جداً بدلاً من الرمادي */
+  /* استبدال الأسود بأزرق داكن جداً وفخم */
+  --color-text-main: #0a1b3f; 
+  --color-text-muted: #3b4c68; 
+  --color-border: #dbeafe; /* إطارات مائلة للزرقة */
 }
 
 @layer base {
+  html {
+    background: #ffffff;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-text-main);
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: var(--font-manrope), sans-serif;
   }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-sora), sans-serif;
+  }
+}
+
+@layer utilities {
+  .animate-shine {
+    animation: shine 2.5s infinite linear;
+  }
+}
+
+@keyframes shine {
+  0% { transform: translateX(-150%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
 }
