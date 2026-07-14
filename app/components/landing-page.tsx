@@ -98,7 +98,12 @@ export default function LandingPage() {
   const [introComplete, setIntroComplete] = useState(false);
 
   return (
-    <div className="relative min-h-screen text-[var(--color-text-main)] selection:bg-[#114FD1] selection:text-white cursor-auto">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+      className="relative min-h-screen text-[var(--color-text-main)] selection:bg-[#114FD1] selection:text-white cursor-auto"
+    >
       
       {/* 1. الشبكة الهندسية التفاعلية مع تأثير النيون المضمون */}
       <InteractiveGridBackground />
@@ -111,10 +116,41 @@ export default function LandingPage() {
       ) : null}
 
       <main className="relative z-10">
-        <HeroSection />
-        <ZigZagSections />
-        <EngineeringMilestones /> 
-        <SuccessPartners /> 
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <HeroSection />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <ZigZagSections />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <EngineeringMilestones /> 
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <SuccessPartners /> 
+        </motion.div>
 
         {/* =========================================================================
             قسم التواصل 
@@ -175,6 +211,6 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-    </div>
+    </motion.div>
   );
 }
