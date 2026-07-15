@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -121,7 +121,7 @@ function CardFallingDots({ type }: { type: "blue" | "green" }) {
 }
 
 // =========================================================================
-// ✨ 2. الجسيمات الطبية العامة (الخلفية الكلية للمشروع)
+// ✨ 2. الجسيمات الطبية العامة 
 // =========================================================================
 function GlobalBackgroundParticles() {
   const particles = Array.from({ length: 30 });
@@ -151,15 +151,13 @@ function GlobalBackgroundParticles() {
 }
 
 // =========================================================================
-// ✨ 3. خلفية المخطط العميقة (أخضر فاتح مائي + مجسمات كثيفة)
+// ✨ 3. خلفية المخطط العميقة
 // =========================================================================
 function ChartDeepBackground() {
   const shapes = Array.from({ length: 35 }); 
   
   return (
     <div className="absolute inset-0 z-0 overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#eafcf4] to-[#d6efdf]">
-      
-      {/* شبكة بيانية داخلية للشركات */}
       <div className="absolute inset-0 opacity-40" style={{ 
         backgroundImage: 'linear-gradient(to right, rgba(13, 148, 104, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(13, 148, 104, 0.1) 1px, transparent 1px)', 
         backgroundSize: '40px 40px',
@@ -167,7 +165,6 @@ function ChartDeepBackground() {
         WebkitMaskImage: 'linear-gradient(to bottom, white 40%, transparent 100%)'
       }} />
 
-      {/* المجسمات المتناثرة الكثيفة */}
       {shapes.map((_, i) => {
         const isCube = i % 2 === 0;
         return (
@@ -193,7 +190,6 @@ function ChartDeepBackground() {
         );
       })}
 
-      {/* هالات مضيئة لدمج الألوان */}
       <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-[var(--color-primary)]/10 blur-[120px] rounded-full mix-blend-multiply"></div>
       <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-[var(--color-secondary)]/15 blur-[100px] rounded-full mix-blend-multiply"></div>
     </div>
@@ -206,6 +202,18 @@ function ChartDeepBackground() {
 export default function EngineeringMilestones() {
   const [view, setView] = useState<"chart" | "tree">("chart");
   const [activeIndex, setActiveIndex] = useState<number>(WORK_HISTORY.length - 1);
+  const [screenSize, setScreenSize] = useState<"mobile" | "tablet" | "desktop">("desktop");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setScreenSize("mobile");
+      else if (window.innerWidth < 1024) setScreenSize("tablet");
+      else setScreenSize("desktop");
+    };
+    handleResize(); 
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -215,9 +223,6 @@ export default function EngineeringMilestones() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [view]);
 
-  // =========================================================================
-  // 📈 الكبسولة الإرشادية الذكية (Smart Hover Pill)
-  // =========================================================================
   const CustomRechartsTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -233,52 +238,80 @@ export default function EngineeringMilestones() {
   };
 
   // =========================================================================
-  // 📏 خوارزمية الشجرة التفرعية
+  // 📏 خوارزمية "التمدد الذكي" (Smart Expansion Layout) للفخامة البصرية
   // =========================================================================
   const activeData = WORK_HISTORY[activeIndex];
-  const ROW_HEIGHT = 170; 
   const totalItems = activeData.categories.reduce((acc, cat) => acc + cat.items.length, 0);
   
-  const treeHeight = Math.max(700, totalItems * ROW_HEIGHT + 150); 
-  const treeWidth = 1400; 
-  const nodeRootX = 1300; 
-  const nodeRootY = treeHeight / 2;
-  const colCatX = 850; 
-  const colTaskX = 350; 
+  // تفعيل التفرع المزدوج (التكثيف) فقط عندما يزيد العدد عن 4
+  const needsStagger = totalItems > 4;
+  
+  // لا تصغير للخطوط أو البطاقات أبداً، بل نعطيها مقاس 1 بالكامل
+  const scaleFactor = screenSize === "mobile" ? Math.min(1, 4.5 / totalItems) : 1; 
+
+  const ROOT_X = screenSize === "mobile" ? 92 : screenSize === "tablet" ? 93 : 95;
+  const CAT_X = screenSize === "mobile" ? 72 : screenSize === "tablet" ? 75 : 82;
+  
+  // السر هنا: عندما تقل المعلومات، نقوم بمد الخطوط لأقصى اليسار لتعبر الشاشة بكامل العرض
+  const TASK_X_1 = needsStagger 
+    ? (screenSize === "mobile" ? 45 : screenSize === "tablet" ? 48 : 60) 
+    : (screenSize === "mobile" ? 68 : screenSize === "tablet" ? 50 : 45); // تمدد ضخم ومدروس
+    
+  const TASK_X_2 = screenSize === "mobile" ? 5 : screenSize === "tablet" ? 15 : 28; 
+
+  // الفئات الديناميكية للتحجيم لكي تملأ الفراغ بالكامل عندما تكون البيانات قليلة
+  const catDynamicClass = needsStagger 
+    ? "w-[26vw] md:w-[190px] lg:w-[240px] px-3 py-3 lg:px-4 lg:py-4" 
+    : "w-[30vw] md:w-[240px] lg:w-[320px] px-4 py-4 lg:px-6 lg:py-6";
+    
+  const catTitleClass = needsStagger 
+    ? "text-xs md:text-sm lg:text-xl" 
+    : "text-sm md:text-lg lg:text-2xl";
+
+  const taskDynamicClass = needsStagger 
+    ? "w-[45vw] md:w-[250px] lg:w-[340px] p-3 md:p-3 lg:p-4" 
+    : "w-[65vw] md:w-[360px] lg:w-[460px] p-4 md:p-5 lg:p-6"; // بطاقة ضخمة وواسعة
+    
+  const taskTitleClass = needsStagger 
+    ? "text-sm md:text-sm lg:text-lg mb-1 lg:mb-1.5" 
+    : "text-base md:text-lg lg:text-2xl mb-2 lg:mb-3";
+    
+  const taskDescClass = needsStagger 
+    ? "text-[10px] md:text-[11px] lg:text-[13px]" 
+    : "text-xs md:text-sm lg:text-base";
+
 
   let currentItemIdx = 0;
   const layoutData = activeData.categories.map(cat => {
     const itemsLayout = cat.items.map((item) => {
-      const itemCenterY = (currentItemIdx + 0.5) * ROW_HEIGHT + 75; 
+      const colIndex = (needsStagger && currentItemIdx % 2 === 1) ? 1 : 0; 
+      const segmentSize = 85 / totalItems;
+      const centerY = 7.5 + (currentItemIdx + 0.5) * segmentSize; 
       currentItemIdx++;
-      return { ...item, centerY: itemCenterY };
+      return { ...item, centerY, colIndex };
     });
     const catCenterY = (itemsLayout[0].centerY + itemsLayout[itemsLayout.length - 1].centerY) / 2;
     return { ...cat, centerY: catCenterY, itemsLayout };
   });
 
   return (
-    <section className="relative w-full py-24 lg:py-32 z-20 overflow-hidden text-[var(--color-text-main)] min-h-screen flex flex-col justify-center bg-transparent">
+    <section className="relative w-full py-16 lg:py-24 z-20 overflow-hidden text-[var(--color-text-main)] min-h-screen flex flex-col justify-center bg-transparent">
       
       <GlobalBackgroundParticles />
 
       <div className="w-full px-4 md:px-8 lg:px-12 relative z-10 max-w-[1900px] mx-auto">
         
-        {/* العناوين */}
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="mb-14 flex flex-col items-center text-center max-w-4xl mx-auto drop-shadow-sm">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.2]">
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="mb-10 flex flex-col items-center text-center max-w-4xl mx-auto drop-shadow-sm">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.2]">
             تطور تقني يعكس <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]">نمو الرعاية الصحية</span>
           </h2>
-          <p className="mt-5 text-lg font-bold text-[var(--color-text-muted)] max-w-2xl">
+          <p className="mt-4 text-base md:text-lg font-bold text-[var(--color-text-muted)] max-w-2xl">
             استكشف السجل الهندسي الدقيق للبنية التحتية والميزات المركزية للمنصة.
           </p>
         </motion.div>
 
         <AnimatePresence mode="wait">
           
-          {/* =========================================================================
-              VIEW 1: مخطط RECHARTS (بحجم ضخم وحلقات تفاعلية)
-              ========================================================================= */}
           {view === "chart" && (
             <motion.div 
               key="chart-view"
@@ -287,7 +320,6 @@ export default function EngineeringMilestones() {
             >
               <ChartDeepBackground />
 
-              {/* 🔷 البطاقة الإرشادية الذكية (Smart Hint Badge) */}
               <motion.div 
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8, duration: 0.8 }}
                 className="absolute top-6 right-8 lg:top-8 lg:right-12 z-30 flex items-center gap-3 bg-white/80 backdrop-blur-2xl px-5 py-2.5 rounded-2xl shadow-[0_10px_30px_rgba(17,79,209,0.08)] border border-[var(--color-primary)]/10 pointer-events-none"
@@ -302,8 +334,7 @@ export default function EngineeringMilestones() {
                 </div>
               </motion.div>
 
-              {/* 📊 حاوية Recharts بأبعاد عملاقة */}
-              <div className="relative z-10 w-full h-[600px] lg:h-[750px] p-4 lg:p-10 pt-24 pb-20">
+              <div className="relative z-10 w-full h-[55vh] min-h-[450px] lg:h-[650px] p-4 lg:p-10 pt-24 pb-16">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={rechartsData} margin={{ top: 30, right: 40, left: 0, bottom: 20 }}>
                     <defs>
@@ -342,20 +373,13 @@ export default function EngineeringMilestones() {
                         const { cx, cy, payload } = props;
                         return (
                           <g onClick={() => { setActiveIndex(payload.index); setView("tree"); }} className="cursor-pointer">
-                            {/* مساحة الضغط الوهمية */}
                             <circle cx={cx} cy={cy} r="40" fill="transparent" />
-                            
-                            {/* الحلقة المتقطعة الداخلية (تدور لليمين) */}
                             <g style={{ transformOrigin: `${cx}px ${cy}px` }} className="animate-[spin_4s_linear_infinite]">
                               <circle cx={cx} cy={cy} r={18} fill="none" stroke="var(--color-secondary)" strokeWidth={2.5} strokeDasharray="6 4" />
                             </g>
-                            
-                            {/* الحلقة المتقطعة الخارجية (تدور لليسار) */}
                             <g style={{ transformOrigin: `${cx}px ${cy}px` }} className="animate-[spin_6s_linear_infinite_reverse]">
                               <circle cx={cx} cy={cy} r={26} fill="none" stroke="var(--color-primary)" strokeWidth={1.5} strokeDasharray="4 6" opacity={0.7} />
                             </g>
-                            
-                            {/* النقطة المركزية المضيئة */}
                             <circle cx={cx} cy={cy} r={10} fill="#eafcf4" stroke="var(--color-secondary)" strokeWidth={4} style={{ filter: "drop-shadow(0 0 15px rgba(13,148,104,0.8))" }} />
                           </g>
                         );
@@ -369,43 +393,46 @@ export default function EngineeringMilestones() {
           )}
 
           {/* =========================================================================
-              VIEW 2: الشجرة التفرعية المتجاوبة 
+              VIEW 2: الشجرة التفرعية المتجاوبة - بمسافات مريحة ותمدد ذكي (Smart Expansion)
               ========================================================================= */}
           {view === "tree" && (
             <motion.div 
               key="tree-view"
               initial={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }} animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }} transition={{ duration: 0.6, ease: "easeOut" }}
-              className="w-full relative overflow-x-auto overflow-y-hidden custom-scrollbar pb-4"
+              className="w-full relative overflow-hidden flex items-center justify-center h-[80vh] min-h-[600px] lg:min-h-[750px]"
             >
-              <div className="relative min-w-[1200px] bg-transparent" style={{ height: `${treeHeight}px` }}>
+              <div className="relative w-full h-full max-w-[1500px] mx-auto bg-transparent">
                 
-                {/* دائرة السنة المركزية */}
-                <div className="absolute right-[2%] z-40 flex flex-col items-center gap-6" style={{ top: `${nodeRootY}px`, transform: 'translateY(-50%)' }}>
-                  <button onClick={() => setActiveIndex(p => Math.min(WORK_HISTORY.length - 1, p + 1))} disabled={activeIndex === WORK_HISTORY.length - 1} className="w-12 h-12 flex items-center justify-center rounded-full bg-[#b2dcda]/90 backdrop-blur-md border border-white/50 text-[#0a3f2d] hover:bg-[#0d9468] hover:text-white disabled:opacity-30 transition-all shadow-md"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg></button>
-                  <div className="w-36 h-36 lg:w-44 lg:h-44 rounded-full bg-gradient-to-br from-[#114fd1] to-[#0d9468] border-[6px] border-[#b2dcda] flex items-center justify-center shadow-[0_20px_50px_rgba(17,79,209,0.4)] relative">
+                {/* دائرة السنة المركزية (Root Node) */}
+                <div className="absolute z-40 flex flex-col items-center gap-4 md:gap-6" style={{ top: `50%`, right: `${100 - ROOT_X}%`, transform: 'translate(50%, -50%)' }}>
+                  <button onClick={() => setActiveIndex(p => Math.min(WORK_HISTORY.length - 1, p + 1))} disabled={activeIndex === WORK_HISTORY.length - 1} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-[#b2dcda]/90 backdrop-blur-md border border-white/50 text-[#0a3f2d] hover:bg-[#0d9468] hover:text-white disabled:opacity-30 transition-all shadow-md"><svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg></button>
+                  <div className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full bg-gradient-to-br from-[#114fd1] to-[#0d9468] border-[4px] md:border-[6px] border-[#b2dcda] flex items-center justify-center shadow-[0_20px_50px_rgba(17,79,209,0.4)] relative">
                     <div className="absolute inset-0 rounded-full border-2 border-white/40 border-dashed animate-[spin_15s_linear_infinite]"></div>
-                    <span className="text-5xl lg:text-6xl font-black font-display text-white">{activeData.year}</span>
+                    <span className="text-3xl md:text-4xl lg:text-5xl font-black font-display text-white">{activeData.year}</span>
                   </div>
-                  <button onClick={() => setActiveIndex(p => Math.max(0, p - 1))} disabled={activeIndex === 0} className="w-12 h-12 flex items-center justify-center rounded-full bg-[#b2dcda]/90 backdrop-blur-md border border-white/50 text-[#0a3f2d] hover:bg-[#0d9468] hover:text-white disabled:opacity-30 transition-all shadow-md"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg></button>
+                  <button onClick={() => setActiveIndex(p => Math.max(0, p - 1))} disabled={activeIndex === 0} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-[#b2dcda]/90 backdrop-blur-md border border-white/50 text-[#0a3f2d] hover:bg-[#0d9468] hover:text-white disabled:opacity-30 transition-all shadow-md"><svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg></button>
                 </div>
 
                 <AnimatePresence mode="wait">
                   <motion.div key={`tree-${activeIndex}`} className="absolute inset-0 w-full h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }}>
                     
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox={`0 0 ${treeWidth} ${treeHeight}`} preserveAspectRatio="none">
+                    {/* SVG للخطوط المتكيفة 100% */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                       {layoutData.map((cat, i) => {
-                        const cpX1 = (nodeRootX + colCatX) / 2;
-                        const path1 = `M ${nodeRootX} ${nodeRootY} C ${cpX1} ${nodeRootY}, ${cpX1} ${cat.centerY}, ${colCatX} ${cat.centerY}`;
+                        const cpX1 = (ROOT_X + CAT_X) / 2;
+                        const path1 = `M ${ROOT_X} 50 C ${cpX1} 50, ${cpX1} ${cat.centerY}, ${CAT_X} ${cat.centerY}`;
 
                         return (
                           <g key={`paths-${i}`}>
-                            <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.1 + (i * 0.1) }} d={path1} fill="none" stroke="var(--color-primary)" strokeWidth="4" strokeOpacity="0.4" />
+                            <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.1 + (i * 0.1) }} d={path1} fill="none" stroke="var(--color-primary)" strokeWidth="3" strokeOpacity="0.4" vectorEffect="non-scaling-stroke" />
                             
                             {cat.itemsLayout.map((item, j) => {
-                              const cpX2 = (colCatX + colTaskX) / 2;
-                              const path2 = `M ${colCatX} ${cat.centerY} C ${cpX2} ${cat.centerY}, ${cpX2} ${item.centerY}, ${colTaskX} ${item.centerY}`;
+                              const targetX = item.colIndex === 0 ? TASK_X_1 : TASK_X_2;
+                              const cpX2 = (CAT_X + targetX) / 2;
+                              const path2 = `M ${CAT_X} ${cat.centerY} C ${cpX2} ${cat.centerY}, ${cpX2} ${item.centerY}, ${targetX} ${item.centerY}`;
+                              
                               return (
-                                <motion.path key={`path2-${i}-${j}`} initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.4 + (i * 0.1) + (j * 0.1) }} d={path2} fill="none" stroke="var(--color-secondary)" strokeWidth="3" strokeOpacity="0.5" strokeDasharray="6,6" />
+                                <motion.path key={`path2-${i}-${j}`} initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.4 + (i * 0.1) + (j * 0.1) }} d={path2} fill="none" stroke="var(--color-secondary)" strokeWidth="2.5" strokeOpacity="0.5" strokeDasharray="6,6" vectorEffect="non-scaling-stroke" />
                               );
                             })}
                           </g>
@@ -415,20 +442,18 @@ export default function EngineeringMilestones() {
 
                     <div className="absolute inset-0 w-full h-full pointer-events-none">
                       {layoutData.map((cat, i) => {
-                        const catTopPercent = (cat.centerY / treeHeight) * 100;
-                        const catRightPercent = ((treeWidth - colCatX) / treeWidth) * 100;
-                        const logoMidXPercent = (((nodeRootX + colCatX) / 2) / treeWidth) * 100;
-                        const logoMidYPercent = (((nodeRootY + cat.centerY) / 2) / treeHeight) * 100;
+                        const logoMidX = (ROOT_X + CAT_X) / 2;
+                        const logoMidY = (50 + cat.centerY) / 2;
 
                         return (
                           <div key={`cat-${i}`}>
                             
                             <motion.div 
-                              initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", delay: 0.3 + (i * 0.1) }} 
-                              style={{ left: `${logoMidXPercent}%`, top: `${logoMidYPercent}%` }} 
-                              className="absolute w-12 h-12 -translate-x-1/2 -translate-y-1/2 bg-[#eafcf4]/95 backdrop-blur-md rounded-2xl border border-[var(--color-secondary)]/20 flex items-center justify-center shadow-[0_0_20px_rgba(13,148,104,0.3)] z-20"
+                              initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: scaleFactor }} transition={{ type: "spring", delay: 0.3 + (i * 0.1) }} 
+                              style={{ left: `${logoMidX}%`, top: `${logoMidY}%`, transformOrigin: "center" }} 
+                              className="absolute w-8 h-8 md:w-12 md:h-12 -translate-x-1/2 -translate-y-1/2 bg-[#eafcf4]/95 backdrop-blur-md rounded-xl md:rounded-2xl border border-[var(--color-secondary)]/20 flex items-center justify-center shadow-[0_0_20px_rgba(13,148,104,0.3)] z-20"
                             >
-                              <svg viewBox="0 0 24 24" fill="var(--color-secondary)" fillOpacity="0.1" stroke="var(--color-secondary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                              <svg viewBox="0 0 24 24" fill="var(--color-secondary)" fillOpacity="0.1" stroke="var(--color-secondary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 md:w-6 md:h-6">
                                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                                 <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                                 <line x1="12" y1="22.08" x2="12" y2="12" />
@@ -436,34 +461,39 @@ export default function EngineeringMilestones() {
                             </motion.div>
 
                             <motion.div 
-                              initial={{ opacity: 0, x: -30, scale: 0.9 }} animate={{ opacity: 1, x: 0, scale: 1 }} transition={{ duration: 0.4, delay: 0.4 + (i * 0.1) }}
-                              style={{ top: `${catTopPercent}%`, right: `${catRightPercent}%` }}
-                              className="absolute w-[290px] lg:w-[340px] -translate-y-1/2 pointer-events-auto z-30"
+                              initial={{ opacity: 0, x: -20, scale: scaleFactor * 0.9 }} 
+                              animate={{ opacity: 1, x: 0, scale: scaleFactor }} 
+                              transition={{ duration: 0.4, delay: 0.4 + (i * 0.1) }}
+                              style={{ top: `${cat.centerY}%`, right: `${100 - CAT_X}%`, transformOrigin: "right center" }}
+                              className="absolute -translate-y-1/2 pointer-events-auto z-30"
                             >
-                              <div className="relative overflow-hidden bg-gradient-to-b from-[#f0fdf4] to-[#b2dcda] border border-[#83c5a6] rounded-[1.5rem] px-6 py-6 shadow-[0_15px_30px_rgba(13,148,104,0.2)] hover:shadow-[0_20px_40px_rgba(13,148,104,0.3)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                              {/* بطاقة الفئة مع التحجيم الديناميكي */}
+                              <div className={`relative overflow-hidden bg-gradient-to-b from-[#f0fdf4] to-[#b2dcda] border border-[#83c5a6] rounded-xl lg:rounded-[1.2rem] shadow-[0_15px_30px_rgba(13,148,104,0.2)] hover:shadow-[0_20px_40px_rgba(13,148,104,0.3)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center ${catDynamicClass}`}>
                                 <CardFallingDots type="green" />
-                                <div className="absolute top-1/2 -right-[10px] w-4 h-4 bg-[#f0fdf4] border-[4px] border-[var(--color-secondary)] rounded-full -translate-y-1/2 shadow-sm z-10"></div>
-                                <h3 className="text-xl lg:text-2xl font-black text-[#0a3f2d] text-center relative z-10">{cat.title}</h3>
+                                <div className="absolute top-1/2 -right-[6px] lg:-right-[8px] w-3 h-3 lg:w-4 lg:h-4 bg-[#f0fdf4] border-[3px] lg:border-[4px] border-[var(--color-secondary)] rounded-full -translate-y-1/2 shadow-sm z-10"></div>
+                                <h3 className={`font-black text-[#0a3f2d] text-center relative z-10 ${catTitleClass}`}>{cat.title}</h3>
                               </div>
                             </motion.div>
 
                             {cat.itemsLayout.map((item, j) => {
-                              const itemTopPercent = (item.centerY / treeHeight) * 100;
-                              const itemRightPercent = ((treeWidth - colTaskX) / treeWidth) * 100;
+                              const targetX = item.colIndex === 0 ? TASK_X_1 : TASK_X_2;
 
                               return (
                                 <motion.div 
                                   key={`item-${i}-${j}`}
-                                  initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.5 + (i * 0.1) + (j * 0.1) }}
-                                  style={{ top: `${itemTopPercent}%`, right: `${itemRightPercent}%` }}
-                                  className="absolute w-[290px] lg:w-[380px] -translate-y-1/2 pointer-events-auto z-20"
+                                  initial={{ opacity: 0, x: -20, scale: scaleFactor * 0.9 }} 
+                                  animate={{ opacity: 1, x: 0, scale: scaleFactor }} 
+                                  transition={{ duration: 0.4, delay: 0.5 + (i * 0.1) + (j * 0.1) }}
+                                  style={{ top: `${item.centerY}%`, right: `${100 - targetX}%`, transformOrigin: "right center" }}
+                                  className="absolute -translate-y-1/2 pointer-events-auto z-20"
                                 >
-                                  <div className="relative overflow-hidden bg-gradient-to-b from-[#f8faff] to-[#b2c8ea] border border-[#8caabf] p-5 lg:p-6 rounded-[1.5rem] shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:border-[var(--color-primary)]/80 transition-all duration-300 group">
+                                  {/* بطاقة المهمة تتوسع الشاشة بأكملها عندما تقل العناصر */}
+                                  <div className={`relative overflow-hidden bg-gradient-to-b from-[#f8faff] to-[#b2c8ea] border border-[#8caabf] rounded-xl lg:rounded-[1.2rem] shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:border-[var(--color-primary)]/80 transition-all duration-300 group ${taskDynamicClass}`}>
                                     <CardFallingDots type="blue" />
-                                    <div className="absolute top-1/2 -right-[6px] w-3 h-3 bg-[#f8faff] border-[3px] border-[var(--color-primary)] rounded-full -translate-y-1/2 group-hover:scale-150 transition-all shadow-sm z-10"></div>
+                                    <div className="absolute top-1/2 -right-[5px] lg:-right-[6px] w-2.5 h-2.5 lg:w-3 lg:h-3 bg-[#f8faff] border-[2px] lg:border-[3px] border-[var(--color-primary)] rounded-full -translate-y-1/2 group-hover:scale-150 transition-all shadow-sm z-10"></div>
                                     
-                                    <h4 className="text-lg lg:text-xl font-extrabold text-[var(--color-primary-dark)] mb-2 relative z-10">{item.name}</h4>
-                                    <p className="text-sm font-bold text-gray-800 leading-relaxed relative z-10">{item.desc}</p>
+                                    <h4 className={`font-extrabold text-[var(--color-primary-dark)] relative z-10 ${taskTitleClass}`}>{item.name}</h4>
+                                    <p className={`font-bold text-gray-800 leading-snug relative z-10 line-clamp-2 md:line-clamp-none ${taskDescClass}`}>{item.desc}</p>
                                   </div>
                                 </motion.div>
                               );
@@ -477,21 +507,18 @@ export default function EngineeringMilestones() {
                 </AnimatePresence>
               </div>
 
-              {/* 🔷 زر الـ ESC الاحترافي والذكي (مثبت أعلى يمين الصفحة لا يتحرك مع الـ Scroll) */}
+              {/* زر الرجوع للخلف */}
               <div className="fixed top-6 right-6 lg:top-8 lg:right-8 z-[100] pointer-events-auto">
                 <button 
                   onClick={() => setView("chart")} 
-                  className="flex items-center gap-4 px-5 py-2.5 bg-[#eafcf4]/90 hover:bg-white backdrop-blur-2xl border border-[var(--color-secondary)]/30 rounded-2xl shadow-[0_15px_30px_rgba(13,148,104,0.15)] transition-all duration-300 group hover:-translate-y-1"
+                  className="flex items-center gap-3 lg:gap-4 px-3 py-2 lg:px-5 lg:py-2.5 bg-[#eafcf4]/90 hover:bg-white backdrop-blur-2xl border border-[var(--color-secondary)]/30 rounded-xl lg:rounded-2xl shadow-[0_15px_30px_rgba(13,148,104,0.15)] transition-all duration-300 group hover:-translate-y-1"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--color-secondary)]/10 group-hover:bg-[var(--color-secondary)] transition-colors">
-                    <svg className="w-4 h-4 text-[var(--color-secondary-dark)] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+                  <div className="flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 rounded-full bg-[var(--color-secondary)]/10 group-hover:bg-[var(--color-secondary)] transition-colors">
+                    <svg className="w-3 h-3 lg:w-4 lg:h-4 text-[var(--color-secondary-dark)] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                   </div>
-                  <div className="flex flex-col items-start pr-2">
-                    <span className="text-sm font-extrabold text-[#0a3f2d] leading-none">المخطط</span>
-                    <span className="text-[10px] font-bold text-[var(--color-secondary-dark)] mt-1">الرجوع للخلف</span>
-                  </div>
-                  <div className="ml-2 pl-3 border-l border-[var(--color-secondary)]/20 flex items-center">
-                    <kbd className="bg-white text-[var(--color-secondary-dark)] px-2.5 py-1 rounded-lg text-xs font-black uppercase font-sans border border-[var(--color-secondary)]/20 shadow-sm group-hover:shadow-md transition-all">ESC</kbd>
+                  <div className="flex flex-col items-start pr-1 lg:pr-2">
+                    <span className="text-xs lg:text-sm font-extrabold text-[#0a3f2d] leading-none">المخطط</span>
+                    <span className="hidden md:block text-[10px] font-bold text-[var(--color-secondary-dark)] mt-1">الرجوع للخلف</span>
                   </div>
                 </button>
               </div>
