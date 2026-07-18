@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
-import Header from "./components/header";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
@@ -33,7 +32,6 @@ export default function RootLayout({
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[800px] w-[800px] rounded-full bg-[#2B72E6] opacity-[0.03] blur-[150px]" />
         </div>
 
-        <Header/>
         
         {/* المحتوى الرئيسي */}
         <main className="pt-20 relative z-0">
