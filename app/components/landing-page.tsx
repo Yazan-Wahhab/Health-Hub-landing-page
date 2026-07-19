@@ -9,8 +9,12 @@ import HeroSection from "./hero";
 import Intro from "./intro";
 import ZigZagSections from "./zigzag-sections";
 import EngineeringMilestones from "./engineering-milestones";
-import OurProcess from "./our-process"; // 🌟 تم إضافة استدعاء قسم طريقة العمل هنا
+import OurProcess from "./our-process"; 
+import StatisticsSection from "./statistics";
 import SuccessPartners from "./success-partners";
+import Testimonials from "./testimonials"; 
+import FAQ from "./faq"; 
+import ContactSection from "./contact"; // 🌟 تم إضافة استدعاء قسم التواصل الاحترافي هنا
 
 // =========================================================================
 // ✨ 1. الخلفية التفاعلية: (Rich Enterprise Pattern - Hover Blue)
@@ -110,60 +114,31 @@ export default function LandingPage() {
               <EngineeringMilestones /> 
             </motion.div>
 
-            {/* 🌟 تم إضافة قسم طريقة العمل والفيديوهات هنا */}
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <OurProcess /> 
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+              <StatisticsSection />
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <SuccessPartners /> 
             </motion.div>
 
-            {/* قسم التواصل */}
-            <section id="contact" className="relative bg-transparent py-32 border-t border-[var(--color-border)] mt-10">
-              <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-16 px-6 lg:flex-row lg:items-center lg:justify-between lg:px-12 relative z-10">
-                <div className="max-w-2xl">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                    className="inline-flex items-center gap-2 bg-white/80 border border-[var(--color-primary)]/15 px-5 py-2.5 rounded-full mb-6 backdrop-blur-xl shadow-sm"
-                  >
-                    <div className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse shadow-[0_0_8px_var(--color-primary)]"></div>
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-primary)]">Healthcare Enterprise</span>
-                  </motion.div>
-                  
-                  <motion.h2 
-                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-                    className="mt-4 font-display text-4xl font-extrabold tracking-tight text-[var(--color-text-main)] sm:text-6xl leading-[1.2]"
-                  >
-                    بنية تحتية مصممة للمستشفيات التي تطلب <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]">الاستقرار والموثوقية.</span>
-                  </motion.h2>
-                  
-                  <motion.p 
-                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-                    className="mt-6 text-lg leading-relaxed text-[var(--color-text-muted)] font-medium"
-                  >
-                    بدءاً من مكاتب الاستقبال وحتى الإدارة المالية وغرف العمليات، توفر منصة Smart Care بيئة عمل موحدة، خالية من التعقيد، وفائقة الدقة للطواقم الطبية.
-                  </motion.p>
-                </div>
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+              <Testimonials /> 
+            </motion.div>
 
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
-                  className="relative overflow-hidden rounded-[2.5rem] border border-white bg-white/60 p-10 md:p-12 backdrop-blur-3xl shadow-[0_20px_60px_rgba(17,79,209,0.05)] lg:w-[500px]"
-                >
-                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary-dark)]"></div>
-                  <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--color-secondary)] mb-3 flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                    تواصل مع خبرائنا
-                  </p>
-                  <p className="mt-2 text-base leading-relaxed text-[var(--color-text-muted)] font-medium">
-                    احجز استشارة خاصة مع مهندسينا لاستعراض آلية عمل النظام، وخيارات الدمج المخصصة لتلائم شبكة عياداتك أو مستشفاك.
-                  </p>
-                  <button className="mt-10 w-full inline-flex items-center justify-center rounded-[1rem] bg-[var(--color-primary)] px-8 py-5 text-base font-bold text-white shadow-[0_10px_30px_rgba(17,79,209,0.15)] transition-all duration-300 hover:scale-[1.02] hover:bg-[var(--color-primary-dark)] hover:shadow-[0_15px_40px_rgba(17,79,209,0.25)] border border-white/20">
-                    طلب عرض توضيحي (Demo)
-                  </button>
-                </motion.div>
-              </div>
-            </section>
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+              <FAQ /> 
+            </motion.div>
+
+            {/* 🌟 قسم التواصل الجديد (تم استبدال الكود القديم بالمكون المخصص) */}
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+              <ContactSection />
+            </motion.div>
+
           </main>
         </motion.div>
       )}
