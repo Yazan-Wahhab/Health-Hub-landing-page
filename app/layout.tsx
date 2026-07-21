@@ -8,6 +8,13 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
 export const metadata: Metadata = {
   title: "Health-Hub | By Arachnotech",
   description: "Enterprise hospital management platform.",
+  icons: [
+    {
+      rel: "icon",
+      type: "image/png",
+      url: "https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75",
+    },
+  ],
 };
 
 export default function RootLayout({
