@@ -157,16 +157,19 @@ export default function SuccessPartners() {
   return (
     <section 
       dir="rtl" 
-      className="relative w-full py-24 lg:py-32 bg-transparent overflow-hidden"
+      // تم تخفيف المساحة العلوية والسفلية (py) للموبايل لتصبح 16 بدلاً من 24
+      className="relative w-full py-16 md:py-24 lg:py-32 bg-transparent overflow-hidden"
       aria-labelledby={headingId}
     >
-      <div className="w-full px-6 md:px-12 lg:px-16 relative z-10 max-w-[1600px] mx-auto">
+      <div className="w-full px-4 md:px-12 lg:px-16 relative z-10 max-w-[1600px] mx-auto">
         
-        <div className="mb-16 md:mb-20 flex flex-col items-start text-right max-w-3xl relative z-20">
+        {/* تقليل الـ margin السفلي للترويسة في الموبايل */}
+        <div className="mb-10 md:mb-20 flex flex-col items-start text-right max-w-3xl relative z-20">
           <motion.h2 
             id={headingId}
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[var(--color-text-main)] mb-6 tracking-tight leading-[1.2]"
+            // تم تصغير الخط للموبايل (text-3xl) مع المحافظة على (md:text-5xl lg:text-6xl)
+            className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[var(--color-text-main)] mb-4 md:mb-6 tracking-tight leading-[1.2]"
           >
             مشاريع تم إنجازها{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-l from-[var(--color-primary)] to-[var(--color-secondary)]">
@@ -176,20 +179,23 @@ export default function SuccessPartners() {
           
           <motion.p 
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="text-[var(--color-text-muted)] font-medium text-lg md:text-xl leading-relaxed"
+            // تصغير خط الوصف في الموبايل
+            className="text-[var(--color-text-muted)] font-medium text-[15px] md:text-lg lg:text-xl leading-relaxed"
           >
             نستعرض هنا مجموعة من المشاريع البرمجية التي تمت هندستها وتطبيقها فعلياً لرفع الكفاءة التشغيلية للمنشآت الطبية الكبرى وتحويلها رقمياً.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-6 relative z-20">
+        {/* تقليل الـ gap بين الكروت في الموبايل */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5 lg:gap-6 relative z-20">
           {PROJECTS_DATA.map((project, idx) => {
             let spanClass = "";
-            if (idx === 0) spanClass = "md:col-span-8 md:row-span-2 min-h-[450px] lg:min-h-[600px]"; 
-            else if (idx === 1) spanClass = "md:col-span-4 md:row-span-1 min-h-[300px]";
-            else if (idx === 2) spanClass = "md:col-span-4 md:row-span-1 min-h-[300px]";
-            else if (idx === 3) spanClass = "md:col-span-6 md:row-span-1 min-h-[350px]";
-            else if (idx === 4) spanClass = "md:col-span-6 md:row-span-1 min-h-[350px]";
+            // تم تصغير (min-h) للكروت في الموبايل لكي لا تظهر عملاقة جداً وتشغل الشاشة بالكامل
+            if (idx === 0) spanClass = "md:col-span-8 md:row-span-2 min-h-[380px] md:min-h-[450px] lg:min-h-[600px]"; 
+            else if (idx === 1) spanClass = "md:col-span-4 md:row-span-1 min-h-[260px] md:min-h-[300px]";
+            else if (idx === 2) spanClass = "md:col-span-4 md:row-span-1 min-h-[260px] md:min-h-[300px]";
+            else if (idx === 3) spanClass = "md:col-span-6 md:row-span-1 min-h-[280px] md:min-h-[350px]";
+            else if (idx === 4) spanClass = "md:col-span-6 md:row-span-1 min-h-[280px] md:min-h-[350px]";
 
             return (
               <ProjectCard 
@@ -238,7 +244,8 @@ function ProjectCard({ project, spanClass, isHero, onClick }: ProjectCardProps) 
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick()}
       role="button"
       tabIndex={0}
-      className={`group relative flex flex-col justify-end overflow-hidden rounded-[2rem] bg-[#0f172a] ring-1 ring-inset ring-white/10 cursor-pointer transition-all duration-700 outline-none ${spanClass} ${
+      // تقليل انحناء الحواف في الموبايل
+      className={`group relative flex flex-col justify-end overflow-hidden rounded-2xl md:rounded-[2rem] bg-[#0f172a] ring-1 ring-inset ring-white/10 cursor-pointer transition-all duration-700 outline-none ${spanClass} ${
         isPrimary ? "hover:ring-[var(--color-primary)] hover:shadow-[0_20px_50px_-15px_rgba(17,79,209,0.4)]" : "hover:ring-[var(--color-secondary)] hover:shadow-[0_20px_50px_-15px_rgba(13,148,104,0.4)]"
       }`}
     >
@@ -249,41 +256,41 @@ function ProjectCard({ project, spanClass, isHero, onClick }: ProjectCardProps) 
           loading={isHero ? "eager" : "lazy"}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110"
         />
-        
-        {/* الفلتر اللوني: تم تقليل الشفافية إلى 20% لتكون خفيفة جداً، وتتلاشى تماماً عند الهوفر */}
         <div className={`absolute inset-0 mix-blend-multiply opacity-20 transition-opacity duration-700 group-hover:opacity-0 ${isPrimary ? "bg-[#0c3ba6]" : "bg-[#08704d]"}`} />
-        
-        {/* التدرج الكحلي/أسود من الأسفل ضروري لإبراز النص */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/30 to-transparent pointer-events-none" />
       </div>
 
-      <div className="relative p-6 md:p-8 lg:p-10 z-10 w-full h-full flex flex-col justify-end text-white">
-        <div className={`absolute top-6 left-6 w-12 h-12 rounded-full backdrop-blur-lg border border-white/20 bg-white/10 flex items-center justify-center opacity-0 -translate-x-4 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100 ${
+      {/* تقليل الـ padding الداخلي للموبايل */}
+      <div className="relative p-5 md:p-8 lg:p-10 z-10 w-full h-full flex flex-col justify-end text-white">
+        {/* تصغير الأيقونة العلوية للموبايل وتعديل موقعها */}
+        <div className={`absolute top-4 left-4 md:top-6 md:left-6 w-10 h-10 md:w-12 md:h-12 rounded-full backdrop-blur-lg border border-white/20 bg-white/10 flex items-center justify-center opacity-0 -translate-x-4 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100 ${
           isPrimary ? 'group-hover:bg-[#114fd1] group-hover:border-[#114fd1] shadow-[0_0_20px_rgba(17,79,209,0.5)]' : 'group-hover:bg-[#0d9468] group-hover:border-[#0d9468] shadow-[0_0_20px_rgba(13,148,104,0.5)]'
         }`}>
-          <svg className="w-5 h-5 rotate-180 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 text-white rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </div>
 
         <div>
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-3 md:mb-4">
             {project.tags.map((tag, i) => (
               <span 
                 key={i} 
-                className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white uppercase shadow-sm"
+                // تصغير حجم التاجز للموبايل
+                className="px-2.5 py-1 md:px-3 text-[10px] md:text-[11px] font-bold tracking-wider rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white uppercase shadow-sm"
               >
                 {tag}
               </span>
             ))}
           </div>
 
-          <h3 className={`font-extrabold tracking-tight mb-2 text-white drop-shadow-md ${isHero ? "text-3xl md:text-5xl leading-tight" : "text-2xl md:text-3xl"}`}>
+          {/* تعديل أحجام الخطوط بدقة بين الموبايل والديسكتوب */}
+          <h3 className={`font-extrabold tracking-tight mb-2 text-white drop-shadow-md ${isHero ? "text-[26px] sm:text-3xl md:text-5xl leading-tight" : "text-xl sm:text-2xl md:text-3xl"}`}>
             {project.title}
           </h3>
 
-          <p className="font-medium text-sm md:text-base flex items-center gap-2 drop-shadow-md text-gray-200">
-            <svg className={`w-5 h-5 ${isPrimary ? 'text-[#60a5fa]' : 'text-[#34d399]'}`} fill="currentColor" viewBox="0 0 24 24">
+          <p className="font-medium text-[13px] md:text-sm lg:text-base flex items-center gap-2 drop-shadow-md text-gray-200">
+            <svg className={`w-4 h-4 md:w-5 md:h-5 ${isPrimary ? 'text-[#60a5fa]' : 'text-[#34d399]'}`} fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
             {project.hospital}
@@ -311,7 +318,8 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
     : "bg-gradient-to-br from-[#D8F4E6] to-[#AEE8CB]";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-12 overflow-hidden">
+    // تقليل الـ padding الخارجي للموبايل ليعطي مساحة أكبر للـ Modal
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-12 overflow-hidden">
       
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
@@ -325,60 +333,66 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }} 
         exit={{ opacity: 0, scale: 0.96, y: 20 }} 
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className={`relative w-full max-w-6xl rounded-[2.5rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col md:flex-row max-h-[95vh] z-10 border border-white/60 ${modalBgTheme}`}
+        // تقليل الانحناء للموبايل
+        className={`relative w-full max-w-6xl rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col md:flex-row max-h-[95vh] z-10 border border-white/60 ${modalBgTheme}`}
       >
         <button 
           onClick={onClose} 
-          className="absolute top-6 left-6 z-30 w-12 h-12 rounded-full bg-white/70 backdrop-blur-md border border-white shadow-sm flex items-center justify-center text-[#0f172a] hover:bg-white hover:text-red-500 hover:scale-105 transition-all"
+          // تصغير زر الإغلاق وتعديل موقعه للموبايل
+          className="absolute top-3 left-3 md:top-6 md:left-6 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/70 backdrop-blur-md border border-white shadow-sm flex items-center justify-center text-[#0f172a] hover:bg-white hover:text-red-500 hover:scale-105 transition-all"
         >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="w-full md:w-[55%] p-8 md:p-12 lg:p-16 overflow-y-auto flex flex-col justify-center relative order-2 md:order-1">
+        {/* تقليل المساحات الداخلية لقسم النصوص في الموبايل */}
+        <div className="w-full md:w-[55%] p-5 sm:p-8 md:p-12 lg:p-16 overflow-y-auto flex flex-col justify-center relative order-2 md:order-1">
           
           <ColoredFallingShapes color={project.color} />
 
           <div className="relative z-10">
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
               {project.tags.map((tag, idx) => (
                 <span 
                   key={idx} 
-                  className="px-3 py-1.5 text-xs font-bold tracking-wider rounded-lg border bg-white/50 backdrop-blur-md uppercase shadow-sm text-[#0f172a] border-white/80"
+                  className="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-bold tracking-wider rounded-lg border bg-white/50 backdrop-blur-md uppercase shadow-sm text-[#0f172a] border-white/80"
                 >
                   {tag}
                 </span>
               ))}
             </div>
             
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0f172a] mb-4 leading-[1.2] tracking-tight">
+            {/* تصغير عنوان المشروع داخل البوب أب للموبايل */}
+            <h3 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-[#0f172a] mb-3 md:mb-4 leading-[1.2] tracking-tight">
               {project.title}
             </h3>
             
-            <p className={`text-sm font-bold uppercase tracking-wider mb-8 flex items-center gap-2 ${isPrimary ? "text-[#0c3ba6]" : "text-[#08704d]"}`}>
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <p className={`text-[11px] md:text-sm font-bold uppercase tracking-wider mb-5 md:mb-8 flex items-center gap-2 ${isPrimary ? "text-[#0c3ba6]" : "text-[#08704d]"}`}>
+              <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
               {project.hospital}
             </p>
 
-            <p className="text-[#334155] font-semibold text-lg leading-relaxed mb-10">
+            {/* تصغير حجم خط الوصف */}
+            <p className="text-[#334155] font-semibold text-[14px] md:text-lg leading-relaxed mb-6 md:mb-10">
               {project.description}
             </p>
 
             <div className="mt-auto">
-              <h4 className="text-xs font-bold text-[#475569] uppercase tracking-widest mb-5">الأثر التشغيلي</h4>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              <h4 className="text-[10px] md:text-xs font-bold text-[#475569] uppercase tracking-widest mb-3 md:mb-5">الأثر التشغيلي</h4>
+              {/* تقليل المسافات بين كروت الإحصائيات داخل البوب أب */}
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                 {project.stats.map((stat, idx) => (
                   <div 
                     key={idx} 
-                    className="p-5 rounded-2xl border border-white/80 bg-white/50 backdrop-blur-xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] hover:bg-white/80 transition-all"
+                    className="p-3.5 md:p-5 rounded-xl md:rounded-2xl border border-white/80 bg-white/50 backdrop-blur-xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] hover:bg-white/80 transition-all"
                   >
-                    <span className={`block text-2xl md:text-3xl font-black mb-1 ${isPrimary ? "text-[#114fd1]" : "text-[#0d9468]"}`}>
+                    <span className={`block text-xl md:text-3xl font-black mb-1 ${isPrimary ? "text-[#114fd1]" : "text-[#0d9468]"}`}>
                       {stat.value}
                     </span>
-                    <span className="text-xs font-bold text-[#475569] uppercase tracking-wider">
+                    <span className="text-[10px] md:text-xs font-bold text-[#475569] uppercase tracking-wider">
                       {stat.label}
                     </span>
                   </div>
@@ -388,18 +402,14 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </div>
 
-        {/* القسم الأيسر (الصورة) */}
-        <div className="w-full md:w-[45%] h-64 md:h-auto relative overflow-hidden order-1 md:order-2 bg-[#0f172a] border-r border-white/40">
+        {/* القسم الأيسر (الصورة): تقليل ارتفاع الصورة في الموبايل لتوفير مساحة للنص */}
+        <div className="w-full md:w-[45%] h-52 sm:h-64 md:h-auto relative overflow-hidden order-1 md:order-2 bg-[#0f172a] border-r border-white/40 flex-shrink-0">
           <img 
             src={project.image} 
             alt={project.title} 
             className="absolute inset-0 w-full h-full object-cover"
           />
-          
-          {/* الدمج اللوني مخفف إلى 20% لتكون الصورة طبيعية وواضحة جداً */}
           <div className={`absolute inset-0 mix-blend-multiply opacity-20 ${isPrimary ? "bg-[#0c3ba6]" : "bg-[#08704d]"}`} />
-          
-          {/* التدرج الكحلي الناعم من الأسفل واليسار للدمج المريح مع النصوص */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/30 to-transparent pointer-events-none" />
         </div>
 

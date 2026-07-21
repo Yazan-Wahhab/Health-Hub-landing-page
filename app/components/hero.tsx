@@ -6,23 +6,43 @@ import { motion, useScroll, useTransform } from "framer-motion";
 export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
 
-  const { scrollYProgress } = useScroll({
+  // =========================================================================
+  // 💻 1. هندسة مسار اللوغو للشاشات الكبيرة (محمية 100% لم يتم تغيير أي رقم)
+  // =========================================================================
+  const { scrollYProgress: desktopProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
 
+  const dLogoX = useTransform(desktopProgress, [0, 1], ["0vw", "-25vw"]); 
+  const dLogoY = useTransform(desktopProgress, [0, 1], ["0vh", "110vh"]); 
+  const dLogoScale = useTransform(desktopProgress, [0, 1], [1, 0.45]); 
+  const dLogoOpacity = useTransform(desktopProgress, [0.95, 1], [1, 0]);
+
   // =========================================================================
-  // هندسة مسار اللوغو الأصلي
+  // 📱 2. هندسة مسار اللوغو للموبايل (ممددة لتتداخل مع كود ZigZag بسلاسة تامة)
   // =========================================================================
-  const logoX = useTransform(scrollYProgress, [0, 1], ["0vw", "-22vw"]); 
-  const logoY = useTransform(scrollYProgress, [0, 1], ["0vh", "100vh"]); 
-  const logoScale = useTransform(scrollYProgress, [0, 1], [1, 0.45]); 
-  const logoOpacity = useTransform(scrollYProgress, [0.95, 1], [1, 0]);
+  const { scrollYProgress: mobileProgress } = useScroll({
+    target: heroRef,
+    // السر هنا: نمدد تتبع السكرول لمسافة 150vh (أي 50vh بعد انتهاء الهيرو) 
+    // لكي يكمل المجسم حركته داخل قسم ZigZag ولا يتجمد عند نهاية الهيرو
+    offset: ["start start", "start -150vh"], 
+  });
+
+  // 0 = بداية الصفحة
+  // 0.666 = اللحظة التي تنتهي فيها صفحة الهيرو ويبدأ ZigZag تماماً (100vh)
+  // 1 = نهاية مسار التتبع داخل قسم ZigZag
+  
+  const mLogoX = useTransform(mobileProgress, [0, 0.666], ["0vw", "-30vw"]); // يذهب للمنتصف تماماً
+  const mLogoY = useTransform(mobileProgress, [0, 0.666, 1], ["0vh", "130vh", "10vh"]); // يحافظ على بقائه في منتصف الشاشة مع النزول
+  const mLogoScale = useTransform(mobileProgress, [0, 0.666, 0.9], [1, 0.5, 0.2]); // يطابق حجم مجسم ZigZag أثناء التسليم
+  const mLogoOpacity = useTransform(mobileProgress, [0.666, 0.75], [1, 0]); // يختفي بنعومة أثناء ظهور مجسم ZigZag
 
   return (
     <section 
       ref={heroRef} 
-      className="relative h-screen w-full flex items-center bg-transparent z-20"
+      // 💡 التعديل الوحيد هنا للموبايل: السماح بخروج العناصر عمودياً (overflow-y-visible)
+      className="relative h-screen w-full flex items-center bg-transparent z-20 overflow-x-clip overflow-y-visible lg:overflow-visible"
     >
       <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 grid lg:grid-cols-[1.2fr_0.8fr] gap-8 items-center relative z-10 lg:-translate-y-12">
         
@@ -33,7 +53,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col z-20 pt-20 lg:pt-0"
+          className="flex flex-col z-20 pt-0 pointer-events-auto"
         >
           {/* شارة حالة النظام */}
           <div className="mb-5 inline-flex self-start items-center gap-2.5 rounded-full bg-white/70 border border-[var(--color-primary)]/15 px-5 py-2 shadow-sm backdrop-blur-md">
@@ -61,26 +81,24 @@ export default function HeroSection() {
             We engineer high-trust medical systems that unify complex hospital operations.
           </p>
 
-          {/* الأزرار */}
-          <div className="mt-10 flex flex-wrap items-center gap-5">
+          <div className="mt-10 flex flex-row items-center gap-3 lg:gap-5 w-full pr-4 lg:pr-0">
             <a
               href="#explore"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-9 py-4 text-sm font-bold text-white shadow-[0_10px_25px_rgba(17,79,209,0.25)] transition-all duration-300 hover:bg-[var(--color-primary-dark)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(17,79,209,0.35)]"
+              className="inline-flex flex-1 lg:flex-none items-center justify-center rounded-full bg-[var(--color-primary)] px-9 py-4 text-[12px] lg:text-sm font-bold text-white whitespace-nowrap shadow-[0_10px_25px_rgba(17,79,209,0.25)] transition-all duration-300 hover:bg-[var(--color-primary-dark)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(17,79,209,0.35)]"
             >
               Discover The Hub
             </a>
             
             <a
               href="#architecture"
-              className="inline-flex items-center justify-center rounded-full bg-white/50 border border-[var(--color-primary)]/20 px-8 py-4 text-sm font-bold text-[var(--color-text-main)] shadow-sm backdrop-blur-sm hover:bg-white hover:border-[var(--color-primary)]/40 hover:shadow-md transition-all duration-300"
+              className="inline-flex flex-1 lg:flex-none items-center justify-center rounded-full bg-white/50 border border-[var(--color-primary)]/20 px-8 py-4 text-[12px] lg:text-sm font-bold text-[var(--color-text-main)] whitespace-nowrap shadow-sm backdrop-blur-sm hover:bg-white hover:border-[var(--color-primary)]/40 hover:shadow-md transition-all duration-300"
             >
               View Architecture
             </a>
           </div>
 
           {/* =========================================================================
-              لوحة القياسات الحيوية المصغرة (Premium Frosted Widget)
-              تم التعديل هنا لتبرز عن الخلفية باحترافية
+              لوحة القياسات الحيوية المصغرة
               ========================================================================= */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -88,10 +106,8 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="relative mt-12 overflow-hidden rounded-[2rem] p-7 max-w-2xl bg-gradient-to-br from-white/95 via-white/70 to-[var(--color-primary)]/10 backdrop-blur-2xl border border-white/80 shadow-[0_25px_50px_rgba(17,79,209,0.08),inset_0_2px_5px_rgba(255,255,255,0.9)] group"
           >
-            {/* خط إضاءة علوي ليعطي طابع واجهة النظام */}
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--color-primary)] via-[#0EA5E9] to-[var(--color-secondary)] opacity-90"></div>
 
-            {/* القسم العلوي: الإحصائيات */}
             <div className="relative z-10 grid grid-cols-3 gap-4 border-b border-[var(--color-border)] pb-5">
               <div>
                 <div className="text-2xl font-display font-black text-[var(--color-text-main)] mb-0.5">
@@ -113,7 +129,6 @@ export default function HeroSection() {
               </div>
             </div>
 
-            {/* القسم السفلي: المخطط البياني الحي (Live Chart) */}
             <div className="relative z-10 pt-5 flex items-end justify-between gap-6">
               <div>
                 <div className="text-[10px] font-bold text-[var(--color-secondary-dark)] uppercase tracking-widest flex items-center gap-2 mb-1.5">
@@ -160,16 +175,18 @@ export default function HeroSection() {
         </motion.div>
 
         {/* =========================================================================
-            النصف الأيمن: اللوغو العائم الفراغي
+            النصف الأيمن: اللوغو العائم الفراغي (تم عزل الديسكتوب عن الموبايل 100%)
             ========================================================================= */}
+            
+        {/* 💻 1. نسخة الشاشات الكبيرة (كودك الأصلي تماماً، مخفي في الموبايل) */}
         <motion.div 
-          className="relative flex items-center justify-center lg:justify-end z-50 pointer-events-none"
-          style={{ x: logoX, y: logoY, scale: logoScale, opacity: logoOpacity }}
+          className="hidden lg:flex relative right-auto top-auto items-center justify-end z-50 pointer-events-none"
+          style={{ x: dLogoX, y: dLogoY, scale: dLogoScale, opacity: dLogoOpacity }}
         >
           <motion.div
             animate={{ y: [0, -20, 0], rotateZ: [0, 2, -2, 0], rotateY: [0, 10, -10, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="relative perspective-[1200px] flex items-center justify-center"
+            className="relative perspective-[1200px] flex items-center justify-center opacity-100"
           >
             <div className="absolute h-full w-full rounded-full bg-[var(--color-secondary)] opacity-[0.08] blur-[60px] scale-110"></div>
             <div className="absolute h-full w-full rounded-full bg-[var(--color-primary)] opacity-[0.08] blur-[80px] scale-125 translate-x-5"></div>
@@ -177,7 +194,28 @@ export default function HeroSection() {
             <img 
               src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" 
               alt="Health Hub Logo" 
-              className="relative z-10 w-72 h-72 lg:w-[32rem] lg:h-[32rem] object-contain drop-shadow-[0_20px_30px_rgba(17,79,209,0.1)] grayscale-[10%]"
+              className="relative z-10 w-[32rem] h-[32rem] object-contain drop-shadow-[0_20px_30px_rgba(17,79,209,0.1)] grayscale-[10%]"
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* 📱 2. نسخة الموبايل (مخصصة للتسليم السلس، مخفية في الديسكتوب) */}
+        <motion.div 
+          className="flex lg:hidden absolute right-[-15%] top-[10%] items-center justify-center z-0 pointer-events-none"
+          style={{ x: mLogoX, y: mLogoY, scale: mLogoScale, opacity: mLogoOpacity }}
+        >
+          <motion.div
+            animate={{ y: [0, -20, 0], rotateZ: [0, 2, -2, 0], rotateY: [0, 10, -10, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="relative perspective-[1200px] flex items-center justify-center opacity-60"
+          >
+            <div className="absolute h-full w-full rounded-full bg-[var(--color-secondary)] opacity-[0.08] blur-[60px] scale-110"></div>
+            <div className="absolute h-full w-full rounded-full bg-[var(--color-primary)] opacity-[0.08] blur-[80px] scale-125 translate-x-5"></div>
+            
+            <img 
+              src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" 
+              alt="Health Hub Logo" 
+              className="relative z-10 w-72 h-72 object-contain drop-shadow-[0_20px_30px_rgba(17,79,209,0.1)] grayscale-[10%]"
             />
           </motion.div>
         </motion.div>

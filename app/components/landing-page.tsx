@@ -98,9 +98,9 @@ export default function LandingPage() {
 
       {introComplete && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-          <Header />
+          {/* <Header /> */}
 
-          <main className="relative z-10 pt-32" id="home">
+          <main className="relative z-10" id="home">
             
             <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <HeroSection />
