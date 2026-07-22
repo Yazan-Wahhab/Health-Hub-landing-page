@@ -239,7 +239,7 @@ export default function ImpactPartners() {
                       
                       {/* Tooltip */}
                       <g className="transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                        <rect x={point.x - 45} y={point.y - 45} width="90" height="28" rx="8" fill="#0f172a" shadow="md" />
+                        <rect x={point.x - 45} y={point.y - 45} width="90" height="28" rx="8" fill="#0f172a" className="drop-shadow-md" />
                         <text x={point.x} y={point.y - 26} fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">{point.count} مهام مركزية</text>
                         <polygon points={`${point.x - 5},${point.y - 17} ${point.x + 5},${point.y - 17} ${point.x},${point.y - 12}`} fill="#0f172a" />
                       </g>
