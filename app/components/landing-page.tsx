@@ -14,7 +14,7 @@ import StatisticsSection from "./statistics";
 import SuccessPartners from "./success-partners";
 import Testimonials from "./testimonials"; 
 import FAQ from "./faq"; 
-import ContactSection from "./contact"; // 🌟 تم إضافة استدعاء قسم التواصل الاحترافي هنا
+import ContactSection from "./contact";
 
 // =========================================================================
 // ✨ 1. الخلفية التفاعلية: (Rich Enterprise Pattern - Hover Blue)
@@ -40,21 +40,10 @@ function RichEnterpriseBackground() {
 
   return (
     <div className="fixed inset-0 z-[-2] bg-gradient-to-br from-[#bce8d4] via-[#dcf4e9] to-[#a8e0c6] overflow-hidden pointer-events-none">
-      <motion.div 
-        animate={{ x: [0, 60, -30, 0], y: [0, -40, 30, 0] }} 
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-[var(--color-primary)] rounded-full blur-[140px] opacity-[0.05]"
-      />
-      <motion.div 
-        animate={{ x: [0, -50, 40, 0], y: [0, 50, -40, 0] }} 
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-[var(--color-secondary)] rounded-full blur-[120px] opacity-[0.05]"
-      />
+      <motion.div animate={{ x: [0, 60, -30, 0], y: [0, -40, 30, 0] }} transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-[var(--color-primary)] rounded-full blur-[140px] opacity-[0.05]" />
+      <motion.div animate={{ x: [0, -50, 40, 0], y: [0, 50, -40, 0] }} transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-[var(--color-secondary)] rounded-full blur-[120px] opacity-[0.05]" />
       <div className="absolute inset-0" style={{ backgroundImage: basePattern, backgroundPosition: "center" }} />
-      <motion.div
-        className="absolute inset-0"
-        style={{ backgroundImage: activePattern, backgroundPosition: "center", WebkitMaskImage: maskImage, maskImage: maskImage }}
-      />
+      <motion.div className="absolute inset-0" style={{ backgroundImage: activePattern, backgroundPosition: "center", WebkitMaskImage: maskImage, maskImage: maskImage }} />
     </div>
   );
 }
@@ -79,7 +68,7 @@ function SynchronizedParallaxLogo() {
 }
 
 // =========================================================================
-// 🚀 3. الصفحة الرئيسية المجمعة
+// 🚀 3. الصفحة الرئيسية المجمعة 
 // =========================================================================
 export default function LandingPage() {
   const [introComplete, setIntroComplete] = useState(false);
@@ -87,7 +76,7 @@ export default function LandingPage() {
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}
-      className="relative min-h-screen text-[var(--color-text-main)] selection:bg-[var(--color-primary)] selection:text-white cursor-auto"
+      className="relative min-h-screen text-[var(--color-text-main)] selection:bg-[var(--color-primary)] selection:text-white cursor-auto scroll-smooth"
     >
       <RichEnterpriseBackground />
       <SynchronizedParallaxLogo />
@@ -98,44 +87,44 @@ export default function LandingPage() {
 
       {introComplete && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-          {/* <Header /> */}
+          <Header />
 
-          <main className="relative z-10" id="home">
+          <main className="relative z-10">
             
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            {/* 🌟 إضافة المعرفات ID لكل قسم حسب فكرتك */}
+            <motion.div id="home" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <HeroSection />
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="features" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <ZigZagSections />
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="modules" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <EngineeringMilestones /> 
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="process" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <OurProcess /> 
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="statistics" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <StatisticsSection />
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="partners" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <SuccessPartners /> 
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="testimonials" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <Testimonials /> 
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="faq" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <FAQ /> 
             </motion.div>
 
-            {/* 🌟 قسم التواصل الجديد (تم استبدال الكود القديم بالمكون المخصص) */}
-            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <motion.div id="contact" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <ContactSection />
             </motion.div>
 
