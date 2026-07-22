@@ -155,10 +155,11 @@ export default function OurProcess() {
             🎯 اللوغو الديناميكي والفيديوهات
             ============================================================ */}
         <motion.div 
+          // 💡 التعديل هنا لحل مشكلة التايب سكريبت!
           style={{ 
             top: logoY, 
             '--progress': xProgress 
-          } as React.CSSProperties} 
+          } as any} 
           className="absolute left-[calc(35px+(50%-35px)*var(--progress))] md:left-[calc(50%+(50%-50%)*var(--progress))] -translate-x-1/2 -translate-y-1/2 z-50 flex items-center justify-center will-change-transform pointer-events-auto"
         >
           

@@ -42,7 +42,17 @@ function HyperactiveNetwork() {
   );
 }
 
-const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color }) => {
+// 🌟 الواجهة الجديدة التي تحل مشكلة الـ Build
+interface LogoFaceProps {
+  initialPosition: [number, number, number];
+  animatePosition: [number, number, number];
+  rotation: [number, number, number];
+  scale: [number, number, number];
+  color: string;
+}
+
+// 🌟 تطبيق الواجهة هنا
+const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color }: LogoFaceProps) => {
   const i = initialPosition;
   const a1 = animatePosition;
   const a2 = [a1[0] * 1.5, a1[1] * 1.5, a1[2] * 1.5]; 
@@ -118,7 +128,8 @@ const LogoModel = () => {
   );
 };
 
-export default function Logo3D({ className = "" }) {
+// 🌟 إضافة تعريف النوع لـ className لتجنب أي أخطاء مشابهة
+export default function Logo3D({ className = "" }: { className?: string }) {
   return (
     <div className={`absolute top-0 left-0 w-full h-full z-0 pointer-events-none ${className}`}>
       <Canvas>
