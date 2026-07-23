@@ -5,8 +5,7 @@ import {
   motion, 
   useMotionValue, 
   useMotionTemplate, 
-  useScroll, 
-  useTransform, 
+  useScroll,
   useSpring
 } from "framer-motion";
 
@@ -100,6 +99,9 @@ const testimonialsData = [
   }
 ];
 
+// مضاعفة المصفوفة لإنشاء تأثير التمرير اللانهائي (Infinite Loop)
+const extendedTestimonials = [...testimonialsData, ...testimonialsData];
+
 // ==========================================
 // ✨ مكون المجسمات المتساقطة
 // ==========================================
@@ -130,7 +132,7 @@ function FallingShapes() {
 }
 
 // ==========================================
-// ✨ مكون البطاقة الممتلئ والغني
+// ✨ مكون البطاقة
 // ==========================================
 function TestimonialCard({ item }: { item: typeof testimonialsData[0] }) {
   const mouseX = useMotionValue(0);
@@ -150,15 +152,13 @@ function TestimonialCard({ item }: { item: typeof testimonialsData[0] }) {
       dir="rtl"
       onMouseMove={handleMouseMove}
       className="group relative flex shrink-0 flex-col justify-between overflow-hidden rounded-[1.5rem] md:rounded-[2rem] p-6 sm:p-8 text-right shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(13,148,104,0.08)] select-none
-                 w-[90vw] max-w-[340px] h-auto min-h-[420px] md:max-w-[420px] md:h-[520px] md:min-h-[520px]
+                 w-[85vw] max-w-[340px] h-auto min-h-[420px] md:max-w-[420px] md:h-[520px] md:min-h-[520px]
                  bg-[#e6f7ec]/90 backdrop-blur-2xl border border-[#bce8d0]"
     >
-      {/* إضاءات وحواف متحركة */}
       <motion.div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-[0.03]" style={{ background: backgroundSpotlight }} />
       <motion.div className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ background: borderSpotlight, maskImage: "linear-gradient(white, white)", maskComposite: "exclude", WebkitMaskComposite: "xor", padding: "1px" }} />
       <div className="pointer-events-none absolute inset-[1px] rounded-[1.5rem] md:rounded-[2rem] bg-[#e6f7ec]/80 backdrop-blur-3xl z-0" />
 
-      {/* علامة اقتباس كبيرة في الخلفية لملء المساحة */}
       <svg className="absolute top-4 left-4 w-24 h-24 md:w-32 md:h-32 text-[var(--color-primary)] opacity-[0.04] z-0 pointer-events-none -scale-x-100" fill="currentColor" viewBox="0 0 24 24">
         <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z" />
       </svg>
@@ -166,8 +166,6 @@ function TestimonialCard({ item }: { item: typeof testimonialsData[0] }) {
       <FallingShapes />
 
       <div className="relative z-10 flex flex-col h-full pointer-events-none">
-        
-        {/* الترويسة: الشعار والإحصائيات */}
         <div className="mb-6 flex items-start justify-between">
           <div className={`h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-gradient-to-br ${item.logoColor} p-0.5 shadow-lg shrink-0`}>
             <div className="flex h-full w-full items-center justify-center rounded-[10px] md:rounded-[14px] bg-white">
@@ -186,7 +184,6 @@ function TestimonialCard({ item }: { item: typeof testimonialsData[0] }) {
           </div>
         </div>
 
-        {/* النجوم وعلامة التوثيق */}
         <div className="flex items-center gap-3 mb-4">
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -201,12 +198,10 @@ function TestimonialCard({ item }: { item: typeof testimonialsData[0] }) {
           </span>
         </div>
 
-        {/* النص */}
-        <p className="mb-8 text-[15px] sm:text-base md:text-lg lg:text-xl font-medium leading-[1.8] md:leading-[1.9] text-[var(--color-text-main)]">
+        <p className="mb-8 text-[14px] sm:text-base md:text-lg lg:text-xl font-medium leading-[1.8] md:leading-[1.9] text-[var(--color-text-main)]">
           "{item.quote}"
         </p>
 
-        {/* ذيل الكرت */}
         <div className="mt-auto flex items-center gap-3 md:gap-4 pt-4 md:pt-6 border-t border-[#bce8d0]">
           <img src={item.avatar} alt={item.author} className="h-12 w-12 md:h-14 md:w-14 rounded-full object-cover border-2 border-white shadow-md pointer-events-auto shrink-0" />
           <div className="overflow-hidden flex-1">
@@ -225,100 +220,153 @@ function TestimonialCard({ item }: { item: typeof testimonialsData[0] }) {
 // 🚀 المكون الرئيسي
 // ==========================================
 export default function InteractiveTestimonials() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [scrollRange, setScrollRange] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  useEffect(() => {
+  // إيقاف التشغيل التلقائي عند التفاعل
+  const stopAutoPlay = () => setIsAutoPlaying(false);
+
+  // دالة التحكم اليدوي الدقيقة
+  const scrollExactly = (direction: 'next' | 'prev') => {
     if (!carouselRef.current) return;
+    const container = carouselRef.current;
+    
+    const firstCard = container.children[0] as HTMLElement;
+    const gap = parseFloat(getComputedStyle(container).gap) || 0;
+    const exactCardWidth = firstCard.offsetWidth + gap;
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const viewportWidth = document.documentElement.clientWidth;
-        const range = entry.target.scrollWidth - viewportWidth;
-        setScrollRange(range > 0 ? range : 0);
+    const currentScroll = container.scrollLeft;
+    const currentIndex = Math.round(currentScroll / exactCardWidth);
+
+    const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    const exactTargetScroll = nextIndex * exactCardWidth;
+
+    container.scrollTo({ left: exactTargetScroll, behavior: "smooth" });
+  };
+
+  // 🔥 التشغيل التلقائي اللانهائي والسريع (Seamless Infinite Scroll)
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    let animationFrameId: number;
+    let currentScroll = carouselRef.current?.scrollLeft || 0;
+
+    const play = () => {
+      if (carouselRef.current) {
+        const container = carouselRef.current;
+        
+        // حساب العرض الدقيق لمجموعة البطاقات الأصلية (بدون النسخ)
+        const firstCard = container.children[0] as HTMLElement;
+        const gap = parseFloat(getComputedStyle(container).gap) || 0;
+        const exactSetWidth = testimonialsData.length * (firstCard.offsetWidth + gap);
+
+        // سرعة التمرير (تمت زيادتها لتكون أسرع)
+        currentScroll += 1.8; 
+
+        // الخدعة السحرية للحلقة اللانهائية: عندما نقطع مسافة المجموعة الأصلية، 
+        // نعيد التمرير للصفر بلمح البصر دون أن يلاحظ المستخدم.
+        if (currentScroll >= exactSetWidth) {
+          currentScroll -= exactSetWidth; 
+        }
+        
+        container.scrollLeft = currentScroll;
       }
-    });
+      animationFrameId = requestAnimationFrame(play);
+    };
 
-    resizeObserver.observe(carouselRef.current);
-    return () => resizeObserver.disconnect();
-  }, []);
+    animationFrameId = requestAnimationFrame(play);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isAutoPlaying]);
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 150, damping: 25, mass: 0.1 });
-  const x = useTransform(smoothProgress, [0, 1], [0, -scrollRange]);
-  const progressWidth = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
-  
-  // 🔥 الميزة الجديدة: الشفافية تتغير للصفر عندما يصل التمرير بين 90% و 98%
-  const indicatorOpacity = useTransform(scrollYProgress, [0.9, 0.98], [1, 0]);
+  // التحكم بالأزرار اليدوية
+  const handleScrollClick = (direction: 'next' | 'prev') => {
+    stopAutoPlay();
+    scrollExactly(direction);
+  };
+
+  // شريط التقدم السفلي
+  const { scrollXProgress } = useScroll({ container: carouselRef });
+  const scaleX = useSpring(scrollXProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
-    <section ref={containerRef} className="relative h-[500vh] bg-transparent" id="testimonials">
-      <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden">
-        
-        {/* العنوان */}
-        <div className="absolute top-10 sm:top-16 md:top-24 left-0 w-full z-10" dir="rtl">
-          <div className="mx-auto max-w-[1600px] px-4 md:px-6 lg:px-12">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-              className="font-display text-3xl md:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--color-text-main)] max-w-2xl"
-            >
-              نظام يثق به <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] leading-tight">
-                روّاد الرعاية الصحية.
-              </span>
-            </motion.h2>
-          </div>
-        </div>
-
-        {/* الكروت */}
-        <motion.div className="w-full mt-10 md:mt-16">
-          <motion.div 
-            ref={carouselRef}
-            style={{ x }} 
-            className="flex w-max items-center pb-6 md:pb-10"
-            dir="ltr" 
-          >
-            {testimonialsData.map((item, index) => (
-              <motion.div
-                key={item.id}
-                className={`${index === 0 ? "ml-[5vw] md:ml-[10vw] lg:ml-[15vw]" : "ml-4 md:ml-10"}`}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <TestimonialCard item={item} />
-              </motion.div>
-            ))}
-            
-            <div className="w-[100vw] md:w-[40vw] lg:w-[50vw] shrink-0" />
-            
-          </motion.div>
-        </motion.div>
-
-        {/* 
-          🔥 مؤشر التمرير السفلي: 
-          استخدمنا motion.div وقمنا بربط style.opacity مع indicatorOpacity 
-          وأضافنا pointer-events-none لكي لا يتداخل مع أي تفاعل للمستخدم أثناء اختفائه.
-        */}
-        <motion.div 
-          style={{ opacity: indicatorOpacity }}
-          className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 md:gap-2 z-50 w-[80%] max-w-[250px] md:max-w-[300px] pointer-events-none"
+    <section className="relative py-20 bg-transparent overflow-hidden" id="testimonials">
+      
+      {/* الترويسة والأزرار */}
+      <div className="mx-auto max-w-[1600px] px-4 md:px-6 lg:px-12 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6" dir="rtl">
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+          className="font-display text-3xl md:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--color-text-main)] max-w-2xl"
         >
-          <div className="w-full h-1 md:h-1.5 bg-gray-200/50 backdrop-blur-sm rounded-full overflow-hidden">
-            <motion.div className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full" style={{ width: progressWidth }} />
-          </div>
-          <span className="text-[10px] lg:text-xs font-bold text-[var(--color-text-muted)] tracking-widest uppercase opacity-60">
-            مرر لأسفل للتصفح
+          نظام يثق به <br/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] leading-tight">
+            روّاد الرعاية الصحية.
           </span>
-        </motion.div>
+        </motion.h2>
 
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+          className="flex gap-3"
+          dir="ltr"
+        >
+          <button 
+            onClick={() => handleScrollClick('prev')}
+            className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          
+          <button 
+            onClick={() => handleScrollClick('next')}
+            className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </motion.div>
       </div>
+
+      {/* حاوية الـ Carousel */}
+      <div 
+        ref={carouselRef}
+        dir="ltr"
+        className={`flex gap-4 md:gap-8 overflow-x-auto px-4 md:px-6 lg:px-12 pb-8 pt-4 hide-scrollbar cursor-grab active:cursor-grabbing ${!isAutoPlaying ? 'snap-x snap-mandatory' : ''}`}
+        onPointerDown={stopAutoPlay}
+        onTouchStart={stopAutoPlay}
+        onWheel={stopAutoPlay}
+      >
+        {/* نستخدم المصفوفة المضاعفة لخلق تأثير الحلقة اللانهائية */}
+        {extendedTestimonials.map((item, index) => (
+          <div key={`${item.id}-${index}`} className="snap-center shrink-0">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: (index % testimonialsData.length) * 0.1 }}
+            >
+              <TestimonialCard item={item} />
+            </motion.div>
+          </div>
+        ))}
+      </div>
+
+      {/* شريط التمرير السفلي */}
+      <div className="mx-auto flex flex-col items-center gap-2 w-[80%] max-w-[300px] mt-4" dir="ltr">
+        <div className="w-full h-1.5 md:h-2 bg-gray-200/60 backdrop-blur-sm rounded-full overflow-hidden">
+          <motion.div 
+            className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full origin-left" 
+            style={{ scaleX }} 
+          />
+        </div>
+        <span className="text-[10px] lg:text-xs font-bold text-[var(--color-text-muted)] tracking-widest uppercase opacity-60" dir="rtl">
+          مرر للتصفح
+        </span>
+      </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
+      
     </section>
   );
 }
