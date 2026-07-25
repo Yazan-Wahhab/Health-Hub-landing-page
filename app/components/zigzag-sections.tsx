@@ -70,9 +70,8 @@ export default function ZigZagSections() {
   });
 
   // =========================================================================
-  // 🌟 إعدادات الحركة (فيزياء سلسة جداً واحترافية)
+  // 🌟 إعدادات الحركة
   // =========================================================================
-  // حركة بطيئة وانسيابية بدون ارتداد مزعج
   const smoothSpring = { type: "spring", stiffness: 50, damping: 15, mass: 1 };
 
   // =========================================================================
@@ -103,7 +102,6 @@ export default function ZigZagSections() {
   return (
     <>
       <style dangerouslySetInnerHTML={{__html: `
-        /* تم تبطيء سرعة الخطوط من 1.5s إلى 4s لحركة انسيابية وفخمة */
         @keyframes dataFlow { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
         .animate-data-flow { animation: dataFlow 4s linear infinite; }
         @keyframes fallDown {
@@ -140,22 +138,27 @@ export default function ZigZagSections() {
 
             <div className="relative w-full h-[88svh] max-h-[800px] max-w-[420px] mx-auto pointer-events-auto">
               
-              {/* رسم الخطوط ببطء (duration: 1.5) */}
-              <svg className="absolute inset-0 w-full h-full z-0 pointer-events-none" preserveAspectRatio="none">
-                <motion.line x1="25%" y1="18%" x2="25%" y2="82%" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1.5" />
+              {/* تعديل الخطوط لإخفائها بالكامل ورسمها تدريجياً */}
+              <motion.svg 
+                className="absolute inset-0 w-full h-full z-0 pointer-events-none" 
+                preserveAspectRatio="none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isMobileReady ? 1 : 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <motion.line x1="25%" y1="18%" x2="25%" y2="82%" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1.5 }} />
                 <motion.line x1="25%" y1="18%" x2="25%" y2="82%" stroke="var(--color-primary)" strokeWidth="2" strokeDasharray="6 8" className="animate-data-flow opacity-60" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1.5 }} />
 
-                <motion.line x1="75%" y1="18%" x2="75%" y2="82%" stroke="var(--color-secondary)" strokeOpacity="0.2" strokeWidth="1.5" />
+                <motion.line x1="75%" y1="18%" x2="75%" y2="82%" stroke="var(--color-secondary)" strokeOpacity="0.2" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1.5 }} />
                 <motion.line x1="75%" y1="18%" x2="75%" y2="82%" stroke="var(--color-secondary)" strokeWidth="2" strokeDasharray="6 8" className="animate-data-flow opacity-60" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1.5 }} />
 
-                <motion.line x1="25%" y1="50%" x2="38%" y2="50%" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1.5" />
+                <motion.line x1="25%" y1="50%" x2="38%" y2="50%" stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1, delay: 0.2 }} />
                 <motion.line x1="25%" y1="50%" x2="38%" y2="50%" stroke="var(--color-primary)" strokeWidth="2" strokeDasharray="6 8" className="animate-data-flow opacity-60" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1, delay: 0.2 }} />
 
-                <motion.line x1="62%" y1="50%" x2="75%" y2="50%" stroke="var(--color-secondary)" strokeOpacity="0.2" strokeWidth="1.5" />
+                <motion.line x1="62%" y1="50%" x2="75%" y2="50%" stroke="var(--color-secondary)" strokeOpacity="0.2" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1, delay: 0.2 }} />
                 <motion.line x1="62%" y1="50%" x2="75%" y2="50%" stroke="var(--color-secondary)" strokeWidth="2" strokeDasharray="6 8" className="animate-data-flow opacity-60" initial={{ pathLength: 0 }} animate={{ pathLength: isMobileReady ? 1 : 0 }} transition={{ duration: 1, delay: 0.2 }} />
-              </svg>
+              </motion.svg>
 
-              {/* بطاقة أعلى اليسار: تنسحب لمركز الشاشة عند الرجوع */}
               <motion.div 
                 className="absolute top-[10%] left-[2%] w-[46%] flex justify-center z-10"
                 initial={{ opacity: 0, x: "40vw", y: "35vh", scale: 0 }}
@@ -170,7 +173,6 @@ export default function ZigZagSections() {
                 </div>
               </motion.div>
 
-              {/* جهاز أعلى اليمين: ينسحب لمركز الشاشة */}
               <motion.div 
                 className="absolute top-[6%] right-[2%] w-[46%] flex justify-center z-20"
                 initial={{ opacity: 0, x: "-40vw", y: "35vh", scale: 0 }}
@@ -185,7 +187,6 @@ export default function ZigZagSections() {
                 </div>
               </motion.div>
 
-              {/* البطاقة المركزية: تصغر في مكانها (لأنها أصلاً في المركز) */}
               <motion.div 
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[48%] max-w-[180px] z-30"
                 initial={{ opacity: 0, scale: 0 }}
@@ -201,7 +202,6 @@ export default function ZigZagSections() {
                 </div>
               </motion.div>
 
-              {/* جهاز أسفل اليسار: يرتفع لمركز الشاشة */}
               <motion.div 
                 className="absolute bottom-[8%] left-[2%] w-[46%] flex justify-center z-20"
                 initial={{ opacity: 0, x: "40vw", y: "-35vh", scale: 0 }}
@@ -217,7 +217,6 @@ export default function ZigZagSections() {
                 </div>
               </motion.div>
 
-              {/* بطاقة أسفل اليمين: ترتفع لمركز الشاشة */}
               <motion.div 
                 className="absolute bottom-[10%] right-[2%] w-[46%] flex justify-center z-10"
                 initial={{ opacity: 0, x: "-40vw", y: "-35vh", scale: 0 }}
@@ -238,13 +237,12 @@ export default function ZigZagSections() {
       </div>
 
       {/* =========================================================================
-          💻 قسم اللابتوب (تأثير سحب الجاذبية للداخل عند السكرول العكسي)
+          💻 قسم اللابتوب
           ========================================================================= */}
       <div className="hidden lg:block">
         <section ref={containerRef} className="relative h-[150vh] w-full bg-transparent z-10">
           <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none">
             
-            {/* اللوغو المركزي */}
             <motion.div 
               className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center"
               style={{ opacity: centerLogoOpacity, scale: centerLogoScale }}
@@ -255,7 +253,6 @@ export default function ZigZagSections() {
               </div>
             </motion.div>
 
-            {/* العنوان العلوي: ينسحب للأسفل داخل اللوغو */}
             <motion.div
               className="absolute top-[4vh] left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-xl border border-[var(--color-border)] shadow-[0_15px_30px_rgba(0,0,0,0.06)] px-8 py-3.5 rounded-full text-center flex items-center gap-4 pointer-events-auto"
               initial={{ opacity: 0, scale: 0, y: "46vh" }}
@@ -267,7 +264,6 @@ export default function ZigZagSections() {
               <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-secondary)] animate-pulse shadow-[0_0_8px_var(--color-secondary)]"></div>
             </motion.div>
 
-            {/* مسارات الـ SVG (السرعة أبطأ بكثير للرسم) */}
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full z-10 pointer-events-none opacity-100">
               <motion.path d="M 50 10 C 50 16, 25 15, 25 22" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" strokeOpacity="0.4" vectorEffect="non-scaling-stroke" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: isReady ? 1 : 0 }} transition={{ duration: 1.5 }} />
               <motion.path d="M 50 10 C 50 16, 25 15, 25 22" fill="none" stroke="var(--color-primary)" strokeWidth="3" vectorEffect="non-scaling-stroke" strokeDasharray="6 8" className="animate-data-flow opacity-90" initial={{ pathLength: 0 }} animate={{ pathLength: isReady ? 1 : 0 }} transition={{ duration: 1.5 }} />
@@ -291,7 +287,6 @@ export default function ZigZagSections() {
               <motion.path d="M 75 72 C 75 78, 58 76, 50 76" fill="none" stroke="var(--color-secondary)" strokeWidth="3" vectorEffect="non-scaling-stroke" strokeDasharray="6 8" className="animate-data-flow opacity-90" initial={{ pathLength: 0 }} animate={{ pathLength: isReady ? 1 : 0 }} transition={{ duration: 1, delay: 0.4 }} />
             </svg>
 
-            {/* أيقونة الجسر: تصغر في المنتصف */}
             <motion.div 
               className="absolute top-[22vh] left-1/2 z-20 flex items-center justify-center pointer-events-none"
               initial={{ x: "-50%", y: "-50%", opacity: 0, scale: 0 }}
@@ -308,7 +303,6 @@ export default function ZigZagSections() {
               </div>
             </motion.div>
 
-            {/* جهاز الويب: ينسحب لليمين والأسفل نحو اللوغو */}
             <motion.div 
               className="absolute top-[10vh] left-1/2 z-30 flex flex-col items-center w-[40vw] max-w-[30rem] pointer-events-auto"
               initial={{ x: "-50%", y: "40vh", opacity: 0, scale: 0 }}
@@ -329,7 +323,6 @@ export default function ZigZagSections() {
               </div>
             </motion.div>
 
-            {/* جهاز الموبايل: ينسحب لليسار والأسفل نحو اللوغو */}
             <motion.div 
               className="absolute top-[10vh] left-1/2 z-30 flex flex-col items-center w-[18vw] max-w-[12rem] pointer-events-auto"
               initial={{ x: "-50%", y: "40vh", opacity: 0, scale: 0 }}
@@ -349,7 +342,6 @@ export default function ZigZagSections() {
               </div>
             </motion.div>
 
-            {/* الكارت الأيسر: ينسحب لليمين وللأعلى نحو اللوغو */}
             <motion.div 
               className="absolute top-[56vh] left-1/2 z-30 w-[38vw] max-w-[26rem] flex flex-col items-center group transition-colors duration-500"
               initial={{ x: "-50%", y: "-6vh", opacity: 0, scale: 0 }}
@@ -365,7 +357,6 @@ export default function ZigZagSections() {
               <div className="absolute -bottom-3 w-4 h-4 rounded-full bg-[#f0f6ff] border-2 border-[var(--color-secondary)] z-20"><div className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></div></div>
             </motion.div>
 
-            {/* الكارت الأيمن: ينسحب لليسار وللأعلى نحو اللوغو */}
             <motion.div 
               className="absolute top-[56vh] left-1/2 z-30 w-[38vw] max-w-[26rem] flex flex-col items-center group transition-colors duration-500"
               initial={{ x: "-50%", y: "-6vh", opacity: 0, scale: 0 }}
@@ -381,7 +372,6 @@ export default function ZigZagSections() {
               <div className="absolute -bottom-3 w-4 h-4 rounded-full bg-[#f0f6ff] border-2 border-[var(--color-secondary)] z-20"><div className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></div></div>
             </motion.div>
 
-            {/* الكارت السفلي: ينسحب بقوة للأعلى داخل اللوغو */}
             <motion.div 
               className="absolute bottom-[3vh] left-1/2 -translate-x-1/2 z-40 w-[85vw] max-w-[42rem] flex flex-col items-center"
               initial={{ opacity: 0, y: "-40vh", scale: 0 }}
