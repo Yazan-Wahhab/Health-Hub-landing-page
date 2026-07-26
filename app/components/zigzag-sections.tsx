@@ -32,44 +32,46 @@ export default function ZigZagSections() {
   const [direction, setDirection] = useState(0);
 
   // =========================================================================
-  // 💻 الديسكتوب (قفل الحركة لمنع الرجوع + مسح السكرول الفاضي)
+  // 💻 الديسكتوب
   // =========================================================================
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const [isReady, setIsReady] = useState(false);
 
-  // 🚀 تم ضغط الحركة لتنتهي بسرعة وبدون سكرول عالفاضي
-  const centerLogoScale = useTransform(scrollYProgress, [0, 0.8], [0.5, 0.2]); 
-  const centerLogoOpacity = useTransform(scrollYProgress, [0.4, 0.8], [1, 0]); 
+  const centerLogoScale = useTransform(scrollYProgress, [0, 0.8, 1], [0.5, 0.2, 0.2]); 
+  const centerLogoOpacity = useTransform(scrollYProgress, [0, 0.02, 0.4, 0.8, 1], [0, 1, 1, 0, 0]); 
 
-  // 🔒 القفل الذكي
-  const [logoDone, setLogoDone] = useState(false);
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (latest >= 0.1 && !isReady) setIsReady(true);
-    if (latest >= 0.85 && !logoDone) setLogoDone(true); // يُقفل فوراً بعد الحركة
   });
 
   // =========================================================================
-  // 📱 الموبايل (قفل الحركة لمنع الرجوع + مسح السكرول الفاضي)
+  // 📱 الموبايل
   // =========================================================================
   const mobileContainerRef = useRef<HTMLElement>(null);
   const { scrollYProgress: mobileScroll } = useScroll({ target: mobileContainerRef, offset: ["start start", "end end"] });
   const [isMobileReady, setIsMobileReady] = useState(false);
 
-  // 🚀 نفس الضغط والسرعة للموبايل
-  const mLogoScale = useTransform(mobileScroll, [0, 0.8], [0.5, 0.2]);
-  const mLogoOpacity = useTransform(mobileScroll, [0.4, 0.8], [1, 0]);
+  const mLogoScale = useTransform(mobileScroll, [0, 0.8, 1], [0.5, 0.2, 0.2]);
+  const mLogoOpacity = useTransform(mobileScroll, [0, 0.02, 0.4, 0.8, 1], [0, 1, 1, 0, 0]);
 
-  const [mLogoDone, setMLogoDone] = useState(false);
   useMotionValueEvent(mobileScroll, "change", (latest) => {
     if (latest >= 0.1 && !isMobileReady) setIsMobileReady(true);
-    if (latest >= 0.85 && !mLogoDone) setMLogoDone(true);
   });
 
   const smoothSpring = { type: "spring", stiffness: 70, damping: 20, mass: 1 };
   const activeImages = activeGallery === 'web' ? WEB_IMAGES : MOBILE_IMAGES;
-  const goNext = () => { setDirection(1); setCurrentImgIndex((prev) => (prev + 1) % activeImages.length); };
-  const goPrev = () => { setDirection(-1); setCurrentImgIndex((prev) => (prev - 1 + activeImages.length) % activeImages.length); };
+  
+  const goNext = (e?: React.MouseEvent) => { 
+    if(e) e.stopPropagation();
+    setDirection(1); 
+    setCurrentImgIndex((prev) => (prev + 1) % activeImages.length); 
+  };
+  const goPrev = (e?: React.MouseEvent) => { 
+    if(e) e.stopPropagation();
+    setDirection(-1); 
+    setCurrentImgIndex((prev) => (prev - 1 + activeImages.length) % activeImages.length); 
+  };
   const closeGallery = () => { setActiveGallery(null); setCurrentImgIndex(0); setDirection(0); };
 
   useEffect(() => {
@@ -83,9 +85,29 @@ export default function ZigZagSections() {
   }, [activeGallery, activeImages.length]);
 
   const slideVariants = {
-    enter: (direction: number) => ({ x: direction > 0 ? 100 : -100, opacity: 0, scale: 0.95 }),
-    center: { zIndex: 1, x: 0, opacity: 1, scale: 1 },
-    exit: (direction: number) => ({ zIndex: 0, x: direction < 0 ? 100 : -100, opacity: 0, scale: 0.95 })
+    enter: (direction: number) => ({
+      x: direction > 0 ? 150 : -150,
+      opacity: 0,
+      scale: 0.9,
+      rotateY: direction > 0 ? 10 : -10,
+      filter: "blur(8px)",
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      rotateY: 0,
+      filter: "blur(0px)",
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 150 : -150,
+      opacity: 0,
+      scale: 0.9,
+      rotateY: direction < 0 ? -10 : 10,
+      filter: "blur(8px)",
+    })
   };
 
   return (
@@ -97,18 +119,34 @@ export default function ZigZagSections() {
         .shape-fall { animation: fallDown 4s linear infinite; }
         .delay-1 { animation-delay: 0.1s; left: 10%; animation-duration: 4.5s; } .delay-2 { animation-delay: 1.2s; left: 25%; animation-duration: 3.8s; } .delay-3 { animation-delay: 0.5s; left: 50%; animation-duration: 5s; }
         .delay-4 { animation-delay: 2.1s; left: 70%; animation-duration: 4.2s; } .delay-5 { animation-delay: 0.8s; left: 85%; animation-duration: 4.8s; } .delay-6 { animation-delay: 1.5s; left: 40%; animation-duration: 5.5s; }
+        
+        .parallax-layer {
+          position: absolute;
+          top: -50%; left: -50%;
+          width: 200%; height: 200%;
+          pointer-events: none;
+        }
+        .layer-1 {
+          background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.2'%3E%3Ccircle cx='40' cy='50' r='10' fill='%230EA5E9'/%3E%3Ccircle cx='60' cy='50' r='10' fill='%2310B981'/%3E%3Cpath d='M40 50 L60 50' stroke='%23ffffff' stroke-width='2' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E");
+          background-size: 100px 100px;
+          animation: driftFast 15s linear infinite;
+        }
+        .layer-2 {
+          background-image: url("data:image/svg+xml,%3Csvg width='220' height='220' viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.1'%3E%3Ccircle cx='90' cy='110' r='20' fill='%230EA5E9'/%3E%3Ccircle cx='130' cy='110' r='20' fill='%2310B981'/%3E%3Cpath d='M90 110 L130 110' stroke='%23ffffff' stroke-width='3' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E");
+          background-size: 220px 220px;
+          animation: driftSlow 30s linear infinite;
+        }
+        @keyframes driftFast { 0% { transform: translate(0, 0); } 100% { transform: translate(-100px, -100px); } }
+        @keyframes driftSlow { 0% { transform: translate(0, 0); } 100% { transform: translate(-220px, -220px); } }
       `}} />
 
       {/* 📱 قسم الموبايل */}
       <div className="block lg:hidden">
-        {/* 🔥 الحل السحري: تعديل الارتفاع إلى 120vh للقضاء على السكرول الفارغ تماماً */}
         <section ref={mobileContainerRef} className="relative h-[120vh] w-full bg-transparent z-20">
           <div className="sticky top-0 h-[100svh] w-full overflow-hidden flex items-center justify-center pointer-events-none">
-            
             <motion.div 
               className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none will-change-transform transform-gpu"
-              // 🔥 إذا انتهت الحركة يُخفى للأبد، وغير ذلك يتبع السكرول بشكل طبيعي
-              style={mLogoDone ? { opacity: 0, scale: 0.2 } : { opacity: mLogoOpacity, scale: mLogoScale }}
+              style={{ opacity: mLogoOpacity, scale: mLogoScale }}
             >
               <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="relative flex items-center justify-center transform-gpu">
                 <div className="absolute w-[250%] h-[250%] rounded-full opacity-15 transform-gpu" style={{ background: 'radial-gradient(circle, var(--color-secondary) 0%, transparent 60%)' }}></div>
@@ -176,14 +214,11 @@ export default function ZigZagSections() {
 
       {/* 💻 قسم اللابتوب */}
       <div className="hidden lg:block">
-        {/* 🔥 الحل السحري: تقليص الارتفاع للقضاء على السكرول الفارغ */}
         <section ref={containerRef} className="relative h-[120vh] w-full bg-transparent z-10">
           <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none">
-            
             <motion.div 
               className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center will-change-transform transform-gpu"
-              // 🔥 إذا كان مقفلاً، يبقى شفافيته صفر للأبد
-              style={logoDone ? { opacity: 0, scale: 0.2 } : { opacity: centerLogoOpacity, scale: centerLogoScale }}
+              style={{ opacity: centerLogoOpacity, scale: centerLogoScale }}
             >
               <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="relative flex items-center justify-center transform-gpu">
                 <div className="absolute w-[180%] h-[180%] rounded-full opacity-20 transform-gpu" style={{ background: 'radial-gradient(circle, var(--color-secondary) 0%, transparent 60%)' }}></div>
@@ -264,25 +299,110 @@ export default function ZigZagSections() {
         </section>
       </div>
 
-      {/* المعرض السينمائي */}
+      {/* 🚀 الـ Lightbox التفاعلي بثلاثي الأبعاد ومجسمات اللوغو */}
       <AnimatePresence mode="wait">
         {activeGallery && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeGallery} className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#020617]/95 backdrop-blur-3xl overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black/50 to-transparent z-50 pointer-events-none" />
-            <div className="absolute top-6 inset-x-6 flex items-center justify-between z-50">
-              <span className="text-white/60 font-bold tracking-widest text-sm bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-sm">{activeGallery === 'web' ? 'منصة الويب' : 'تطبيق الموبايل'}</span>
-              <button onClick={closeGallery} className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 p-3 lg:p-4 rounded-full transition-all hover:scale-110 hover:rotate-90 shadow-lg"><svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg></button>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.97, filter: "blur(10px)" }} 
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} 
+            exit={{ opacity: 0, scale: 0.97, filter: "blur(10px)" }} 
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            onClick={closeGallery} 
+            className="fixed inset-0 z-[999] bg-[#0A1326]/95 flex flex-col overflow-hidden"
+          >
+            {/* 🎨 خلفية مجسمات اللوغو المتكررة (Animated Parallax Background) */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+              <div className="parallax-layer layer-1"></div>
+              <div className="parallax-layer layer-2"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
             </div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-[var(--color-primary)]/20 rounded-full blur-[120px] pointer-events-none" />
-            <div className={`relative flex items-center justify-center z-40 w-full h-full px-4 lg:px-16 ${activeGallery === 'web' ? 'max-w-7xl max-h-[75vh]' : 'max-w-md max-h-[85vh]'}`}>
-              <AnimatePresence initial={false} custom={direction}>
-                <motion.img key={currentImgIndex} src={activeImages[currentImgIndex]} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }} onClick={(e) => e.stopPropagation()} className={`absolute max-w-full max-h-full rounded-2xl lg:rounded-[2rem] drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)] object-contain border border-white/10 bg-black/20 ${activeGallery === 'web' ? 'aspect-[16/10]' : 'aspect-[9/19.5]'}`} />
-              </AnimatePresence>
+
+            {/* الهيدر الاحترافي */}
+            <div className="relative z-50 flex-none h-20 px-6 md:px-10 flex items-center justify-between border-b border-white/5 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-4">
+                <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)] animate-pulse" />
+                <div className="flex flex-col">
+                  <span className="text-white/90 font-medium tracking-wide text-sm md:text-base drop-shadow-md">
+                    {activeGallery === 'web' ? 'منصة إدارة العمليات المركزية' : 'تطبيق وصول الأطباء'}
+                  </span>
+                  <span className="text-white/40 text-xs tracking-widest uppercase font-mono">
+                    Preview {currentImgIndex + 1} / {activeImages.length}
+                  </span>
+                </div>
+              </div>
+              
+              <button onClick={closeGallery} className="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300">
+                <span className="hidden md:block text-xs font-semibold uppercase tracking-[0.2em] group-hover:text-white/80 transition-colors">Esc</span>
+                <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/15 transition-all">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+              </button>
             </div>
-            <div className="absolute bottom-8 lg:bottom-12 z-50 flex items-center gap-4 bg-white/10 backdrop-blur-2xl px-3 py-3 rounded-full border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4)]" onClick={(e) => e.stopPropagation()}>
-              <button onClick={goPrev} className="bg-white/5 hover:bg-white/20 text-white p-3 rounded-full transition-all active:scale-95"><svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg></button>
-              <div className="flex items-center gap-2 px-3">{activeImages.map((_, idx) => (<div key={idx} className={`rounded-full transition-all duration-500 ease-out ${idx === currentImgIndex ? 'bg-[var(--color-primary)] w-8 lg:w-10 h-2 shadow-[0_0_15px_var(--color-primary)]' : 'bg-white/30 w-2 h-2 hover:bg-white/50 cursor-pointer'}`} onClick={() => { setDirection(idx > currentImgIndex ? 1 : -1); setCurrentImgIndex(idx); }} />))}</div>
-              <button onClick={goNext} className="bg-white/5 hover:bg-white/20 text-white p-3 rounded-full transition-all active:scale-95"><svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg></button>
+
+            {/* مسرح العرض الرئيسي */}
+            <div className="flex-1 relative flex items-center justify-center p-4 md:p-10 overflow-hidden group z-40" style={{ perspective: '1200px' }}>
+              
+              <button 
+                onClick={goPrev} 
+                className="absolute left-4 md:left-10 z-50 p-4 rounded-full bg-black/40 text-white/70 backdrop-blur-xl border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-[var(--color-primary)]/80 hover:border-[var(--color-primary)] hover:text-white hover:scale-110 transition-all duration-300 pointer-events-auto hidden md:block shadow-2xl"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+
+              <div className="relative z-40 w-full h-full flex items-center justify-center pointer-events-none">
+                <AnimatePresence initial={false} custom={direction}>
+                  <motion.img 
+                    key={currentImgIndex} 
+                    src={activeImages[currentImgIndex]} 
+                    custom={direction} 
+                    variants={slideVariants} 
+                    initial="enter" 
+                    animate="center" 
+                    exit="exit" 
+                    transition={{ type: "spring", stiffness: 220, damping: 25, mass: 1 }} 
+                    /* 🔴 تم تحويل position إلى absolute للحفاظ على ترتيب الطبقات، وإزالة backdrop-blur-sm التي تسببت بالمشكلة وتخفيف الظل */
+                    className={`absolute rounded-lg md:rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] object-contain pointer-events-auto max-h-full max-w-full ${
+                      activeGallery === 'web' 
+                        ? 'bg-transparent border-none' 
+                        : 'bg-[#050505] border border-white/5'
+                    }`} 
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </AnimatePresence>
+              </div>
+
+              <button 
+                onClick={goNext} 
+                className="absolute right-4 md:right-10 z-50 p-4 rounded-full bg-black/40 text-white/70 backdrop-blur-xl border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-[var(--color-primary)]/80 hover:border-[var(--color-primary)] hover:text-white hover:scale-110 transition-all duration-300 pointer-events-auto hidden md:block shadow-2xl"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+
+            {/* شريط الصور المصغرة السفلي */}
+            <div className="relative z-50 flex-none pb-8 pt-4 px-6 flex items-center justify-center gap-3 md:gap-5 overflow-x-auto pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+              {activeImages.map((src, idx) => (
+                <button 
+                  key={idx} 
+                  onClick={() => { setDirection(idx > currentImgIndex ? 1 : -1); setCurrentImgIndex(idx); }} 
+                  className={`relative overflow-hidden rounded-lg transition-all duration-300 ease-out flex-shrink-0 bg-[#0a0a0a] border ${
+                    idx === currentImgIndex 
+                      ? 'border-[var(--color-primary)] opacity-100 scale-110 shadow-[0_10px_30px_rgba(17,79,209,0.5)] z-10' 
+                      : 'border-white/10 opacity-30 hover:opacity-80 hover:border-white/30 scale-95 hover:scale-100'
+                  } ${activeGallery === 'web' ? 'w-24 h-16 md:w-36 md:h-24' : 'w-10 h-16 md:w-14 md:h-28'}`}
+                >
+                  <img src={src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  {idx !== currentImgIndex && <div className="absolute inset-0 bg-black/40 hover:bg-black/10 transition-colors" />}
+                </button>
+              ))}
+            </div>
+
+            <div className="md:hidden relative z-50 flex-none pb-8 flex items-center justify-center gap-10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+               <button onClick={goPrev} className="p-3.5 rounded-full bg-white/5 text-white/80 border border-white/10 active:scale-95 transition-transform"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg></button>
+               <button onClick={goNext} className="p-3.5 rounded-full bg-white/5 text-white/80 border border-white/10 active:scale-95 transition-transform"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></button>
             </div>
           </motion.div>
         )}
