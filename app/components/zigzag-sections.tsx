@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "framer-motion";
+import { createPortal } from "react-dom"; // 🚀 تمت إضافة البورتال
 
 const WEB_IMAGES = [
   "/assets/images/Screenshot 2026-07-09 141200.png",
@@ -30,6 +31,10 @@ export default function ZigZagSections() {
   const [activeGallery, setActiveGallery] = useState<'web' | 'mobile' | null>(null);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+
+  // 🚀 التأكد من أن المكون تم تحميله لاستخدام الـ Portal بأمان في Next.js
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // =========================================================================
   // 💻 الديسكتوب
@@ -74,15 +79,53 @@ export default function ZigZagSections() {
   };
   const closeGallery = () => { setActiveGallery(null); setCurrentImgIndex(0); setDirection(0); };
 
+  // 🚀 التأثير السحري لإخفاء الهيدر وإيقاف السكرول عند فتح البوب أب
   useEffect(() => {
-    if (!activeGallery) return;
+    if (!activeGallery) {
+      document.body.style.overflow = '';
+      const style = document.getElementById('hide-header-style');
+      if (style) style.remove();
+      return;
+    }
+
+    // إيقاف سكرول الصفحة بالخلفية
+    document.body.style.overflow = 'hidden';
+    
+    // حقن كود CSS مؤقت يخفي الهيدر العائم الخاص بك تماماً
+    if (!document.getElementById('hide-header-style')) {
+      const style = document.createElement('style');
+      style.id = 'hide-header-style';
+      style.innerHTML = `
+        nav, div.fixed.z-\\[100\\] { 
+          opacity: 0 !important; 
+          visibility: hidden !important;
+          pointer-events: none !important; 
+          transition: opacity 0.3s ease; 
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") goNext();
       if (e.key === "ArrowLeft") goPrev();
       if (e.key === "Escape") closeGallery();
     };
-    window.addEventListener("keydown", handleKeyDown); return () => window.removeEventListener("keydown", handleKeyDown);
+    
+    window.addEventListener("keydown", handleKeyDown); 
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [activeGallery, activeImages.length]);
+
+  // تنظيف عام عند تدمير المكون
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+      const style = document.getElementById('hide-header-style');
+      if (style) style.remove();
+    };
+  }, []);
 
   const slideVariants = {
     enter: (direction: number) => ({
@@ -299,114 +342,116 @@ export default function ZigZagSections() {
         </section>
       </div>
 
-      {/* 🚀 الـ Lightbox التفاعلي بثلاثي الأبعاد ومجسمات اللوغو */}
-      <AnimatePresence mode="wait">
-        {activeGallery && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.97, filter: "blur(10px)" }} 
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} 
-            exit={{ opacity: 0, scale: 0.97, filter: "blur(10px)" }} 
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            onClick={closeGallery} 
-            className="fixed inset-0 z-[999] bg-[#0A1326]/95 flex flex-col overflow-hidden"
-          >
-            {/* 🎨 خلفية مجسمات اللوغو المتكررة (Animated Parallax Background) */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-              <div className="parallax-layer layer-1"></div>
-              <div className="parallax-layer layer-2"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
-            </div>
-
-            {/* الهيدر الاحترافي */}
-            <div className="relative z-50 flex-none h-20 px-6 md:px-10 flex items-center justify-between border-b border-white/5 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center gap-4">
-                <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)] animate-pulse" />
-                <div className="flex flex-col">
-                  <span className="text-white/90 font-medium tracking-wide text-sm md:text-base drop-shadow-md">
-                    {activeGallery === 'web' ? 'منصة إدارة العمليات المركزية' : 'تطبيق وصول الأطباء'}
-                  </span>
-                  <span className="text-white/40 text-xs tracking-widest uppercase font-mono">
-                    Preview {currentImgIndex + 1} / {activeImages.length}
-                  </span>
-                </div>
-              </div>
-              
-              <button onClick={closeGallery} className="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300">
-                <span className="hidden md:block text-xs font-semibold uppercase tracking-[0.2em] group-hover:text-white/80 transition-colors">Esc</span>
-                <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/15 transition-all">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-              </button>
-            </div>
-
-            {/* مسرح العرض الرئيسي */}
-            <div className="flex-1 relative flex items-center justify-center p-4 md:p-10 overflow-hidden group z-40" style={{ perspective: '1200px' }}>
-              
-              <button 
-                onClick={goPrev} 
-                className="absolute left-4 md:left-10 z-50 p-4 rounded-full bg-black/40 text-white/70 backdrop-blur-xl border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-[var(--color-primary)]/80 hover:border-[var(--color-primary)] hover:text-white hover:scale-110 transition-all duration-300 pointer-events-auto hidden md:block shadow-2xl"
-              >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-              </button>
-
-              <div className="relative z-40 w-full h-full flex items-center justify-center pointer-events-none">
-                <AnimatePresence initial={false} custom={direction}>
-                  <motion.img 
-                    key={currentImgIndex} 
-                    src={activeImages[currentImgIndex]} 
-                    custom={direction} 
-                    variants={slideVariants} 
-                    initial="enter" 
-                    animate="center" 
-                    exit="exit" 
-                    transition={{ type: "spring", stiffness: 220, damping: 25, mass: 1 }} 
-                    /* 🔴 تم تحويل position إلى absolute للحفاظ على ترتيب الطبقات، وإزالة backdrop-blur-sm التي تسببت بالمشكلة وتخفيف الظل */
-                    className={`absolute rounded-lg md:rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] object-contain pointer-events-auto max-h-full max-w-full ${
-                      activeGallery === 'web' 
-                        ? 'bg-transparent border-none' 
-                        : 'bg-[#050505] border border-white/5'
-                    }`} 
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </AnimatePresence>
+      {/* 🚀 الـ Lightbox التفاعلي بثلاثي الأبعاد ومجسمات اللوغو داخل Portal */}
+      {mounted && typeof document !== 'undefined' && createPortal(
+        <AnimatePresence mode="wait">
+          {activeGallery && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.97, filter: "blur(10px)" }} 
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} 
+              exit={{ opacity: 0, scale: 0.97, filter: "blur(10px)" }} 
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              onClick={closeGallery} 
+              className="fixed inset-0 z-[99999] bg-[#0A1326]/95 flex flex-col overflow-hidden"
+            >
+              {/* 🎨 خلفية مجسمات اللوغو المتكررة */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="parallax-layer layer-1"></div>
+                <div className="parallax-layer layer-2"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
               </div>
 
-              <button 
-                onClick={goNext} 
-                className="absolute right-4 md:right-10 z-50 p-4 rounded-full bg-black/40 text-white/70 backdrop-blur-xl border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-[var(--color-primary)]/80 hover:border-[var(--color-primary)] hover:text-white hover:scale-110 transition-all duration-300 pointer-events-auto hidden md:block shadow-2xl"
-              >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </button>
-            </div>
-
-            {/* شريط الصور المصغرة السفلي */}
-            <div className="relative z-50 flex-none pb-8 pt-4 px-6 flex items-center justify-center gap-3 md:gap-5 overflow-x-auto pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-              {activeImages.map((src, idx) => (
-                <button 
-                  key={idx} 
-                  onClick={() => { setDirection(idx > currentImgIndex ? 1 : -1); setCurrentImgIndex(idx); }} 
-                  className={`relative overflow-hidden rounded-lg transition-all duration-300 ease-out flex-shrink-0 bg-[#0a0a0a] border ${
-                    idx === currentImgIndex 
-                      ? 'border-[var(--color-primary)] opacity-100 scale-110 shadow-[0_10px_30px_rgba(17,79,209,0.5)] z-10' 
-                      : 'border-white/10 opacity-30 hover:opacity-80 hover:border-white/30 scale-95 hover:scale-100'
-                  } ${activeGallery === 'web' ? 'w-24 h-16 md:w-36 md:h-24' : 'w-10 h-16 md:w-14 md:h-28'}`}
-                >
-                  <img src={src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
-                  {idx !== currentImgIndex && <div className="absolute inset-0 bg-black/40 hover:bg-black/10 transition-colors" />}
+              {/* الهيدر الاحترافي */}
+              <div className="relative z-50 flex-none h-20 px-6 md:px-10 flex items-center justify-between border-b border-white/5 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-4">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)] animate-pulse" />
+                  <div className="flex flex-col">
+                    <span className="text-white/90 font-medium tracking-wide text-sm md:text-base drop-shadow-md">
+                      {activeGallery === 'web' ? 'منصة إدارة العمليات المركزية' : 'تطبيق وصول الأطباء'}
+                    </span>
+                    <span className="text-white/40 text-xs tracking-widest uppercase font-mono">
+                      Preview {currentImgIndex + 1} / {activeImages.length}
+                    </span>
+                  </div>
+                </div>
+                
+                <button onClick={closeGallery} className="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300">
+                  <span className="hidden md:block text-xs font-semibold uppercase tracking-[0.2em] group-hover:text-white/80 transition-colors">Esc</span>
+                  <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/15 transition-all">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
                 </button>
-              ))}
-            </div>
+              </div>
 
-            <div className="md:hidden relative z-50 flex-none pb-8 flex items-center justify-center gap-10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-               <button onClick={goPrev} className="p-3.5 rounded-full bg-white/5 text-white/80 border border-white/10 active:scale-95 transition-transform"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg></button>
-               <button onClick={goNext} className="p-3.5 rounded-full bg-white/5 text-white/80 border border-white/10 active:scale-95 transition-transform"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              {/* مسرح العرض الرئيسي */}
+              <div className="flex-1 relative flex items-center justify-center p-4 md:p-10 overflow-hidden group z-40" style={{ perspective: '1200px' }}>
+                
+                <button 
+                  onClick={goPrev} 
+                  className="absolute left-4 md:left-10 z-50 p-4 rounded-full bg-black/40 text-white/70 backdrop-blur-xl border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-[var(--color-primary)]/80 hover:border-[var(--color-primary)] hover:text-white hover:scale-110 transition-all duration-300 pointer-events-auto hidden md:block shadow-2xl"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                </button>
+
+                <div className="relative z-40 w-full h-full flex items-center justify-center pointer-events-none">
+                  <AnimatePresence initial={false} custom={direction}>
+                    <motion.img 
+                      key={currentImgIndex} 
+                      src={activeImages[currentImgIndex]} 
+                      custom={direction} 
+                      variants={slideVariants} 
+                      initial="enter" 
+                      animate="center" 
+                      exit="exit" 
+                      transition={{ type: "spring", stiffness: 220, damping: 25, mass: 1 }} 
+                      className={`absolute rounded-lg md:rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] object-contain pointer-events-auto max-h-full max-w-full ${
+                        activeGallery === 'web' 
+                          ? 'bg-transparent border-none' 
+                          : 'bg-[#050505] border border-white/5'
+                      }`} 
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </AnimatePresence>
+                </div>
+
+                <button 
+                  onClick={goNext} 
+                  className="absolute right-4 md:right-10 z-50 p-4 rounded-full bg-black/40 text-white/70 backdrop-blur-xl border border-white/10 opacity-0 group-hover:opacity-100 hover:bg-[var(--color-primary)]/80 hover:border-[var(--color-primary)] hover:text-white hover:scale-110 transition-all duration-300 pointer-events-auto hidden md:block shadow-2xl"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                </button>
+              </div>
+
+              {/* شريط الصور المصغرة السفلي */}
+              <div className="relative z-50 flex-none pb-8 pt-4 px-6 flex items-center justify-center gap-3 md:gap-5 overflow-x-auto pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                {activeImages.map((src, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => { setDirection(idx > currentImgIndex ? 1 : -1); setCurrentImgIndex(idx); }} 
+                    className={`relative overflow-hidden rounded-lg transition-all duration-300 ease-out flex-shrink-0 bg-[#0a0a0a] border ${
+                      idx === currentImgIndex 
+                        ? 'border-[var(--color-primary)] opacity-100 scale-110 shadow-[0_10px_30px_rgba(17,79,209,0.5)] z-10' 
+                        : 'border-white/10 opacity-30 hover:opacity-80 hover:border-white/30 scale-95 hover:scale-100'
+                    } ${activeGallery === 'web' ? 'w-24 h-16 md:w-36 md:h-24' : 'w-10 h-16 md:w-14 md:h-28'}`}
+                  >
+                    <img src={src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    {idx !== currentImgIndex && <div className="absolute inset-0 bg-black/40 hover:bg-black/10 transition-colors" />}
+                  </button>
+                ))}
+              </div>
+
+              <div className="md:hidden relative z-50 flex-none pb-8 flex items-center justify-center gap-10 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+                 <button onClick={goPrev} className="p-3.5 rounded-full bg-white/5 text-white/80 border border-white/10 active:scale-95 transition-transform"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg></button>
+                 <button onClick={goNext} className="p-3.5 rounded-full bg-white/5 text-white/80 border border-white/10 active:scale-95 transition-transform"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

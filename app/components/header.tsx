@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 
 // =========================================================================
-// 🛸 مكون المجسمات ثلاثية الأبعاد (يعمل فقط على الديسكتوب للحفاظ على نظافة الموبايل)
+// 🛸 مكون المجسمات ثلاثية الأبعاد
 // =========================================================================
-const Falling3DShapes = () => {
+const Falling3DShapes = React.memo(() => {
   const Sphere = () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="12" cy="12" r="10" fill="url(#sphereGrad)" />
@@ -50,7 +50,7 @@ const Falling3DShapes = () => {
         <motion.div
           key={shape.id}
           className={`absolute top-[-60px] ${shape.size}`}
-          style={{ left: shape.left }}
+          style={{ left: shape.left, transformOrigin: "center" }}
           animate={{ y: [-60, 1000], rotate: [0, 180, 360], x: [0, shape.xMove, 0] }}
           transition={{ duration: shape.duration, repeat: Infinity, ease: "linear", delay: shape.delay }}
         >
@@ -59,7 +59,8 @@ const Falling3DShapes = () => {
       ))}
     </div>
   );
-};
+});
+Falling3DShapes.displayName = "Falling3DShapes";
 
 // =========================================================================
 // بيانات أقسام الموقع
@@ -82,11 +83,13 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
   const [navState, setNavState] = useState<"horizontal" | "ball" | "vertical">("horizontal");
+  const navStateRef = useRef<"horizontal" | "ball" | "vertical">("horizontal");
+  
   const [activeSection, setActiveSection] = useState("home");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // اكتشاف الموبايل
   useEffect(() => {
     setMounted(true);
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -95,11 +98,6 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    if (!isMobile) setIsMenuOpen(false);
-  }, [isMobile]);
-
-  // دالة النقر والتمرير
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, targetId: string) => {
     e.preventDefault();
     setIsMenuOpen(false); 
@@ -108,9 +106,12 @@ export default function Header() {
       router.push(`/#${targetId}`);
       return;
     }
+    
     const element = document.getElementById(targetId);
     if (element) {
-      const y = element.getBoundingClientRect().top + window.scrollY - 80;
+      // 💡 النزول للأقسام الطبيعية بمقدار 80، وقسم features ينزل أكثر ليتمركز بشكل مثالي داخل القسم (باستخدام -20)
+      const offset = targetId === "features" ? -160 : 80;
+      const y = element.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top: y, behavior: "smooth" });
       setActiveSection(targetId);
     } else if (targetId === "home") {
@@ -119,26 +120,33 @@ export default function Header() {
     }
   };
 
-  // تغيير حالة الـ Header مع السكرول
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const isScrollingDown = latest > 150;
+    const isScrolledPast = latest > 150;
     
-    // إغلاق القائمة المنسدلة عند عمل سكرول للحفاظ على سلاسة التجربة
     if (isMenuOpen) setIsMenuOpen(false);
 
-    if (isScrollingDown && navState === "horizontal") {
+    if (isScrolledPast && navStateRef.current === "horizontal") {
+      navStateRef.current = "ball";
       setNavState("ball");
+      
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => setNavState("vertical"), 400);
+      timeoutRef.current = setTimeout(() => {
+        navStateRef.current = "vertical";
+        setNavState("vertical");
+      }, 250); 
     } 
-    else if (!isScrollingDown && (navState === "vertical" || navState === "ball")) {
+    else if (!isScrolledPast && (navStateRef.current === "vertical" || navStateRef.current === "ball")) {
+      navStateRef.current = "ball";
       setNavState("ball");
+      
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => setNavState("horizontal"), 400);
+      timeoutRef.current = setTimeout(() => {
+        navStateRef.current = "horizontal";
+        setNavState("horizontal");
+      }, 250);
     }
   });
 
-  // تتبع القسم النشط
   useEffect(() => {
     if (pathname !== "/") return;
     const handleScroll = () => {
@@ -161,6 +169,8 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
+  const smoothTransition = { type: "tween", ease: [0.25, 1, 0.5, 1], duration: 0.4 };
+
   const navVariants = {
     horizontal: {
       top: isMobile ? 16 : 24, 
@@ -168,23 +178,23 @@ export default function Header() {
       width: "95%", maxWidth: 1200, 
       height: isMobile ? 64 : 72,
       borderRadius: 9999,
-      transition: { type: "spring", stiffness: 220, damping: 28 }
+      transition: smoothTransition
     },
     ball: {
       top: isMobile ? "auto" : "50%", bottom: isMobile ? 24 : "auto",
       left: isMobile ? "auto" : 24, right: isMobile ? 24 : "auto",
       x: 0, y: isMobile ? 0 : "-50%",
-      width: 64, height: 64,
+      width: 64, maxWidth: 64, height: 64,
       borderRadius: 9999,
-      transition: { type: "spring", stiffness: 200, damping: 25 }
+      transition: smoothTransition
     },
     vertical: {
       top: isMobile ? "auto" : "50%", bottom: isMobile ? 24 : "auto",
       left: isMobile ? "auto" : 24, right: isMobile ? 24 : "auto",
       x: 0, y: isMobile ? 0 : "-50%",
-      width: isMobile ? 64 : 72, height: isMobile ? 64 : 600,
+      width: isMobile ? 64 : 72, maxWidth: isMobile ? 64 : 72, height: isMobile ? 64 : 600,
       borderRadius: isMobile ? 9999 : 36,
-      transition: { type: "spring", stiffness: 250, damping: 25 }
+      transition: smoothTransition
     }
   };
 
@@ -192,11 +202,10 @@ export default function Header() {
 
   const isVertical = navState === "vertical";
   const isBall = navState === "ball";
-  const isTopPosition = navState === "horizontal"; // لمعرفة موقع الموبايل (فوق أو زر عائم تحت)
+  const isTopPosition = navState === "horizontal"; 
 
   return (
     <>
-      {/* 🌟 1. طبقة التعتيم الخلفية (Backdrop) عند فتح القائمة */}
       <AnimatePresence>
         {isMenuOpen && isMobile && (
           <motion.div
@@ -205,27 +214,22 @@ export default function Header() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={() => setIsMenuOpen(false)}
-            // تعتيم خفيف وأنيق لتبقى الشاشة الأصلية مرئية بوضوح
             className="fixed inset-0 z-[90] bg-slate-900/10 backdrop-blur-[4px] pointer-events-auto"
           />
         )}
       </AnimatePresence>
 
-      {/* 🌟 2. الحاوية الرئيسية للـ Header والقائمة المنسدلة */}
       <div className="fixed inset-0 z-[100] pointer-events-none">
-        
-        {/* ============================================== */}
-        {/* الـ Header الرئيسي (شريط أو زر عائم) */}
-        {/* ============================================== */}
         <motion.nav
           variants={navVariants}
           initial="horizontal"
           animate={navState}
-          className="absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 backdrop-blur-2xl ring-1 ring-[#0d9468]/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_12px_40px_rgba(13,148,104,0.15)] overflow-visible"
+          className="absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 backdrop-blur-2xl ring-1 ring-[#0d9468]/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_12px_40px_rgba(13,148,104,0.15)] overflow-hidden"
           style={{ 
             flexDirection: !isMobile && isVertical ? "column" : "row", 
             padding: isMobile ? (navState === "horizontal" ? "0 16px" : "0") : (isVertical ? "28px 0" : "0 24px"),
-            justifyContent: isMobile && navState !== "horizontal" ? "center" : "space-between"
+            justifyContent: isMobile && navState !== "horizontal" ? "center" : "space-between",
+            transform: "translateZ(0)"
           }}
         >
           <Falling3DShapes />
@@ -239,17 +243,16 @@ export default function Header() {
                     <img src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" alt="Health Hub" className="w-full h-full object-contain" />
                   </div>
                   <h1 className="ml-2 text-[18px] font-display font-extrabold tracking-tight text-[var(--color-text-main)]">
-                    Health<span className="text-[var(--color-primary)]">-Hub</span>
+                    Health-<span className="text-[var(--color-primary)]"> Hub</span>
                   </h1>
                 </a>
               )}
               
-              {/* زر الهمبرغر (يتحول إلى X عند الفتح) */}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)} 
                 className={`relative z-20 flex items-center justify-center w-11 h-11 rounded-full transition-all duration-300 ${isMenuOpen ? "bg-white/80 text-[var(--color-primary)] shadow-sm" : "bg-white/40 text-[var(--color-text-main)]"} hover:bg-white/90 ${!isTopPosition ? "w-14 h-14 bg-transparent hover:bg-white/20" : ""}`}
               >
-                <motion.div animate={{ rotate: isMenuOpen ? 90 : 0 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
+                <motion.div animate={{ rotate: isMenuOpen ? 90 : 0 }} transition={{ type: "tween", duration: 0.2 }}>
                   {isMenuOpen ? (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -264,26 +267,30 @@ export default function Header() {
             </>
           )}
 
-          {/* 💻 محتوى الديسكتوب (لم يتغير، احترافي كما كان) */}
+          {/* 💻 محتوى الديسكتوب */}
           {!isMobile && (
             <>
-              {/* اللوغو */}
               <a href="/#home" onClick={(e) => scrollToSection(e, "home")} className="flex items-center gap-3 group relative shrink-0 z-20 cursor-pointer">
-                <div className={`relative flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${isVertical || isBall ? "w-12 h-12" : "w-10 h-10"}`}>
+                <div className={`relative flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${isVertical || isBall ? "w-12 h-12" : "w-10 h-10"}`}>
                   <img src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" alt="Health Hub" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
                 <AnimatePresence>
                   {navState === "horizontal" && (
-                    <motion.div initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: "auto" }} exit={{ opacity: 0, width: 0 }} className="flex flex-col justify-center whitespace-nowrap overflow-hidden">
+                    <motion.div 
+                      initial={{ opacity: 0, maxWidth: 0 }} 
+                      animate={{ opacity: 1, maxWidth: 150 }} 
+                      exit={{ opacity: 0, maxWidth: 0 }} 
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col justify-center whitespace-nowrap overflow-hidden"
+                    >
                       <h1 className="text-[20px] font-display font-extrabold tracking-tight text-[var(--color-text-main)] leading-none transition-colors duration-300 group-hover:text-[var(--color-primary)]">
-                        Health<span className="text-[var(--color-primary)] group-hover:text-[var(--color-secondary)] transition-colors duration-300">-Hub</span>
+                        Health-<span className="text-[var(--color-primary)] group-hover:text-[var(--color-secondary)] transition-colors duration-300">Hub</span>
                       </h1>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </a>
 
-              {/* روابط الديسكتوب */}
               <AnimatePresence>
                 {!isBall && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className={`flex items-center relative z-10 ${isVertical ? "flex-col gap-2 mt-4 mb-4 w-full px-3" : "flex-row gap-1 lg:gap-1.5"}`}>
@@ -292,7 +299,7 @@ export default function Header() {
                       return (
                         <a key={item.id} href={`/#${item.id}`} onClick={(e) => scrollToSection(e, item.id)} className={`relative flex items-center justify-center group transition-all duration-300 z-20 cursor-pointer ${isVertical ? "w-full h-12 rounded-xl" : "px-3 lg:px-4 py-2.5 rounded-full"} ${isActive ? "text-[var(--color-primary)] font-bold shadow-sm" : "text-[var(--color-text-muted)] font-medium hover:text-[var(--color-primary)]"}`}>
                           {isActive ? (
-                            <motion.div layoutId="activeNavBackground" className="absolute inset-0 bg-white/70 border border-white/90 z-[-1]" style={{ borderRadius: isVertical ? "12px" : "9999px" }} initial={false} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                            <motion.div layoutId="activeNavBackground" className="absolute inset-0 bg-white/70 border border-white/90 z-[-1]" style={{ borderRadius: isVertical ? "12px" : "9999px" }} initial={false} transition={{ type: "tween", duration: 0.3 }} />
                           ) : (
                             <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-[-1]" style={{ borderRadius: isVertical ? "12px" : "9999px" }} />
                           )}
@@ -307,7 +314,6 @@ export default function Header() {
                 )}
               </AnimatePresence>
 
-              {/* زر Contact Desktop */}
               <AnimatePresence>
                 {!isBall && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className={`flex items-center shrink-0 z-20 ${isVertical ? "w-full px-3 mt-auto" : "pl-2"}`}>
@@ -330,23 +336,36 @@ export default function Header() {
           )}
         </motion.nav>
 
-        {/* =========================================================================
-            🌟 القائمة المنسدلة الذكية للموبايل (Smart Floating Dropdown)
-            ========================================================================= */}
+        {/* القائمة المنسدلة للموبايل */}
         <AnimatePresence>
           {isMenuOpen && isMobile && (
             <motion.div
-              // 💡 ذكاء الأنميشن: تنزل من فوق إذا كان الهيدر شريط، وتطلع من تحت إذا كان زر عائم!
               initial={isTopPosition ? { opacity: 0, y: -20, scale: 0.98 } : { opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={isTopPosition ? { opacity: 0, y: -20, scale: 0.98 } : { opacity: 0, y: 20, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              transition={{ type: "tween", duration: 0.2 }}
               className={`absolute pointer-events-auto left-4 right-4 bg-white/95 backdrop-blur-3xl rounded-3xl p-3 shadow-[0_20px_50px_-12px_rgba(17,79,209,0.25)] border border-white/60 flex flex-col gap-1 z-[110] overflow-hidden ${
                 isTopPosition ? "top-[90px] origin-top" : "bottom-[100px] origin-bottom-right lg:origin-bottom-left"
               }`}
             >
-              {/* قائمة الروابط بتصميم بطاقات صغيرة فخمة */}
-              {NAV_ITEMS.map((item, i) => {
+              
+              {/* زر Home المُضاف خصيصاً للموبايل لضمان الوصول لأول الصفحة */}
+              <a
+                href="/#home"
+                onClick={(e) => scrollToSection(e, "home")}
+                className={`flex items-center gap-4 p-3.5 rounded-2xl transition-all duration-200 active:scale-95 ${
+                  activeSection === "home" && pathname === "/" ? "bg-[var(--color-primary)]/5 text-[var(--color-primary)]" : "text-[var(--color-text-muted)] hover:bg-slate-50"
+                }`}
+              >
+                <div className={`w-9 h-9 flex items-center justify-center rounded-full shadow-sm ${activeSection === "home" && pathname === "/" ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <span className={`text-[15px] ${activeSection === "home" && pathname === "/" ? "font-bold" : "font-semibold"}`}>Home</span>
+              </a>
+
+              {NAV_ITEMS.map((item) => {
                 const isActive = activeSection === item.id && pathname === "/";
                 return (
                   <a
@@ -365,10 +384,8 @@ export default function Header() {
                 );
               })}
 
-              {/* خط فاصل أنيق */}
               <div className="h-[1px] bg-slate-200/60 my-1 mx-2 rounded-full" />
 
-              {/* زر Contact Us الأساسي داخل القائمة */}
               <a
                 href="/#contact"
                 onClick={(e) => scrollToSection(e, "contact")}
