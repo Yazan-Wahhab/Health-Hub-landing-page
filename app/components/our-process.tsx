@@ -29,7 +29,6 @@ const FloatingParticles = ({ isEven }: { isEven: boolean }) => (
 // =========================================================================
 const LINE_DURATION = 2.5; 
 
-// حركة انبثاق الشاشة لتبدو وكأنها تخرج من الخط
 const screenRevealVariants = {
   hidden: { scale: 0.5, opacity: 0 },
   visible: {
@@ -45,19 +44,34 @@ export default function OurProcess() {
   const isInView = useInView(containerRef, { once: true, margin: "-15% 0px" });
   const [animationPhase, setAnimationPhase] = useState(0); 
   const [showIframes, setShowIframes] = useState(false); 
+  
+  // حالة جديدة للتحكم في إخفاء النصوص عند التفاعل مع الفيديو
+  const [hideVideoTitles, setHideVideoTitles] = useState(false);
 
   useEffect(() => {
     if (isInView) {
-      setAnimationPhase(1); // 1. نزول الخط واللوغو
+      setAnimationPhase(1); 
       
-      const t1 = setTimeout(() => setAnimationPhase(2), LINE_DURATION * 1000); // 2. استقرار اللوغو في المنتصف
-      const t2 = setTimeout(() => setAnimationPhase(3), (LINE_DURATION + 0.8) * 1000); // 3. رسم الخطوط الجانبية الثابتة
-      const t3 = setTimeout(() => setAnimationPhase(4), (LINE_DURATION + 1.3) * 1000); // 4. ظهور الشاشات
-      const t4 = setTimeout(() => setShowIframes(true), (LINE_DURATION + 1.8) * 1000); // 5. تشغيل الفيديوهات
+      const t1 = setTimeout(() => setAnimationPhase(2), LINE_DURATION * 1000); 
+      const t2 = setTimeout(() => setAnimationPhase(3), (LINE_DURATION + 0.8) * 1000); 
+      const t3 = setTimeout(() => setAnimationPhase(4), (LINE_DURATION + 1.3) * 1000); 
+      const t4 = setTimeout(() => setShowIframes(true), (LINE_DURATION + 1.8) * 1000); 
       
       return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
     }
   }, [isInView]);
+
+  // خدعة برمجية لاكتشاف النقر داخل الـ iframe وإخفاء النصوص
+  useEffect(() => {
+    const handleBlur = () => {
+      // إذا كان العنصر الذي تم التركيز عليه هو iframe (يعني المستخدم ضغط على الفيديو للتشغيل)
+      if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+        setHideVideoTitles(true);
+      }
+    };
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, []);
 
   const hubLogoUrl = "https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75";
 
@@ -90,7 +104,6 @@ export default function OurProcess() {
             <div className="absolute top-0 bottom-0 left-[35px] md:left-1/2 w-[3px] md:w-1.5 bg-[var(--color-border)]/40 rounded-full -translate-x-1/2 z-0" />
             <motion.div initial={{ height: "0%" }} animate={isInView ? { height: "100%" } : {}} transition={{ duration: LINE_DURATION, ease: "linear" }} className="absolute top-0 left-[35px] md:left-1/2 w-[3px] md:w-1.5 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full -translate-x-1/2 z-10 origin-top" />
 
-            {/* اللوغو في مرحلة النزول */}
             {animationPhase === 1 && (
               <motion.div layoutId="hubLogo" initial={{ top: "0%" }} animate={{ top: "100%" }} transition={{ duration: LINE_DURATION, ease: "linear" }} className="absolute left-[35px] md:left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
                 {renderHubLogo()}
@@ -116,9 +129,9 @@ export default function OurProcess() {
             </div>
           </div>
 
-          {/* 🎯 منطقة الشاشات والخطوط الثابتة */}
-          <div className="relative w-full max-w-5xl mx-auto px-4 md:px-8 z-20 mt-10 md:mt-16">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-[4rem] relative w-full">
+          {/* 🎯 منطقة الشاشات والخطوط الثابتة (تم تكبير الـ max-w إلى 7xl وتقليل الحواف في الجوال) */}
+          <div className="relative w-full max-w-7xl mx-auto px-2 md:px-8 z-20 mt-10 md:mt-16">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-[4rem] relative w-full">
               
               {/* =============================================== */}
               {/* 💻 الشاشة الأولى (يسار الكمبيوتر / أعلى الموبايل) */}
@@ -126,24 +139,34 @@ export default function OurProcess() {
               <div className="relative w-full md:w-1/2 aspect-video flex items-center justify-center z-10 origin-bottom md:origin-right">
                 <motion.div variants={screenRevealVariants} initial="hidden" animate={animationPhase >= 4 ? "visible" : "hidden"} className="w-full h-full relative">
                   
-                  {/* البنية الخارجية للشاشة (Mockup) */}
-                  <div className="w-full h-full bg-[#1e1e1e] p-2 md:p-3 rounded-2xl md:rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col relative overflow-hidden">
-                    {/* نقطة الكاميرا الوهمية */}
+                  <div className="w-full h-full bg-[#1e1e1e] p-1.5 md:p-3 rounded-2xl md:rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col relative overflow-hidden">
                     <div className="absolute top-1 md:top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 md:w-2 md:h-2 bg-black rounded-full z-30" />
                     
-                    {/* الإطار الداخلي الأسود */}
                     <div className="w-full h-full bg-black rounded-xl md:rounded-2xl overflow-hidden relative">
-                      <motion.div initial={{ opacity: 0, y: -10 }} animate={animationPhase >= 4 ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }} transition={{ delay: 0.5, duration: 0.5 }} className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/95 backdrop-blur-md px-4 py-1.5 md:px-5 md:py-2 rounded-full border border-[var(--color-primary)]/30 shadow-xl z-30">
-                        <span className="text-xs md:text-sm font-extrabold text-[var(--color-primary)]">نظرة عامة على المنصة</span>
-                      </motion.div>
+                      
+                      {/* العنوان الأول مع تأثير الإخفاء */}
+                      <AnimatePresence>
+                        {!hideVideoTitles && animationPhase >= 4 && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: -10 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                            transition={{ duration: 0.4 }} 
+                            className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/95 backdrop-blur-md px-4 py-1.5 md:px-5 md:py-2 rounded-full border border-[var(--color-primary)]/30 shadow-xl z-30 pointer-events-none"
+                          >
+                            <span className="text-xs md:text-sm font-extrabold text-[var(--color-primary)]">نظرة عامة على المنصة</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
 
                       <AnimatePresence>
                         {!showIframes && animationPhase >= 4 && (
                           <motion.div exit={{ opacity: 0 }} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white/20 border-t-white animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" />
                         )}
                       </AnimatePresence>
+
                       {showIframes && (
-                        <motion.iframe initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="absolute inset-0 w-full h-full z-10" src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1&rel=0&playsinline=1&modestbranding=1" title="Overview" allowFullScreen />
+                        <motion.iframe initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="absolute inset-0 w-full h-full z-10" src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1&rel=0&playsinline=1&modestbranding=1" title="Overview" allowFullScreen allow="autoplay; encrypted-media" />
                       )}
                     </div>
                   </div>
@@ -158,36 +181,22 @@ export default function OurProcess() {
                 {animationPhase >= 2 && (
                   <motion.div layoutId="hubLogo" className="absolute z-50" transition={{ type: "spring", bounce: 0.2, duration: 0.8 }}>
                     
-                    {/* الخط الثابت الأول (يمين في الكمبيوتر / أعلى في الموبايل) - يتجه للشاشة الأولى */}
                     <motion.div 
-                      className="absolute bg-[var(--color-primary)] z-0
-                        hidden md:block md:top-1/2 md:-translate-y-1/2 md:right-full md:origin-right md:h-[4px]"
-                      initial={{ width: 0 }}
-                      animate={animationPhase >= 3 ? { width: "4rem" } : { width: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="absolute bg-[var(--color-primary)] z-0 hidden md:block md:top-1/2 md:-translate-y-1/2 md:right-full md:origin-right md:h-[4px]"
+                      initial={{ width: 0 }} animate={animationPhase >= 3 ? { width: "4rem" } : { width: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}
                     />
                     <motion.div 
-                      className="absolute bg-[var(--color-primary)] z-0
-                        block md:hidden left-1/2 -translate-x-1/2 bottom-full origin-bottom w-[4px]"
-                      initial={{ height: 0 }}
-                      animate={animationPhase >= 3 ? { height: "2.5rem" } : { height: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="absolute bg-[var(--color-primary)] z-0 block md:hidden left-1/2 -translate-x-1/2 bottom-full origin-bottom w-[4px]"
+                      initial={{ height: 0 }} animate={animationPhase >= 3 ? { height: "1.5rem" } : { height: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}
                     />
 
-                    {/* الخط الثابت الثاني (يسار في الكمبيوتر / أسفل في الموبايل) - يتجه للشاشة الثانية */}
                     <motion.div 
-                      className="absolute bg-[var(--color-secondary)] z-0
-                        hidden md:block md:top-1/2 md:-translate-y-1/2 md:left-full md:origin-left md:h-[4px]"
-                      initial={{ width: 0 }}
-                      animate={animationPhase >= 3 ? { width: "4rem" } : { width: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="absolute bg-[var(--color-secondary)] z-0 hidden md:block md:top-1/2 md:-translate-y-1/2 md:left-full md:origin-left md:h-[4px]"
+                      initial={{ width: 0 }} animate={animationPhase >= 3 ? { width: "4rem" } : { width: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}
                     />
                     <motion.div 
-                      className="absolute bg-[var(--color-secondary)] z-0
-                        block md:hidden left-1/2 -translate-x-1/2 top-full origin-top w-[4px]"
-                      initial={{ height: 0 }}
-                      animate={animationPhase >= 3 ? { height: "2.5rem" } : { height: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      className="absolute bg-[var(--color-secondary)] z-0 block md:hidden left-1/2 -translate-x-1/2 top-full origin-top w-[4px]"
+                      initial={{ height: 0 }} animate={animationPhase >= 3 ? { height: "1.5rem" } : { height: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}
                     />
 
                     {renderHubLogo()}
@@ -201,24 +210,34 @@ export default function OurProcess() {
               <div className="relative w-full md:w-1/2 aspect-video flex items-center justify-center z-10 origin-top md:origin-left">
                 <motion.div variants={screenRevealVariants} initial="hidden" animate={animationPhase >= 4 ? "visible" : "hidden"} className="w-full h-full relative">
                   
-                  {/* البنية الخارجية للشاشة (Mockup) */}
-                  <div className="w-full h-full bg-[#1e1e1e] p-2 md:p-3 rounded-2xl md:rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col relative overflow-hidden">
-                    {/* نقطة الكاميرا الوهمية */}
+                  <div className="w-full h-full bg-[#1e1e1e] p-1.5 md:p-3 rounded-2xl md:rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col relative overflow-hidden">
                     <div className="absolute top-1 md:top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 md:w-2 md:h-2 bg-black rounded-full z-30" />
                     
-                    {/* الإطار الداخلي الأسود */}
                     <div className="w-full h-full bg-black rounded-xl md:rounded-2xl overflow-hidden relative">
-                      <motion.div initial={{ opacity: 0, y: -10 }} animate={animationPhase >= 4 ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }} transition={{ delay: 0.5, duration: 0.5 }} className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/95 backdrop-blur-md px-4 py-1.5 md:px-5 md:py-2 rounded-full border border-[var(--color-secondary)]/30 shadow-xl z-30">
-                        <span className="text-xs md:text-sm font-extrabold text-[var(--color-secondary)]">تجربة تطبيق الأطباء</span>
-                      </motion.div>
+                      
+                      {/* العنوان الثاني مع تأثير الإخفاء */}
+                      <AnimatePresence>
+                        {!hideVideoTitles && animationPhase >= 4 && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: -10 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                            transition={{ duration: 0.4 }} 
+                            className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/95 backdrop-blur-md px-4 py-1.5 md:px-5 md:py-2 rounded-full border border-[var(--color-secondary)]/30 shadow-xl z-30 pointer-events-none"
+                          >
+                            <span className="text-xs md:text-sm font-extrabold text-[var(--color-secondary)]">تجربة تطبيق الأطباء</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
 
                       <AnimatePresence>
                         {!showIframes && animationPhase >= 4 && (
                           <motion.div exit={{ opacity: 0 }} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white/20 border-t-white animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" />
                         )}
                       </AnimatePresence>
+
                       {showIframes && (
-                        <motion.iframe initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="absolute inset-0 w-full h-full z-10" src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1&rel=0&playsinline=1&modestbranding=1" title="Doctors App" allowFullScreen />
+                        <motion.iframe initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="absolute inset-0 w-full h-full z-10" src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1&rel=0&playsinline=1&modestbranding=1" title="Doctors App" allowFullScreen allow="autoplay; encrypted-media" />
                       )}
                     </div>
                   </div>
