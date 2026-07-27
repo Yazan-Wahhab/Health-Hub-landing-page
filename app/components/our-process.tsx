@@ -87,10 +87,7 @@ export default function OurProcess() {
       
       {/* 🟢 العنوان */}
       <div className="flex flex-col items-center text-center w-full max-w-4xl mx-auto px-4 mb-8 md:mb-12 relative z-40">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }} className="inline-flex items-center gap-2 bg-white/90 border border-[var(--color-primary)]/20 px-4 py-2 rounded-full mb-3 shadow-sm">
-          <div className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse shadow-[0_0_8px_var(--color-primary)]"></div>
-          <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-primary)]">Our Process</span>
-        </motion.div>
+        
         <motion.h2 initial={{ opacity: 0, y: -20 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2 }} className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0f172a]">
           منهجية عمل <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]">مضمونة النتائج</span>
         </motion.h2>

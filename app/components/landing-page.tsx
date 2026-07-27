@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useMotionTemplate } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, useMotionTemplate, useSpring } from "framer-motion";
 
 // استدعاء المكونات الخاصة بك
 import Header from "./header"; 
@@ -49,19 +49,46 @@ function RichEnterpriseBackground() {
 }
 
 // =========================================================================
-// 🛸 2. اللوغو الساحب في الخلفية
+// 🛸 2. اللوغو الساحب في الخلفية (نسخة محسنة للأداء الأقصى مع useSpring)
 // =========================================================================
 function SynchronizedParallaxLogo() {
   const { scrollYProgress } = useScroll();
-  const logoY = useTransform(scrollYProgress, [0, 1], ["5vh", "85vh"]);
-  const logoX = useTransform(scrollYProgress, [0, 0.5, 1], ["-5vw", "20vw", "5vw"]);
-  const logoRotate = useTransform(scrollYProgress, [0, 1], [-5, 25]);
-  const logoOpacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 0.20, 0.20, 0]); 
+
+  // ✨ السحر هنا: تنعيم قيم التمرير الخام باستخدام useSpring
+  const smoothScrollProgress = useSpring(scrollYProgress, {
+    stiffness: 100, // سرعة الاستجابة لبدء الحركة
+    damping: 30,    // قوة إخماد الارتداد (لجعلها ناعمة وليست مطاطية)
+    restDelta: 0.001 // دقة التوقف النهائي
+  });
+
+  // ✨ استخدام smoothScrollProgress بدلاً من scrollYProgress الخام
+  const logoY = useTransform(smoothScrollProgress, [0, 1], ["5vh", "85vh"]);
+  const logoX = useTransform(smoothScrollProgress, [0, 0.5, 1], ["-5vw", "20vw", "5vw"]);
+  const logoRotate = useTransform(smoothScrollProgress, [0, 1], [-5, 25]);
+  const logoOpacity = useTransform(smoothScrollProgress, [0, 0.1, 0.9, 1], [0, 0.20, 0.20, 0]); 
 
   return (
-    <motion.div className="fixed z-[-1] pointer-events-none" style={{ top: 0, left: "50%", x: logoX, y: logoY, rotate: logoRotate, opacity: logoOpacity }}>
+    <motion.div 
+      className="fixed z-[-1] pointer-events-none" 
+      style={{ 
+        top: 0, 
+        left: "50%", 
+        x: logoX, 
+        y: logoY, 
+        rotate: logoRotate, 
+        opacity: logoOpacity,
+        // ✨ التحسين للأداء: سياسة will-change
+        willChange: "transform, opacity" 
+      }}
+    >
       <div className="relative flex items-center justify-center scale-[2.5]">
-        <img src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" alt="Background Hologram" className="relative z-10 w-64 h-64 object-contain drop-shadow-[0_15px_30px_rgba(17,79,209,0.2)]" />
+        <img 
+          src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" 
+          alt="Background Hologram" 
+          className="relative z-10 w-64 h-64 object-contain drop-shadow-[0_15px_30px_rgba(17,79,209,0.2)]" 
+          // ✨ التحسين للأداء: إجبار GPU Acceleration على الصورة التي تحتوي على ظل
+          style={{ transform: "translateZ(0)", willChange: "filter, transform" }}
+        />
       </div>
     </motion.div>
   );
@@ -91,7 +118,6 @@ export default function LandingPage() {
 
           <main className="relative z-10">
             
-            {/* 🌟 إضافة المعرفات ID لكل قسم حسب فكرتك */}
             <motion.div id="home" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
               <HeroSection />
             </motion.div>

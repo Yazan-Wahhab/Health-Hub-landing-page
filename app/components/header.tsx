@@ -110,7 +110,7 @@ export default function Header() {
     const element = document.getElementById(targetId);
     if (element) {
       // 💡 النزول للأقسام الطبيعية بمقدار 80، وقسم features ينزل أكثر ليتمركز بشكل مثالي داخل القسم (باستخدام -20)
-      const offset = targetId === "features" ? -160 : 80;
+      const offset = targetId === "features" ? -160 : targetId === "modules" ? -20 : targetId ==="partners" ? -45:targetId === "process" ? -30 : 80;
       const y = element.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top: y, behavior: "smooth" });
       setActiveSection(targetId);
