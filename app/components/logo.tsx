@@ -50,10 +50,11 @@ interface LogoFaceProps {
   label: string;
   featureText: string;
   arrowDirection: "left" | "right";
+  mobileAlign?: "left" | "right" | "center"; // توجيه ذكي لمنع القص في الموبايل
   isMobile: boolean;
 }
 
-const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, label, featureText, arrowDirection, isMobile }: LogoFaceProps) => {
+const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, label, featureText, arrowDirection, mobileAlign = "center", isMobile }: LogoFaceProps) => {
   const i = initialPosition;
   const a1 = animatePosition;
   const a2 = [a1[0] * 1.5, a1[1] * 1.5, a1[2] * 1.5]; 
@@ -97,13 +98,12 @@ const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, la
         </mesh>
       </motion.group>
 
-      {/* Html center ensures the root starts at the exact 3D center */}
+      {/* نقطة الانطلاق الأساسية من المركز الدقيق 0,0 */}
       <Html center zIndexRange={[100, 0]}>
         
-        {/* حاوية صفرية الأبعاد (w-0 h-0) لإجبار العناصر على الانطلاق من نقطة الارتكاز المليمتري */}
         <div className="relative w-0 h-0 flex items-center justify-center pointer-events-none">
           
-          {/* الليبل الأساسي للقطعة (يتحرك للأعلى والأسفل بحرية دون التأثير على الخطوط) */}
+          {/* الليبل الأساسي للقطعة */}
           <motionHtml.div
             animate={{ 
               scale: [0, 0, 1, 1, 0, 0],
@@ -131,7 +131,7 @@ const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, la
             </span>
           </motionHtml.div>
 
-          {/* 1. النقطة المضيئة (مثبتة بدقة في المركز 0,0) */}
+          {/* 1. النقطة المضيئة (مثبتة بدقة في المركز) */}
           <motionHtml.div
             animate={{ opacity: [0, 0, 1, 1, 0, 0], scale: [0, 0, 1, 1, 0, 0] }}
             transition={{ duration: 9, times: [0, 0.44, 0.46, 0.59, 0.61, 1], ease: "backOut" }}
@@ -141,7 +141,7 @@ const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, la
             <div className={`absolute rounded-full opacity-40 animate-ping ${isMobile ? 'w-4 h-4' : 'w-6 h-6'}`} style={{ backgroundColor: color }} />
           </motionHtml.div>
 
-          {/* 2. الخط والصندوق (ينطلقان بشكل هندسي دقيق من المركز) */}
+          {/* 2. الخط والصندوق مع نظام التموضع الذكي (يمنع القص على حواف الموبايل) */}
           <motionHtml.div
             animate={{ 
               opacity: [0, 0, 1, 1, 0, 0], 
@@ -149,17 +149,21 @@ const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, la
               filter: ["blur(8px)", "blur(8px)", "blur(0px)", "blur(0px)", "blur(8px)", "blur(8px)"]
             }}
             transition={{ duration: 9, times: [0, 0.44, 0.46, 0.59, 0.61, 1], ease: "easeInOut" }}
-            className={`absolute flex items-center ${
+            className={`absolute flex pointer-events-none ${
               isMobile 
-                ? 'flex-col top-0 pt-2' // موبايل: الحافة العلوية بالمركز، ويتمدد للأسفل
+                ? mobileAlign === 'left'
+                  ? 'flex-col top-0 left-0 pt-2 items-start' // للموبايل (يسار): يتمدد نحو اليمين
+                  : mobileAlign === 'right'
+                    ? 'flex-col top-0 right-0 pt-2 items-end' // للموبايل (يمين): يتمدد نحو اليسار
+                    : 'flex-col top-0 left-1/2 -translate-x-1/2 pt-2 items-center' // للموبايل (وسط): متمركز
                 : arrowDirection === "left" 
-                  ? 'flex-row-reverse right-0 pr-2 md:pr-3' // ديسكتوب: الحافة اليمنى بالمركز، ويتمدد لليسار
-                  : 'flex-row left-0 pl-2 md:pl-3' // ديسكتوب: الحافة اليسرى بالمركز، ويتمدد لليمين
+                  ? 'flex-row-reverse right-0 top-1/2 -translate-y-1/2 pr-2 md:pr-3 items-center' // للديسكتوب يسار
+                  : 'flex-row left-0 top-1/2 -translate-y-1/2 pl-2 md:pl-3 items-center' // للديسكتوب يمين
             }`}
           >
             {/* الخط الزجاجي */}
             <div
-              className={`${isMobile ? 'w-[1.5px] h-8 md:h-12' : 'h-[1.5px] w-12 md:w-24'}`}
+              className={`${isMobile ? 'w-[1.5px] h-6 md:h-8' : 'h-[1.5px] w-12 md:w-24'}`}
               style={{
                 background: isMobile
                   ? `linear-gradient(to bottom, ${color}ff, ${color}10)`
@@ -172,7 +176,7 @@ const LogoFace = ({ initialPosition, animatePosition, rotation, scale, color, la
             {/* صندوق النص الاحترافي */}
             <div
               className={`relative backdrop-blur-xl rounded-md overflow-hidden border ${
-                isMobile ? 'px-4 py-1.5 mt-1' : 'px-6 py-2.5 mx-1'
+                isMobile ? 'px-4 py-1.5' : 'px-6 py-2.5 mx-1'
               }`}
               style={{
                 backgroundColor: 'rgba(2, 6, 23, 0.8)',
@@ -222,8 +226,9 @@ const LogoModel = () => {
     ? [0, 0.75, 0.75, 0.35, 1.2]  
     : [0, 1.3, 1.3, 0.5, 1.8];    
 
-  const pos1: [number, number, number] = isMobile ? [-1.8, -2.4, 1.5] : [-3.8, -3.2, 2.2];
-  const pos2: [number, number, number] = isMobile ? [1.8, -2.4, -1.5] : [3.8, -3.2, -2.2];
+  // تم تقريب المسافات للموبايل للداخل لضمان عدم ملامسة حواف الشاشة أبداً
+  const pos1: [number, number, number] = isMobile ? [-1.4, -2.4, 1.5] : [-3.8, -3.2, 2.2];
+  const pos2: [number, number, number] = isMobile ? [1.4, -2.4, -1.5] : [3.8, -3.2, -2.2];
   const pos3: [number, number, number] = isMobile ? [0, 2.6, 0] : [0, 4.2, 0];
 
   return (
@@ -249,6 +254,7 @@ const LogoModel = () => {
         label="DATA CORE"
         featureText="السرعة"
         arrowDirection="left"
+        mobileAlign="left" // توجيه الصندوق ليتمدد نحو يمين الشاشة
         isMobile={isMobile}
       />
       <LogoFace 
@@ -260,6 +266,7 @@ const LogoModel = () => {
         label="SECURITY"
         featureText="المصداقية"
         arrowDirection="right"
+        mobileAlign="right" // توجيه الصندوق ليتمدد نحو يسار الشاشة
         isMobile={isMobile}
       />
       <LogoFace 
@@ -271,6 +278,7 @@ const LogoModel = () => {
         label="SYNC"
         featureText="الأمان"
         arrowDirection="right"
+        mobileAlign="center" // متمركز في المنتصف
         isMobile={isMobile}
       />
     </motion.group>
