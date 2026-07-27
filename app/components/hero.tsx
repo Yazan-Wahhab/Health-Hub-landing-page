@@ -7,7 +7,7 @@ export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
 
   // =========================================================================
-  // 💻 1. هندسة مسار اللوغو للشاشات الكبيرة (حركة سلسة تعود لمكانها فورياً مع الماوس)
+  // 💻 1. هندسة مسار اللوغو للشاشات الكبيرة
   // =========================================================================
   const { scrollYProgress: desktopProgress } = useScroll({
     target: heroRef,
@@ -15,28 +15,27 @@ export default function HeroSection() {
   });
 
   const dLogoX = useTransform(desktopProgress, [0, 1], ["0vw", "-25vw"]); 
-  const dLogoY = useTransform(desktopProgress, [0, 1], ["0vh", "105vh"]); // ينزل لمنتصف الشاشة التالية
+  const dLogoY = useTransform(desktopProgress, [0, 1], ["0vh", "105vh"]);
   const dLogoScale = useTransform(desktopProgress, [0, 1], [1, 0.5]); 
-  // يبقى ظاهراً 100% ويختفي فقط في آخر 2% من السكرول ليعمل تسليم متطابق
   const dLogoOpacity = useTransform(desktopProgress, [0, 0.98, 1], [1, 1, 0]);
 
   // =========================================================================
-  // 📱 2. هندسة مسار اللوغو للموبايل (حركة سلسة تعود لمكانها فورياً مع الماوس)
+  // 📱 2. هندسة مسار اللوغو للموبايل (تم ضبط التمركز الجغرافي)
   // =========================================================================
   const { scrollYProgress: mobileProgress } = useScroll({
     target: heroRef,
-    offset: ["start start", "start -150vh"], 
+    offset: ["start start", "end start"], 
   });
 
-  const mLogoX = useTransform(mobileProgress, [0, 0.666], ["0vw", "-35vw"]);
-  const mLogoY = useTransform(mobileProgress, [0, 0.666], ["0vh", "120vh"]);
-  const mLogoScale = useTransform(mobileProgress, [0, 0.666], [1, 0.5]);
-  const mLogoOpacity = useTransform(mobileProgress, [0, 0.65, 0.666], [1, 1, 0]);
+  // تم التعديل هنا: 90vh بدلاً من 130vh لرفع اللوغو، و -42vw لضبطه بالمنتصف أفقياً
+  const mLogoX = useTransform(mobileProgress, [0, 1], ["0vw", "-30vw"]);
+  const mLogoY = useTransform(mobileProgress, [0, 1], ["0vh", "117vh"]);
+  const mLogoScale = useTransform(mobileProgress, [0, 1], [1, 0.5]);
+  const mLogoOpacity = useTransform(mobileProgress, [0, 0.98, 1], [1, 1, 0]);
 
   return (
     <section 
       ref={heroRef} 
-      // overflow-y-visible يسمح للوغو بالنزول للقسم التالي بدون أن ينقطع
       className="relative h-screen w-full flex items-center bg-transparent z-30 overflow-x-clip overflow-y-visible"
     >
       <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 grid lg:grid-cols-[1.2fr_0.8fr] gap-8 items-center relative z-10 lg:-translate-y-12">
@@ -108,7 +107,7 @@ export default function HeroSection() {
         </motion.div>
 
         {/* =========================================================================
-            النصف الأيمن: اللوغو العائم (أداء 60fps)
+            النصف الأيمن: اللوغو العائم 
             ========================================================================= */}
             
         {/* 💻 1. نسخة الشاشات الكبيرة */}

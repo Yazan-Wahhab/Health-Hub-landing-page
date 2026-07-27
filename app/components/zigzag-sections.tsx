@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "framer-motion";
-import { createPortal } from "react-dom"; // 🚀 تمت إضافة البورتال
+import { createPortal } from "react-dom"; 
 
 const WEB_IMAGES = [
   "/assets/images/Screenshot 2026-07-09 141200.png",
@@ -32,7 +32,6 @@ export default function ZigZagSections() {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
-  // 🚀 التأكد من أن المكون تم تحميله لاستخدام الـ Portal بأمان في Next.js
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -79,7 +78,6 @@ export default function ZigZagSections() {
   };
   const closeGallery = () => { setActiveGallery(null); setCurrentImgIndex(0); setDirection(0); };
 
-  // 🚀 التأثير السحري لإخفاء الهيدر وإيقاف السكرول عند فتح البوب أب
   useEffect(() => {
     if (!activeGallery) {
       document.body.style.overflow = '';
@@ -88,10 +86,8 @@ export default function ZigZagSections() {
       return;
     }
 
-    // إيقاف سكرول الصفحة بالخلفية
     document.body.style.overflow = 'hidden';
     
-    // حقن كود CSS مؤقت يخفي الهيدر العائم الخاص بك تماماً
     if (!document.getElementById('hide-header-style')) {
       const style = document.createElement('style');
       style.id = 'hide-header-style';
@@ -118,7 +114,6 @@ export default function ZigZagSections() {
     };
   }, [activeGallery, activeImages.length]);
 
-  // تنظيف عام عند تدمير المكون
   useEffect(() => {
     return () => {
       document.body.style.overflow = '';
@@ -342,7 +337,7 @@ export default function ZigZagSections() {
         </section>
       </div>
 
-      {/* 🚀 الـ Lightbox التفاعلي بثلاثي الأبعاد ومجسمات اللوغو داخل Portal */}
+      {/* 🚀 الـ Lightbox التفاعلي */}
       {mounted && typeof document !== 'undefined' && createPortal(
         <AnimatePresence mode="wait">
           {activeGallery && (
@@ -354,7 +349,6 @@ export default function ZigZagSections() {
               onClick={closeGallery} 
               className="fixed inset-0 z-[99999] bg-[#0A1326]/95 flex flex-col overflow-hidden"
             >
-              {/* 🎨 خلفية مجسمات اللوغو المتكررة */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="parallax-layer layer-1"></div>
                 <div className="parallax-layer layer-2"></div>
@@ -362,7 +356,6 @@ export default function ZigZagSections() {
                 <div className="absolute inset-0 bg-gradient-to-r from-[#0A1326] via-transparent to-[#0A1326] opacity-80" />
               </div>
 
-              {/* الهيدر الاحترافي */}
               <div className="relative z-50 flex-none h-20 px-6 md:px-10 flex items-center justify-between border-b border-white/5 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-4">
                   <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)] animate-pulse" />
@@ -386,7 +379,6 @@ export default function ZigZagSections() {
                 </button>
               </div>
 
-              {/* مسرح العرض الرئيسي */}
               <div className="flex-1 relative flex items-center justify-center p-4 md:p-10 overflow-hidden group z-40" style={{ perspective: '1200px' }}>
                 
                 <button 
@@ -425,7 +417,6 @@ export default function ZigZagSections() {
                 </button>
               </div>
 
-              {/* شريط الصور المصغرة السفلي */}
               <div className="relative z-50 flex-none pb-8 pt-4 px-6 flex items-center justify-center gap-3 md:gap-5 overflow-x-auto pointer-events-auto" onClick={(e) => e.stopPropagation()}>
                 {activeImages.map((src, idx) => (
                   <button 
