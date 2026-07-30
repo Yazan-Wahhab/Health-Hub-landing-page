@@ -54,14 +54,12 @@ function RichEnterpriseBackground() {
 function SynchronizedParallaxLogo() {
   const { scrollYProgress } = useScroll();
 
-  // ✨ السحر هنا: تنعيم قيم التمرير الخام باستخدام useSpring
   const smoothScrollProgress = useSpring(scrollYProgress, {
-    stiffness: 100, // سرعة الاستجابة لبدء الحركة
-    damping: 30,    // قوة إخماد الارتداد (لجعلها ناعمة وليست مطاطية)
-    restDelta: 0.001 // دقة التوقف النهائي
+    stiffness: 100, 
+    damping: 30,    
+    restDelta: 0.001 
   });
 
-  // ✨ استخدام smoothScrollProgress بدلاً من scrollYProgress الخام
   const logoY = useTransform(smoothScrollProgress, [0, 1], ["5vh", "85vh"]);
   const logoX = useTransform(smoothScrollProgress, [0, 0.5, 1], ["-5vw", "20vw", "5vw"]);
   const logoRotate = useTransform(smoothScrollProgress, [0, 1], [-5, 25]);
@@ -77,7 +75,6 @@ function SynchronizedParallaxLogo() {
         y: logoY, 
         rotate: logoRotate, 
         opacity: logoOpacity,
-        // ✨ التحسين للأداء: سياسة will-change
         willChange: "transform, opacity" 
       }}
     >
@@ -86,7 +83,6 @@ function SynchronizedParallaxLogo() {
           src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" 
           alt="Background Hologram" 
           className="relative z-10 w-64 h-64 object-contain drop-shadow-[0_15px_30px_rgba(17,79,209,0.2)]" 
-          // ✨ التحسين للأداء: إجبار GPU Acceleration على الصورة التي تحتوي على ظل
           style={{ transform: "translateZ(0)", willChange: "filter, transform" }}
         />
       </div>
@@ -118,41 +114,43 @@ export default function LandingPage() {
 
           <main className="relative z-10">
             
-            <motion.div id="home" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            {/* قمنا بإزالة الـ motion.div الخارجي من جميع المكونات لمنع التقطيع والتعارض */}
+            
+            <div id="home" className="scroll-mt-24">
               <HeroSection />
-            </motion.div>
+            </div>
 
-            <motion.div id="features" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="features" className="scroll-mt-24">
               <ZigZagSections />
-            </motion.div>
+            </div>
 
-            <motion.div id="modules" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="modules" className="scroll-mt-24">
               <EngineeringMilestones /> 
-            </motion.div>
+            </div>
 
-            <motion.div id="process" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="process" className="scroll-mt-24">
               <OurProcess /> 
-            </motion.div>
+            </div>
 
-            <motion.div id="statistics" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="statistics" className="scroll-mt-24">
               <StatisticsSection />
-            </motion.div>
+            </div>
 
-            <motion.div id="partners" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="partners" className="scroll-mt-24">
               <SuccessPartners /> 
-            </motion.div>
+            </div>
 
-            <motion.div id="testimonials" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="testimonials" className="scroll-mt-24">
               <Testimonials /> 
-            </motion.div>
+            </div>
 
-            <motion.div id="faq" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="faq" className="scroll-mt-24">
               <FAQ /> 
-            </motion.div>
+            </div>
 
-            <motion.div id="contact" className="scroll-mt-24" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div id="contact" className="scroll-mt-24">
               <ContactSection />
-            </motion.div>
+            </div>
 
           </main>
         </motion.div>

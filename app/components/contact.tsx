@@ -2,9 +2,6 @@
 
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 
-// ==========================================
-// 🎨 بيانات قنوات التواصل
-// ==========================================
 const socialChannels = [
   {
     name: "واتساب",
@@ -80,9 +77,6 @@ const socialChannels = [
   },
 ];
 
-// ==========================================
-// ✨ مجسمات التواصل الخارجية
-// ==========================================
 function ColorfulGlobalObjects() {
   return (
     <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
@@ -119,9 +113,6 @@ function ColorfulGlobalObjects() {
   );
 }
 
-// ==========================================
-// ✨ مكون كرت التواصل (أنيق ومناسب للشاشات الصغيرة)
-// ==========================================
 function ContactCard({ channel, index }: { channel: any, index: number }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -139,87 +130,76 @@ function ContactCard({ channel, index }: { channel: any, index: number }) {
   const floatDuration3 = 12 + (index % 4);
 
   return (
-    <motion.a
-      href={channel.link}
-      target="_blank"
-      rel="noopener noreferrer"
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
       transition={{ duration: 0.5, delay: index * 0.05, ease: "easeOut" }}
-      onMouseMove={handleMouseMove}
-      className="group relative flex flex-col items-center justify-center p-5 md:p-8 rounded-2xl md:rounded-[2rem] bg-[#eefaf2]/90 backdrop-blur-xl border border-[#bbf7d0] shadow-[0_4px_20px_rgba(34,197,94,0.04)] overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_rgba(34,197,94,0.15)] hover:border-[#86efac] text-center h-[160px] md:h-[220px]"
+      className="h-full w-full"
     >
-      
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 mix-blend-multiply md:mix-blend-normal"
-        style={{ background: backgroundSpotlight }}
-      />
-
-      {/* ================================================== */}
-      {/* 🟢 المجسمات الداخلية (مخفية في الموبايل، ظاهرة في الديسكتوب) */}
-      {/* ================================================== */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-2xl md:rounded-[2rem]">
-        
-        {/* 1. مثلث (يظهر فقط في الشاشات المتوسطة والكبيرة hidden md:block) */}
-        <motion.svg 
-          animate={{ rotate: 360 }} 
-          transition={{ duration: floatDuration1, repeat: Infinity, ease: "linear" }}
-          className="hidden md:block absolute -top-6 -right-4 w-20 h-20 text-[#86efac] opacity-50" 
-          viewBox="0 0 24 24" 
-          fill="currentColor"
-        >
-          <path d="M12 2L22 20H2L12 2Z" />
-        </motion.svg>
-
-        {/* 2. حلقة دائرية (تظهر فقط في الشاشات المتوسطة والكبيرة hidden md:block) */}
+      <a
+        href={channel.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseMove={handleMouseMove}
+        className="group relative flex flex-col items-center justify-center p-5 md:p-8 rounded-2xl md:rounded-[2rem] bg-[#eefaf2]/90 backdrop-blur-xl border border-[#bbf7d0] shadow-[0_4px_20px_rgba(34,197,94,0.04)] overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_rgba(34,197,94,0.15)] hover:border-[#86efac] text-center h-[160px] md:h-[220px] w-full"
+      >
         <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: floatDuration2, repeat: Infinity, ease: "easeInOut" }}
-          className="hidden md:block absolute -bottom-8 -left-6 w-24 h-24 rounded-full border-[5px] border-[#4ade80] opacity-30"
+          className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 mix-blend-multiply md:mix-blend-normal"
+          style={{ background: backgroundSpotlight }}
         />
 
-        {/* 3. علامة زائد (موجودة في الجوال ولكن بحجم صغير جداً وأنيق) */}
-        <motion.svg 
-          animate={{ y: [0, -15, 0], rotate: [0, 90, 0] }} 
-          transition={{ duration: floatDuration3, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[20%] md:top-[25%] left-[15%] md:left-[20%] w-3 h-3 md:w-6 md:h-6 text-[#22c55e] opacity-40" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M12 4v16m8-8H4" />
-        </motion.svg>
-        
-        {/* 4. نقطة صغيرة (تظهر فقط في الشاشات المتوسطة والكبيرة) */}
-        <motion.div
-          animate={{ x: [-5, 15, -5], y: [0, 10, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="hidden md:block absolute bottom-[20%] right-[25%] w-2 h-2 bg-[#16a34a] rounded-full opacity-60"
-        />
-      </div>
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-2xl md:rounded-[2rem]">
+          <motion.svg 
+            animate={{ rotate: 360 }} 
+            transition={{ duration: floatDuration1, repeat: Infinity, ease: "linear" }}
+            className="hidden md:block absolute -top-6 -right-4 w-20 h-20 text-[#86efac] opacity-50" 
+            viewBox="0 0 24 24" 
+            fill="currentColor"
+          >
+            <path d="M12 2L22 20H2L12 2Z" />
+          </motion.svg>
 
-      {/* ================================================== */}
-      {/* 📌 محتوى الكرت الأساسي */}
-      {/* ================================================== */}
-      <div className="relative z-20 flex flex-col items-center w-full">
-        <div className={`mb-3 md:mb-5 flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 border border-green-200 ${channel.iconColor}`}>
-          {channel.icon}
+          <motion.div
+            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
+            transition={{ duration: floatDuration2, repeat: Infinity, ease: "easeInOut" }}
+            className="hidden md:block absolute -bottom-8 -left-6 w-24 h-24 rounded-full border-[5px] border-[#4ade80] opacity-30"
+          />
+
+          <motion.svg 
+            animate={{ y: [0, -15, 0], rotate: [0, 90, 0] }} 
+            transition={{ duration: floatDuration3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[20%] md:top-[25%] left-[15%] md:left-[20%] w-3 h-3 md:w-6 md:h-6 text-[#22c55e] opacity-40" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M12 4v16m8-8H4" />
+          </motion.svg>
+          
+          <motion.div
+            animate={{ x: [-5, 15, -5], y: [0, 10, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            className="hidden md:block absolute bottom-[20%] right-[25%] w-2 h-2 bg-[#16a34a] rounded-full opacity-60"
+          />
         </div>
-        <h3 className="text-base md:text-xl font-bold text-slate-800 mb-1 md:mb-2 transition-colors duration-300 group-hover:text-slate-900">
-          {channel.name}
-        </h3>
-        <p className="text-[11px] md:text-sm font-medium text-slate-500 transition-colors duration-300 px-1 group-hover:text-slate-700">
-          {channel.desc}
-        </p>
-      </div>
-    </motion.a>
+
+        <div className="relative z-20 flex flex-col items-center w-full">
+          <div className={`mb-3 md:mb-5 flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 border border-green-200 ${channel.iconColor}`}>
+            {channel.icon}
+          </div>
+          <h3 className="text-base md:text-xl font-bold text-slate-800 mb-1 md:mb-2 transition-colors duration-300 group-hover:text-slate-900">
+            {channel.name}
+          </h3>
+          <p className="text-[11px] md:text-sm font-medium text-slate-500 transition-colors duration-300 px-1 group-hover:text-slate-700">
+            {channel.desc}
+          </p>
+        </div>
+      </a>
+    </motion.div>
   );
 }
 
-// ==========================================
-// 🚀 الفوتر 
-// ==========================================
 function HealthHubFooter() {
   return (
     <footer className="relative bg-[#131b2b] border-t border-slate-800/80 pt-16 md:pt-24 pb-6 md:pb-10 overflow-hidden" dir="rtl">
@@ -339,9 +319,6 @@ function HealthHubFooter() {
   );
 }
 
-// ==========================================
-// 🚀 تجميع الصفحة 
-// ==========================================
 export default function ContactAndFooterSection() {
   return (
     <>
@@ -353,7 +330,9 @@ export default function ContactAndFooterSection() {
           
           <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
             <motion.div 
-              initial={{ opacity: 0, y: -10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              initial={{ opacity: 0, y: -10 }} 
+              whileInView={{ opacity: 1, y: 0 }} 
+              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
               className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-green-200/60 px-4 py-1.5 md:py-2 rounded-full mb-6 shadow-sm"
             >
               <span className="relative flex h-2 w-2">
@@ -364,10 +343,12 @@ export default function ContactAndFooterSection() {
             </motion.div>
             
             <motion.h2 
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              initial={{ opacity: 0, y: 20 }} 
+              whileInView={{ opacity: 1, y: 0 }} 
+              viewport={{ once: true, margin: "0px 0px -50px 0px" }} 
+              transition={{ delay: 0.1 }}
               className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight drop-shadow-sm"
             >
-              {/* 🔴 تم تعديل التدرج اللوني هنا ليكون من الأزرق #3b82f6 إلى الأخضر #0d9468 */}
               نحن هنا لنستمع <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] to-[#0d9468]">إليك</span>
             </motion.h2>
           </div>

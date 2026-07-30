@@ -3,9 +3,6 @@
 import { useState, useEffect, useCallback, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-// ==========================================
-// 1. Types & Data
-// ==========================================
 interface Stat {
   label: string;
   value: string;
@@ -91,9 +88,6 @@ const PROJECTS_DATA: Project[] = [
   }
 ];
 
-// ==========================================
-// 2. المجسمات الملونة المتساقطة (Colored Glass Gems)
-// ==========================================
 function ColoredFallingShapes({ color }: { color: "primary" | "secondary" }) {
   const shapes = Array.from({ length: 14 });
   const isPrimary = color === "primary";
@@ -138,9 +132,6 @@ function ColoredFallingShapes({ color }: { color: "primary" | "secondary" }) {
   );
 }
 
-// ==========================================
-// 3. المكون الرئيسي
-// ==========================================
 export default function SuccessPartners() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const headingId = useId();
@@ -157,18 +148,18 @@ export default function SuccessPartners() {
   return (
     <section 
       dir="rtl" 
-      // تم تخفيف المساحة العلوية والسفلية (py) للموبايل لتصبح 16 بدلاً من 24
       className="relative w-full py-16 md:py-24 lg:py-32 bg-transparent overflow-hidden"
       aria-labelledby={headingId}
     >
       <div className="w-full px-4 md:px-12 lg:px-16 relative z-10 max-w-[1600px] mx-auto">
         
-        {/* تقليل الـ margin السفلي للترويسة في الموبايل */}
         <div className="mb-10 md:mb-20 flex flex-col items-start text-right max-w-3xl relative z-20">
           <motion.h2 
             id={headingId}
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            // تم تصغير الخط للموبايل (text-3xl) مع المحافظة على (md:text-5xl lg:text-6xl)
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }} 
+            transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[var(--color-text-main)] mb-4 md:mb-6 tracking-tight leading-[1.2]"
           >
             مشاريع تم إنجازها{" "}
@@ -178,19 +169,19 @@ export default function SuccessPartners() {
           </motion.h2>
           
           <motion.p 
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            // تصغير خط الوصف في الموبايل
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }} 
+            transition={{ delay: 0.2, duration: 0.6 }}
             className="text-[var(--color-text-muted)] font-medium text-[15px] md:text-lg lg:text-xl leading-relaxed"
           >
             نستعرض هنا مجموعة من المشاريع البرمجية التي تمت هندستها وتطبيقها فعلياً لرفع الكفاءة التشغيلية للمنشآت الطبية الكبرى وتحويلها رقمياً.
           </motion.p>
         </div>
 
-        {/* تقليل الـ gap بين الكروت في الموبايل */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5 lg:gap-6 relative z-20">
           {PROJECTS_DATA.map((project, idx) => {
             let spanClass = "";
-            // تم تصغير (min-h) للكروت في الموبايل لكي لا تظهر عملاقة جداً وتشغل الشاشة بالكامل
             if (idx === 0) spanClass = "md:col-span-8 md:row-span-2 min-h-[380px] md:min-h-[450px] lg:min-h-[600px]"; 
             else if (idx === 1) spanClass = "md:col-span-4 md:row-span-1 min-h-[260px] md:min-h-[300px]";
             else if (idx === 2) spanClass = "md:col-span-4 md:row-span-1 min-h-[260px] md:min-h-[300px]";
@@ -219,9 +210,6 @@ export default function SuccessPartners() {
   );
 }
 
-// ==========================================
-// 4. بطاقة المشروع 
-// ==========================================
 interface ProjectCardProps {
   project: Project;
   spanClass: string;
@@ -235,75 +223,71 @@ function ProjectCard({ project, spanClass, isHero, onClick }: ProjectCardProps) 
 
   return (
     <motion.div
-      layoutId={isReducedMotion ? undefined : `card-${project.id}`}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      onClick={onClick}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick()}
-      role="button"
-      tabIndex={0}
-      // تقليل انحناء الحواف في الموبايل
-      className={`group relative flex flex-col justify-end overflow-hidden rounded-2xl md:rounded-[2rem] bg-[#0f172a] ring-1 ring-inset ring-white/10 cursor-pointer transition-all duration-700 outline-none ${spanClass} ${
-        isPrimary ? "hover:ring-[var(--color-primary)] hover:shadow-[0_20px_50px_-15px_rgba(17,79,209,0.4)]" : "hover:ring-[var(--color-secondary)] hover:shadow-[0_20px_50px_-15px_rgba(13,148,104,0.4)]"
-      }`}
+      className={spanClass}
     >
-      <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <img 
-          src={project.image} 
-          alt={project.title} 
-          loading={isHero ? "eager" : "lazy"}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110"
-        />
-        <div className={`absolute inset-0 mix-blend-multiply opacity-20 transition-opacity duration-700 group-hover:opacity-0 ${isPrimary ? "bg-[#0c3ba6]" : "bg-[#08704d]"}`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/30 to-transparent pointer-events-none" />
-      </div>
-
-      {/* تقليل الـ padding الداخلي للموبايل */}
-      <div className="relative p-5 md:p-8 lg:p-10 z-10 w-full h-full flex flex-col justify-end text-white">
-        {/* تصغير الأيقونة العلوية للموبايل وتعديل موقعها */}
-        <div className={`absolute top-4 left-4 md:top-6 md:left-6 w-10 h-10 md:w-12 md:h-12 rounded-full backdrop-blur-lg border border-white/20 bg-white/10 flex items-center justify-center opacity-0 -translate-x-4 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100 ${
-          isPrimary ? 'group-hover:bg-[#114fd1] group-hover:border-[#114fd1] shadow-[0_0_20px_rgba(17,79,209,0.5)]' : 'group-hover:bg-[#0d9468] group-hover:border-[#0d9468] shadow-[0_0_20px_rgba(13,148,104,0.5)]'
-        }`}>
-          <svg className="w-5 h-5 text-white rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+      <motion.div
+        layoutId={isReducedMotion ? undefined : `card-${project.id}`}
+        onClick={onClick}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick()}
+        role="button"
+        tabIndex={0}
+        className={`group relative w-full h-full flex flex-col justify-end overflow-hidden rounded-2xl md:rounded-[2rem] bg-[#0f172a] ring-1 ring-inset ring-white/10 cursor-pointer transition-all duration-700 outline-none ${
+          isPrimary ? "hover:ring-[var(--color-primary)] hover:shadow-[0_20px_50px_-15px_rgba(17,79,209,0.4)]" : "hover:ring-[var(--color-secondary)] hover:shadow-[0_20px_50px_-15px_rgba(13,148,104,0.4)]"
+        }`}
+      >
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <img 
+            src={project.image} 
+            alt={project.title} 
+            loading={isHero ? "eager" : "lazy"}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110"
+          />
+          <div className={`absolute inset-0 mix-blend-multiply opacity-20 transition-opacity duration-700 group-hover:opacity-0 ${isPrimary ? "bg-[#0c3ba6]" : "bg-[#08704d]"}`} />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/30 to-transparent pointer-events-none" />
         </div>
 
-        <div>
-          <div className="flex flex-wrap gap-2 mb-3 md:mb-4">
-            {project.tags.map((tag, i) => (
-              <span 
-                key={i} 
-                // تصغير حجم التاجز للموبايل
-                className="px-2.5 py-1 md:px-3 text-[10px] md:text-[11px] font-bold tracking-wider rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white uppercase shadow-sm"
-              >
-                {tag}
-              </span>
-            ))}
+        <div className="relative p-5 md:p-8 lg:p-10 z-10 w-full h-full flex flex-col justify-end text-white">
+          <div className={`absolute top-4 left-4 md:top-6 md:left-6 w-10 h-10 md:w-12 md:h-12 rounded-full backdrop-blur-lg border border-white/20 bg-white/10 flex items-center justify-center opacity-0 -translate-x-4 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100 ${
+            isPrimary ? 'group-hover:bg-[#114fd1] group-hover:border-[#114fd1] shadow-[0_0_20px_rgba(17,79,209,0.5)]' : 'group-hover:bg-[#0d9468] group-hover:border-[#0d9468] shadow-[0_0_20px_rgba(13,148,104,0.5)]'
+          }`}>
+            <svg className="w-5 h-5 text-white rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </div>
 
-          {/* تعديل أحجام الخطوط بدقة بين الموبايل والديسكتوب */}
-          <h3 className={`font-extrabold tracking-tight mb-2 text-white drop-shadow-md ${isHero ? "text-[26px] sm:text-3xl md:text-5xl leading-tight" : "text-xl sm:text-2xl md:text-3xl"}`}>
-            {project.title}
-          </h3>
+          <div>
+            <div className="flex flex-wrap gap-2 mb-3 md:mb-4">
+              {project.tags.map((tag, i) => (
+                <span 
+                  key={i} 
+                  className="px-2.5 py-1 md:px-3 text-[10px] md:text-[11px] font-bold tracking-wider rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white uppercase shadow-sm"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
 
-          <p className="font-medium text-[13px] md:text-sm lg:text-base flex items-center gap-2 drop-shadow-md text-gray-200">
-            <svg className={`w-4 h-4 md:w-5 md:h-5 ${isPrimary ? 'text-[#60a5fa]' : 'text-[#34d399]'}`} fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            {project.hospital}
-          </p>
+            <h3 className={`font-extrabold tracking-tight mb-2 text-white drop-shadow-md ${isHero ? "text-[26px] sm:text-3xl md:text-5xl leading-tight" : "text-xl sm:text-2xl md:text-3xl"}`}>
+              {project.title}
+            </h3>
+
+            <p className="font-medium text-[13px] md:text-sm lg:text-base flex items-center gap-2 drop-shadow-md text-gray-200">
+              <svg className={`w-4 h-4 md:w-5 md:h-5 ${isPrimary ? 'text-[#60a5fa]' : 'text-[#34d399]'}`} fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              {project.hospital}
+            </p>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
 
-// ==========================================
-// 5. البوب أب (Modal)
-// ==========================================
 interface ProjectModalProps {
   project: Project;
   onClose: () => void;
@@ -318,7 +302,6 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
     : "bg-gradient-to-br from-[#D8F4E6] to-[#AEE8CB]";
 
   return (
-    // تقليل الـ padding الخارجي للموبايل ليعطي مساحة أكبر للـ Modal
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-12 overflow-hidden">
       
       <motion.div 
@@ -333,12 +316,10 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }} 
         exit={{ opacity: 0, scale: 0.96, y: 20 }} 
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        // تقليل الانحناء للموبايل
         className={`relative w-full max-w-6xl rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col md:flex-row max-h-[95vh] z-10 border border-white/60 ${modalBgTheme}`}
       >
         <button 
           onClick={onClose} 
-          // تصغير زر الإغلاق وتعديل موقعه للموبايل
           className="absolute top-3 left-3 md:top-6 md:left-6 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/70 backdrop-blur-md border border-white shadow-sm flex items-center justify-center text-[#0f172a] hover:bg-white hover:text-red-500 hover:scale-105 transition-all"
         >
           <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -346,7 +327,6 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
           </svg>
         </button>
 
-        {/* تقليل المساحات الداخلية لقسم النصوص في الموبايل */}
         <div className="w-full md:w-[55%] p-5 sm:p-8 md:p-12 lg:p-16 overflow-y-auto flex flex-col justify-center relative order-2 md:order-1">
           
           <ColoredFallingShapes color={project.color} />
@@ -363,7 +343,6 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
               ))}
             </div>
             
-            {/* تصغير عنوان المشروع داخل البوب أب للموبايل */}
             <h3 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-[#0f172a] mb-3 md:mb-4 leading-[1.2] tracking-tight">
               {project.title}
             </h3>
@@ -375,14 +354,12 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
               {project.hospital}
             </p>
 
-            {/* تصغير حجم خط الوصف */}
             <p className="text-[#334155] font-semibold text-[14px] md:text-lg leading-relaxed mb-6 md:mb-10">
               {project.description}
             </p>
 
             <div className="mt-auto">
               <h4 className="text-[10px] md:text-xs font-bold text-[#475569] uppercase tracking-widest mb-3 md:mb-5">الأثر التشغيلي</h4>
-              {/* تقليل المسافات بين كروت الإحصائيات داخل البوب أب */}
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                 {project.stats.map((stat, idx) => (
                   <div 
@@ -402,7 +379,6 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </div>
 
-        {/* القسم الأيسر (الصورة): تقليل ارتفاع الصورة في الموبايل لتوفير مساحة للنص */}
         <div className="w-full md:w-[45%] h-52 sm:h-64 md:h-auto relative overflow-hidden order-1 md:order-2 bg-[#0f172a] border-r border-white/40 flex-shrink-0">
           <img 
             src={project.image} 
