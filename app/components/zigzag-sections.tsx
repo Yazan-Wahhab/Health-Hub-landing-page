@@ -42,11 +42,15 @@ export default function ZigZagSections() {
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const [isReady, setIsReady] = useState(false);
 
-  const centerLogoScale = useTransform(scrollYProgress, [0, 0.8, 1], [0.5, 0.2, 0.2]); 
-  const centerLogoOpacity = useTransform(scrollYProgress, [0, 0.02, 0.4, 0.8, 1], [0, 1, 1, 0, 0]); 
+  // 🔴 التعديل هنا: تحريك اللوغو للأعلى واختفاؤه قبل ظهور العناصر
+  const centerLogoScale = useTransform(scrollYProgress, [0, 0.4], [0.5, 0.35]); 
+  const centerLogoY = useTransform(scrollYProgress, [0, 0.4], ["0vh", "-30vh"]); 
+  const centerLogoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.3, 0.4], [0, 1, 1, 0]); 
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (latest >= 0.1 && !isReady) setIsReady(true);
+    // 🔴 التعديل هنا: تأخير ظهور العناصر حتى يصل التمرير لـ 0.45 (بعد اختفاء اللوغو)
+    if (latest >= 0.45 && !isReady) setIsReady(true);
+    if (latest < 0.45 && isReady) setIsReady(false);
   });
 
   // =========================================================================
@@ -56,11 +60,14 @@ export default function ZigZagSections() {
   const { scrollYProgress: mobileScroll } = useScroll({ target: mobileContainerRef, offset: ["start start", "end end"] });
   const [isMobileReady, setIsMobileReady] = useState(false);
 
-  const mLogoScale = useTransform(mobileScroll, [0, 0.8, 1], [0.5, 0.2, 0.2]);
-  const mLogoOpacity = useTransform(mobileScroll, [0, 0.02, 0.4, 0.8, 1], [0, 1, 1, 0, 0]);
+  // 🔴 التعديل هنا: نفس هندسة الحركة للموبايل
+  const mLogoScale = useTransform(mobileScroll, [0, 0.4], [0.5, 0.35]);
+  const mLogoY = useTransform(mobileScroll, [0, 0.4], ["0vh", "-25vh"]);
+  const mLogoOpacity = useTransform(mobileScroll, [0, 0.05, 0.3, 0.4], [0, 1, 1, 0]);
 
   useMotionValueEvent(mobileScroll, "change", (latest) => {
-    if (latest >= 0.1 && !isMobileReady) setIsMobileReady(true);
+    if (latest >= 0.45 && !isMobileReady) setIsMobileReady(true);
+    if (latest < 0.45 && isMobileReady) setIsMobileReady(false);
   });
 
   const smoothSpring = { type: "spring", stiffness: 70, damping: 20, mass: 1 };
@@ -180,11 +187,13 @@ export default function ZigZagSections() {
 
       {/* 📱 قسم الموبايل */}
       <div className="block lg:hidden">
-        <section ref={mobileContainerRef} className="relative h-[120vh] w-full bg-transparent z-20">
+        <section ref={mobileContainerRef} className="relative h-[130vh] w-full bg-transparent z-20">
           <div className="sticky top-0 h-[100svh] w-full overflow-hidden flex items-center justify-center pointer-events-none">
+            
+            {/* 🔴 ربط الـ y لحركة الصعود */}
             <motion.div 
               className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none will-change-transform transform-gpu"
-              style={{ opacity: mLogoOpacity, scale: mLogoScale }}
+              style={{ opacity: mLogoOpacity, scale: mLogoScale, y: mLogoY }}
             >
               <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="relative flex items-center justify-center transform-gpu">
                 <div className="absolute w-[250%] h-[250%] rounded-full opacity-15 transform-gpu" style={{ background: 'radial-gradient(circle, var(--color-secondary) 0%, transparent 60%)' }}></div>
@@ -252,11 +261,13 @@ export default function ZigZagSections() {
 
       {/* 💻 قسم اللابتوب */}
       <div className="hidden lg:block">
-        <section ref={containerRef} className="relative h-[120vh] w-full bg-transparent z-10">
+        <section ref={containerRef} className="relative h-[130vh] w-full bg-transparent z-10">
           <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none">
+            
+            {/* 🔴 ربط الـ y لحركة الصعود */}
             <motion.div 
               className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center will-change-transform transform-gpu"
-              style={{ opacity: centerLogoOpacity, scale: centerLogoScale }}
+              style={{ opacity: centerLogoOpacity, scale: centerLogoScale, y: centerLogoY }}
             >
               <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="relative flex items-center justify-center transform-gpu">
                 <div className="absolute w-[180%] h-[180%] rounded-full opacity-20 transform-gpu" style={{ background: 'radial-gradient(circle, var(--color-secondary) 0%, transparent 60%)' }}></div>
