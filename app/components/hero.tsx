@@ -85,7 +85,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            className="relative mt-12 overflow-hidden rounded-[2rem] p-7 max-w-2xl bg-gradient-to-br from-white/95 via-white/70 to-[var(--color-primary)]/10 backdrop-blur-2xl border border-white/80 shadow-[0_25px_50px_rgba(17,79,209,0.08),inset_0_2px_5px_rgba(255,255,255,0.9)] group will-change-transform"
+            className="relative mt-6 mr-6  overflow-hidden rounded-[2rem] p-7 max-w-2xl bg-gradient-to-br from-white/95 via-white/70 to-[var(--color-primary)]/10 backdrop-blur-2xl border border-white/80 shadow-[0_25px_50px_rgba(17,79,209,0.08),inset_0_2px_5px_rgba(255,255,255,0.9)] group will-change-transform"
           >
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--color-primary)] via-[#0EA5E9] to-[var(--color-secondary)] opacity-90"></div>
             <div className="relative z-10 grid grid-cols-3 gap-4 border-b border-[var(--color-border)] pb-5">
