@@ -32,7 +32,7 @@ const faqs = [
 ];
 
 // ==========================================
-// 🌌 المجسمات الزرقاء الفاتحة (الهادئة جداً) داخل الكرت
+// 🌌 المجسمات الزرقاء الفاتحة (تم تعديلها لتصبح أكثر أناقة ونعومة)
 // ==========================================
 function ElegantInnerShapes() {
   return (
@@ -40,24 +40,19 @@ function ElegantInnerShapes() {
       <motion.div
         animate={{ y: [0, -20, 0], x: [0, 10, 0], rotate: [0, 45, 0] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-10 -right-10 w-32 h-32 md:w-40 md:h-40 rounded-full bg-[#3b82f6] opacity-[0.06] blur-2xl"
+        className="absolute -top-10 -right-10 w-32 h-32 md:w-40 md:h-40 rounded-full bg-[#114fd1] opacity-[0.03] blur-3xl"
       />
       <motion.div
         animate={{ y: [0, 20, 0], x: [0, -15, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-4 left-1/4 w-20 h-20 md:w-24 md:h-24 bg-[#60a5fa] opacity-[0.05] rounded-3xl rotate-12 blur-xl"
-      />
-      <motion.div
-        animate={{ y: [0, -10, 0], rotate: [0, 180] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute top-1/3 left-4 md:left-8 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr from-[#3b82f6]/10 to-transparent border border-[#3b82f6]/20 shadow-sm"
+        className="absolute bottom-4 left-1/4 w-20 h-20 md:w-24 md:h-24 bg-[#0d9468] opacity-[0.03] rounded-3xl rotate-12 blur-2xl"
       />
     </div>
   );
 }
 
 // ==========================================
-// 💎 مجسم الاستفهام الاحترافي (مع اللوغو العائم)
+// 💎 مجسم الاستفهام الاحترافي (بدون أي تعديل كما طلبت)
 // ==========================================
 function PremiumQuestionMark() {
   return (
@@ -135,16 +130,16 @@ export default function FAQSection() {
               <PremiumQuestionMark />
             </div>
             <div className="relative z-10 w-full mt-2 lg:mt-4">
-              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-[#0f172a] leading-[1.3] lg:leading-[1.2] mb-4 sm:mb-6">
+              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-slate-900 leading-[1.3] lg:leading-[1.2] mb-4 sm:mb-6">
                 الأسئلة <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#114fd1] to-[#0d9468]">الشائعة</span>
               </h2>
-              <p className="text-base sm:text-lg text-[#475569] font-medium leading-relaxed max-w-md mx-auto lg:mx-0">
+              <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed max-w-md mx-auto lg:mx-0">
                 كل ما تحتاج لمعرفته حول بنية المنظومة، الأمان، وسرعة التكامل تجده هنا بوضوح هندسي تام.
               </p>
             </div>
           </div>
 
-          {/* الجانب الأيسر (الأسئلة والأجوبة) */}
+          {/* الجانب الأيسر (حاويات الأسئلة بتصميم احترافي) */}
           <div className="lg:w-[60%] xl:w-[65%] relative z-20 flex flex-col gap-4 sm:gap-5">
             {faqs.map((faq) => {
               const isOpen = openId === faq.id;
@@ -153,10 +148,10 @@ export default function FAQSection() {
                   layout
                   key={faq.id}
                   onClick={() => setOpenId(isOpen ? null : faq.id)}
-                  className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 border select-none ${
+                  className={`group relative overflow-hidden rounded-[20px] cursor-pointer transition-all duration-500 select-none ${
                     isOpen 
-                      ? "bg-[#eaf5f0] border-[#0d9468]/30 shadow-[0_15px_40px_rgba(13,148,104,0.12)] z-10 lg:scale-[1.01]" 
-                      : "bg-[#f2f9f5] border-[#cce9ec] shadow-sm hover:border-[#114fd1]/30 hover:shadow-md" 
+                      ? "bg-white border-transparent shadow-[0_25px_50px_-12px_rgba(17,79,209,0.15)] z-10 lg:scale-[1.02] ring-1 ring-[#114fd1]/10" 
+                      : "bg-white/60 backdrop-blur-md border border-slate-200/80 shadow-[0_8px_20px_-12px_rgba(0,0,0,0.05)] hover:bg-white hover:shadow-[0_15px_30px_-10px_rgba(17,79,209,0.15)] hover:border-[#114fd1]/30 hover:-translate-y-1" 
                   }`}
                 >
                   {/* الأشكال الزرقاء الفاتحة تتحرك بالخلفية عند الفتح */}
@@ -168,26 +163,26 @@ export default function FAQSection() {
                     )}
                   </AnimatePresence>
 
-                  {/* الخط الجانبي */}
+                  {/* الخط الجانبي المضيء */}
                   <div 
-                    className={`absolute top-0 right-0 h-full w-[4px] sm:w-[6px] bg-gradient-to-b from-[#114fd1] to-[#0d9468] transition-transform duration-500 ease-out origin-top z-10 ${
-                      isOpen ? "scale-y-100" : "scale-y-0"
+                    className={`absolute top-0 right-0 h-full w-[4px] sm:w-[5px] bg-gradient-to-b from-[#114fd1] to-[#0d9468] transition-transform duration-500 ease-out origin-top z-10 ${
+                      isOpen ? "scale-y-100 shadow-[0_0_15px_rgba(17,79,209,0.5)]" : "scale-y-0 group-hover:scale-y-100 opacity-50"
                     }`} 
                   />
 
-                  <div className="relative z-20 p-4 sm:p-6 lg:p-8">
-                    <div className="flex items-center justify-between gap-3 sm:gap-6">
-                      <h3 className={`text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-relaxed transition-colors duration-300 pr-2 sm:pr-3 flex-1 ${
-                        isOpen ? "text-[#0d9468]" : "text-[#0f172a] group-hover:text-[#114fd1]"
+                  <div className="relative z-20 p-5 sm:p-6 lg:p-7">
+                    <div className="flex items-center justify-between gap-4 sm:gap-6">
+                      <h3 className={`text-base sm:text-lg lg:text-xl font-bold leading-relaxed transition-colors duration-300 pr-3 flex-1 ${
+                        isOpen ? "text-[#114fd1]" : "text-slate-800 group-hover:text-[#114fd1]"
                       }`}>
                         {faq.question}
                       </h3>
                       
-                      {/* أزرار + و x */}
-                      <div className={`shrink-0 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 ${
+                      {/* أزرار الفتح والإغلاق بتصميم ناعم ومميز */}
+                      <div className={`shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
                         isOpen 
                           ? "bg-gradient-to-tr from-[#114fd1] to-[#0d9468] text-white rotate-180 shadow-[0_8px_20px_rgba(13,148,104,0.35)]" 
-                          : "bg-white text-[#114fd1] border border-[#cce9ec] shadow-sm group-hover:bg-[#eef8f9] group-hover:border-[#114fd1]/30"
+                          : "bg-slate-50 text-slate-400 border border-slate-200/80 shadow-sm group-hover:bg-[#114fd1]/5 group-hover:text-[#114fd1] group-hover:border-[#114fd1]/20"
                       }`}>
                         <svg 
                           className={`w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-500 ease-in-out ${isOpen ? "rotate-45" : "rotate-0"}`} 
@@ -209,10 +204,15 @@ export default function FAQSection() {
                           transition={{ duration: 0.4, ease: "easeInOut" }}
                           className="overflow-hidden"
                         >
-                          <div className="pt-3 sm:pt-4 lg:pt-5 mt-3 sm:mt-4 lg:mt-5 border-t border-[#0d9468]/15 pr-2 sm:pr-3">
-                            <p className="text-[#334155] font-medium text-xs sm:text-sm lg:text-lg leading-relaxed bg-white/50 p-3 sm:p-4 lg:p-5 rounded-lg sm:rounded-xl border border-white/60 backdrop-blur-sm shadow-sm">
-                              {faq.answer}
-                            </p>
+                          {/* صندوق الإجابة بتصميم غائر (Inset) احترافي */}
+                          <div className="pt-5 mt-4 sm:mt-5">
+                            <div className="relative overflow-hidden rounded-xl bg-slate-50/80 border border-slate-200/60 p-4 sm:p-5 lg:p-6 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-sm">
+                              {/* تأثير تدرج خفيف داخل مربع الإجابة */}
+                              <div className="absolute top-0 left-0 w-2 h-full bg-[#0d9468] opacity-20 rounded-l-full" />
+                              <p className="text-slate-600 font-medium text-sm sm:text-base lg:text-lg leading-relaxed relative z-10 pr-2">
+                                {faq.answer}
+                              </p>
+                            </div>
                           </div>
                         </motion.div>
                       )}

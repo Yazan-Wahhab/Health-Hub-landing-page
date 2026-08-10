@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 
 // =========================================================================
-// 🛸 مكون المجسمات ثلاثية الأبعاد
+// 🛸 مكون المجسمات ثلاثية الأبعاد (Optimized GPU Rendering)
 // =========================================================================
 const Falling3DShapes = React.memo(() => {
   const Sphere = () => (
@@ -45,11 +45,12 @@ const Falling3DShapes = React.memo(() => {
   ];
 
   return (
-    <div className="absolute inset-0 z-[-1] rounded-[inherit] overflow-hidden pointer-events-none hidden lg:block">
+    // PRO FIX: Fixed width of 1200px stops the children from mathematically recalculating layout positions as the nav shrinks!
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-full z-[-1] pointer-events-none hidden lg:block">
       {shapesData.map((shape) => (
         <motion.div
           key={shape.id}
-          className={`absolute top-[-60px] ${shape.size}`}
+          className={`absolute top-[-60px] ${shape.size} will-change-transform`}
           style={{ left: shape.left, transformOrigin: "center" }}
           animate={{ y: [-60, 1000], rotate: [0, 180, 360], x: [0, shape.xMove, 0] }}
           transition={{ duration: shape.duration, repeat: Infinity, ease: "linear", delay: shape.delay }}
@@ -90,9 +91,15 @@ export default function Header() {
   const [activeSection, setActiveSection] = useState("home");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // PRO FIX: Capture numerical window dimensions dynamically to avoid snapping issues with "auto" properties
+  const [dimensions, setDimensions] = useState({ w: 1200, h: 800 });
+
   useEffect(() => {
     setMounted(true);
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      setDimensions({ w: window.innerWidth, h: window.innerHeight });
+    };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -109,7 +116,6 @@ export default function Header() {
     
     const element = document.getElementById(targetId);
     if (element) {
-      // 💡 النزول للأقسام الطبيعية بمقدار 80، وقسم features ينزل أكثر ليتمركز بشكل مثالي داخل القسم (باستخدام -20)
       const offset = targetId === "features" ? -160 : targetId === "modules" ? -20 : targetId ==="partners" ? -45:targetId === "process" ? -30 : 80;
       const y = element.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top: y, behavior: "smooth" });
@@ -130,20 +136,22 @@ export default function Header() {
       setNavState("ball");
       
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // PRO FIX: Delay strictly matched to transition duration (0.4s). Stops animation from canceling itself.
       timeoutRef.current = setTimeout(() => {
         navStateRef.current = "vertical";
         setNavState("vertical");
-      }, 250); 
+      }, 400); 
     } 
     else if (!isScrolledPast && (navStateRef.current === "vertical" || navStateRef.current === "ball")) {
       navStateRef.current = "ball";
       setNavState("ball");
       
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // PRO FIX: Match duration 
       timeoutRef.current = setTimeout(() => {
         navStateRef.current = "horizontal";
         setNavState("horizontal");
-      }, 250);
+      }, 400);
     }
   });
 
@@ -171,27 +179,29 @@ export default function Header() {
 
   const smoothTransition = { type: "tween", ease: [0.25, 1, 0.5, 1], duration: 0.4 };
 
+  // PRO FIX: Replaced "auto" values with precise mathematical positions. "auto" causes harsh CPU interpolation drops! 
+  // Added "z: 0" to natively force GPU rendering safely without fighting Framer Motion.
   const navVariants = {
     horizontal: {
       top: isMobile ? 16 : 24, 
-      left: "50%", x: "-50%", y: 0,
+      left: "50%", x: "-50%", y: 0, z: 0,
       width: "95%", maxWidth: 1200, 
       height: isMobile ? 64 : 72,
       borderRadius: 9999,
       transition: smoothTransition
     },
     ball: {
-      top: isMobile ? "auto" : "50%", bottom: isMobile ? 24 : "auto",
-      left: isMobile ? "auto" : 24, right: isMobile ? 24 : "auto",
-      x: 0, y: isMobile ? 0 : "-50%",
+      top: isMobile ? dimensions.h - 88 : "50%", 
+      left: isMobile ? dimensions.w - 88 : 24, 
+      x: 0, y: isMobile ? 0 : "-50%", z: 0,
       width: 64, maxWidth: 64, height: 64,
       borderRadius: 9999,
       transition: smoothTransition
     },
     vertical: {
-      top: isMobile ? "auto" : "50%", bottom: isMobile ? 24 : "auto",
-      left: isMobile ? "auto" : 24, right: isMobile ? 24 : "auto",
-      x: 0, y: isMobile ? 0 : "-50%",
+      top: isMobile ? dimensions.h - 88 : "50%", 
+      left: isMobile ? dimensions.w - 88 : 24, 
+      x: 0, y: isMobile ? 0 : "-50%", z: 0,
       width: isMobile ? 64 : 72, maxWidth: isMobile ? 64 : 72, height: isMobile ? 64 : 600,
       borderRadius: isMobile ? 9999 : 36,
       transition: smoothTransition
@@ -224,12 +234,12 @@ export default function Header() {
           variants={navVariants}
           initial="horizontal"
           animate={navState}
-          className="absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 backdrop-blur-2xl ring-1 ring-[#0d9468]/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_12px_40px_rgba(13,148,104,0.15)] overflow-hidden"
+          // PRO FIX: Added transform-gpu and removed inline `transform: translateZ(0)` which breaks the animation engine
+          className="absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 backdrop-blur-2xl ring-1 ring-[#0d9468]/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_12px_40px_rgba(13,148,104,0.15)] overflow-hidden transform-gpu"
           style={{ 
             flexDirection: !isMobile && isVertical ? "column" : "row", 
             padding: isMobile ? (navState === "horizontal" ? "0 16px" : "0") : (isVertical ? "28px 0" : "0 24px"),
             justifyContent: isMobile && navState !== "horizontal" ? "center" : "space-between",
-            transform: "translateZ(0)"
           }}
         >
           <Falling3DShapes />
