@@ -438,7 +438,13 @@ export default function Header() {
         <motion.nav
           variants={navVariants}
           initial="horizontal"
-          animate={mobileMenuUsesCompactButton ? "mobileMenuButton" : mobileMenuAtTop ? "horizontal" : navState}
+          animate={
+            mobileMenuUsesCompactButton
+              ? "mobileMenuButton"
+              : mobileMenuAtTop
+                ? "horizontal"
+                : navState
+          }
           className={`absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 ring-1 ring-[#0d9468]/20 overflow-hidden transform-gpu [-webkit-backface-visibility:hidden] ${
             isMobile
               ? "backdrop-blur-md shadow-[0_8px_20px_rgba(13,148,104,0.15)]"
@@ -757,14 +763,14 @@ export default function Header() {
               <a
                 href="/#home"
                 onClick={(e) => scrollToSection(e, "home")}
-                  className={`flex items-center gap-3 p-2.5 rounded-2xl transition-all duration-200 active:scale-95 ${
+                className={`flex items-center gap-3 p-2.5 rounded-2xl transition-all duration-200 active:scale-95 ${
                   activeSection === "home" && pathname === "/"
                     ? "bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
                     : "text-[var(--color-text-muted)] hover:bg-slate-50"
                 }`}
               >
                 <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm ${activeSection === "home" && pathname === "/" ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm ${activeSection === "home" && pathname === "/" ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}
                 >
                   <svg
                     className="w-5 h-5"
