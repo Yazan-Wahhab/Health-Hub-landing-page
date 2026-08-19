@@ -395,6 +395,18 @@ export default function Header() {
       borderRadius: isMobile ? 9999 : 36,
       transition: smoothTransition,
     },
+    mobileMenuButton: {
+      top: 16,
+      left: dimensions.w - 80,
+      x: 0,
+      y: 0,
+      z: 0,
+      width: 64,
+      maxWidth: 64,
+      height: 64,
+      borderRadius: 9999,
+      transition: smoothTransition,
+    },
   };
 
   if (!mounted)
@@ -404,6 +416,7 @@ export default function Header() {
   const isBall = navState === "ball";
   const isTopPosition = navState === "horizontal";
   const mobileMenuAtTop = isMobile && (isTopPosition || isMenuOpen);
+  const mobileMenuUsesCompactButton = isMobile && isMenuOpen && !isTopPosition;
   const toggleLanguage = () => setLanguage(language === "en" ? "ar" : "en");
 
   return (
@@ -425,7 +438,7 @@ export default function Header() {
         <motion.nav
           variants={navVariants}
           initial="horizontal"
-          animate={mobileMenuAtTop ? "horizontal" : navState}
+          animate={mobileMenuUsesCompactButton ? "mobileMenuButton" : mobileMenuAtTop ? "horizontal" : navState}
           className={`absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 ring-1 ring-[#0d9468]/20 overflow-hidden transform-gpu [-webkit-backface-visibility:hidden] ${
             isMobile
               ? "backdrop-blur-md shadow-[0_8px_20px_rgba(13,148,104,0.15)]"
@@ -735,7 +748,7 @@ export default function Header() {
                   : { opacity: 0, y: 20, scale: 0.9 }
               }
               transition={{ type: "tween", duration: 0.2 }}
-              className={`absolute pointer-events-auto left-4 right-4 bg-white/95 rounded-3xl p-3 border border-white/60 flex flex-col gap-1 z-[110] overflow-hidden transform-gpu [-webkit-backface-visibility:hidden] ${
+              className={`absolute pointer-events-auto left-4 right-4 bg-white/95 rounded-3xl p-2 sm:p-3 border border-white/60 flex flex-col gap-0.5 z-[110] overflow-hidden max-h-[calc(100dvh-104px)] transform-gpu [-webkit-backface-visibility:hidden] ${
                 mobileMenuAtTop
                   ? "top-[90px] origin-top"
                   : "bottom-[100px] origin-bottom-right lg:origin-bottom-left"
@@ -744,14 +757,14 @@ export default function Header() {
               <a
                 href="/#home"
                 onClick={(e) => scrollToSection(e, "home")}
-                className={`flex items-center gap-4 p-3.5 rounded-2xl transition-all duration-200 active:scale-95 ${
+                  className={`flex items-center gap-3 p-2.5 rounded-2xl transition-all duration-200 active:scale-95 ${
                   activeSection === "home" && pathname === "/"
                     ? "bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
                     : "text-[var(--color-text-muted)] hover:bg-slate-50"
                 }`}
               >
                 <div
-                  className={`w-9 h-9 flex items-center justify-center rounded-full shadow-sm ${activeSection === "home" && pathname === "/" ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm ${activeSection === "home" && pathname === "/" ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}
                 >
                   <svg
                     className="w-5 h-5"
@@ -781,14 +794,14 @@ export default function Header() {
                     key={item.id}
                     href={`/#${item.id}`}
                     onClick={(e) => scrollToSection(e, item.id)}
-                    className={`flex items-center gap-4 p-3.5 rounded-2xl transition-all duration-200 active:scale-95 ${
+                    className={`flex items-center gap-3 p-2.5 rounded-2xl transition-all duration-200 active:scale-95 ${
                       isActive
                         ? "bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
                         : "text-[var(--color-text-muted)] hover:bg-slate-50"
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 flex items-center justify-center rounded-full shadow-sm ${isActive ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm ${isActive ? "bg-white text-[var(--color-primary)]" : "bg-slate-100 text-slate-500"}`}
                     >
                       <svg
                         className="w-5 h-5"
@@ -815,7 +828,7 @@ export default function Header() {
               <a
                 href="/#contact"
                 onClick={(e) => scrollToSection(e, "contact")}
-                className="mt-1 relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-[15px] font-bold shadow-md active:scale-95 transition-transform"
+                className="mt-1 relative overflow-hidden w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-[14px] font-bold shadow-md active:scale-95 transition-transform"
               >
                 <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] animate-shine">
                   <div className="relative h-full w-8 bg-white/20" />
@@ -840,10 +853,10 @@ export default function Header() {
                 type="button"
                 onClick={toggleLanguage}
                 aria-label={t("language.switch")}
-                className="mt-1 relative overflow-hidden w-full flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/60 shadow-sm active:scale-95 transition-all duration-200 hover:bg-[var(--color-primary)]/5 hover:border-[var(--color-primary)]/30 group"
+                className="mt-1 relative overflow-hidden w-full flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-200/60 shadow-sm active:scale-95 transition-all duration-200 hover:bg-[var(--color-primary)]/5 hover:border-[var(--color-primary)]/30 group"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm text-slate-500 group-hover:text-[var(--color-primary)] transition-colors">
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-slate-500 group-hover:text-[var(--color-primary)] transition-colors">
                     <svg
                       className="w-5 h-5"
                       fill="none"
