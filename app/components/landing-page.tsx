@@ -1,20 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useMotionTemplate, useSpring } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useMotionTemplate,
+  useSpring,
+} from "framer-motion";
 
 // استدعاء المكونات الخاصة بك
-import Header from "./header"; 
+import Header from "./header";
 import HeroSection from "./hero";
 import Intro from "./intro";
 import ZigZagSections from "./zigzag-sections";
 import EngineeringMilestones from "./engineering-milestones";
-import OurProcess from "./our-process"; 
+import OurProcess from "./our-process";
 import StatisticsSection from "./statistics";
 import SuccessPartners from "./success-partners";
-import Testimonials from "./testimonials"; 
-import FAQ from "./faq"; 
+import Testimonials from "./testimonials";
+import FAQ from "./faq";
 import ContactSection from "./contact";
+import { TranslationProvider } from "./translation-provider";
 
 // =========================================================================
 // ✨ 1. الخلفية التفاعلية: (Rich Enterprise Pattern - Hover Blue)
@@ -40,10 +48,29 @@ function RichEnterpriseBackground() {
 
   return (
     <div className="fixed inset-0 z-[-2] bg-gradient-to-br from-[#bce8d4] via-[#dcf4e9] to-[#a8e0c6] overflow-hidden pointer-events-none">
-      <motion.div animate={{ x: [0, 60, -30, 0], y: [0, -40, 30, 0] }} transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-[var(--color-primary)] rounded-full blur-[140px] opacity-[0.05]" />
-      <motion.div animate={{ x: [0, -50, 40, 0], y: [0, 50, -40, 0] }} transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-[var(--color-secondary)] rounded-full blur-[120px] opacity-[0.05]" />
-      <div className="absolute inset-0" style={{ backgroundImage: basePattern, backgroundPosition: "center" }} />
-      <motion.div className="absolute inset-0" style={{ backgroundImage: activePattern, backgroundPosition: "center", WebkitMaskImage: maskImage, maskImage: maskImage }} />
+      <motion.div
+        animate={{ x: [0, 60, -30, 0], y: [0, -40, 30, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[700px] max-h-[700px] bg-[var(--color-primary)] rounded-full blur-[140px] opacity-[0.05]"
+      />
+      <motion.div
+        animate={{ x: [0, -50, 40, 0], y: [0, 50, -40, 0] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-[var(--color-secondary)] rounded-full blur-[120px] opacity-[0.05]"
+      />
+      <div
+        className="absolute inset-0"
+        style={{ backgroundImage: basePattern, backgroundPosition: "center" }}
+      />
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: activePattern,
+          backgroundPosition: "center",
+          WebkitMaskImage: maskImage,
+          maskImage: maskImage,
+        }}
+      />
     </div>
   );
 }
@@ -55,35 +82,46 @@ function SynchronizedParallaxLogo() {
   const { scrollYProgress } = useScroll();
 
   const smoothScrollProgress = useSpring(scrollYProgress, {
-    stiffness: 100, 
-    damping: 30,    
-    restDelta: 0.001 
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
   });
 
   const logoY = useTransform(smoothScrollProgress, [0, 1], ["5vh", "85vh"]);
-  const logoX = useTransform(smoothScrollProgress, [0, 0.5, 1], ["-5vw", "20vw", "5vw"]);
+  const logoX = useTransform(
+    smoothScrollProgress,
+    [0, 0.5, 1],
+    ["-5vw", "20vw", "5vw"],
+  );
   const logoRotate = useTransform(smoothScrollProgress, [0, 1], [-5, 25]);
-  const logoOpacity = useTransform(smoothScrollProgress, [0, 0.1, 0.9, 1], [0, 0.20, 0.20, 0]); 
+  const logoOpacity = useTransform(
+    smoothScrollProgress,
+    [0, 0.1, 0.9, 1],
+    [0, 0.2, 0.2, 0],
+  );
 
   return (
-    <motion.div 
-      className="fixed z-[-1] pointer-events-none" 
-      style={{ 
-        top: 0, 
-        left: "50%", 
-        x: logoX, 
-        y: logoY, 
-        rotate: logoRotate, 
+    <motion.div
+      className="fixed z-[-1] pointer-events-none"
+      style={{
+        top: 0,
+        left: "50%",
+        x: logoX,
+        y: logoY,
+        rotate: logoRotate,
         opacity: logoOpacity,
-        willChange: "transform, opacity" 
+        willChange: "transform, opacity",
       }}
     >
       <div className="relative flex items-center justify-center scale-[2.5]">
-        <img 
-          src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=750&q=75" 
-          alt="Background Hologram" 
-          className="relative z-10 w-64 h-64 object-contain drop-shadow-[0_15px_30px_rgba(17,79,209,0.2)]" 
-          style={{ transform: "translateZ(0)", willChange: "filter, transform" }}
+        <img
+          src="https://newworkspace.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75"
+          alt="Background Hologram"
+          className="relative z-10 w-64 h-64 object-contain drop-shadow-[0_15px_30px_rgba(17,79,209,0.2)]"
+          style={{
+            transform: "translateZ(0)",
+            willChange: "filter, transform",
+          }}
         />
       </div>
     </motion.div>
@@ -91,70 +129,74 @@ function SynchronizedParallaxLogo() {
 }
 
 // =========================================================================
-// 🚀 3. الصفحة الرئيسية المجمعة 
+// 🚀 3. الصفحة الرئيسية المجمعة
 // =========================================================================
 export default function LandingPage() {
   const [introComplete, setIntroComplete] = useState(false);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}
-      className="relative min-h-screen text-[var(--color-text-main)] selection:bg-[var(--color-primary)] selection:text-white cursor-auto scroll-smooth"
-    >
-      <RichEnterpriseBackground />
-      <SynchronizedParallaxLogo />
+    <TranslationProvider>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="relative min-h-screen text-[var(--color-text-main)] selection:bg-[var(--color-primary)] selection:text-white cursor-auto scroll-smooth"
+      >
+        <RichEnterpriseBackground />
+        <SynchronizedParallaxLogo />
 
-      {!introComplete && (
-        <Intro onComplete={() => setIntroComplete(true)} />
-      )}
+        {!introComplete && <Intro onComplete={() => setIntroComplete(true)} />}
 
-      {introComplete && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-          <Header />
+        {introComplete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Header />
 
-          <main className="relative z-10">
-            
-            {/* قمنا بإزالة الـ motion.div الخارجي من جميع المكونات لمنع التقطيع والتعارض */}
-            
-            <div id="home" className="scroll-mt-24">
-              <HeroSection />
-            </div>
+            <main className="relative z-10">
+              {/* قمنا بإزالة الـ motion.div الخارجي من جميع المكونات لمنع التقطيع والتعارض */}
 
-            <div id="features" className="scroll-mt-24">
-              <ZigZagSections />
-            </div>
+              <div id="home" className="scroll-mt-24">
+                <HeroSection />
+              </div>
 
-            <div id="modules" className="scroll-mt-24">
-              <EngineeringMilestones /> 
-            </div>
+              <div id="features" className="scroll-mt-24">
+                <ZigZagSections />
+              </div>
 
-            <div id="process" className="scroll-mt-24">
-              <OurProcess /> 
-            </div>
+              <div id="modules" className="scroll-mt-24">
+                <EngineeringMilestones />
+              </div>
 
-            <div id="statistics" className="scroll-mt-24">
-              <StatisticsSection />
-            </div>
+              <div id="process" className="scroll-mt-24">
+                <OurProcess />
+              </div>
 
-            <div id="partners" className="scroll-mt-24">
-              <SuccessPartners /> 
-            </div>
+              <div id="statistics" className="scroll-mt-24">
+                <StatisticsSection />
+              </div>
 
-            <div id="testimonials" className="scroll-mt-24">
-              <Testimonials /> 
-            </div>
+              <div id="partners" className="scroll-mt-24">
+                <SuccessPartners />
+              </div>
 
-            <div id="faq" className="scroll-mt-24">
-              <FAQ /> 
-            </div>
+              <div id="testimonials" className="scroll-mt-24">
+                <Testimonials />
+              </div>
 
-            <div id="contact" className="scroll-mt-24">
-              <ContactSection />
-            </div>
+              <div id="faq" className="scroll-mt-24">
+                <FAQ />
+              </div>
 
-          </main>
-        </motion.div>
-      )}
-    </motion.div>
+              <div id="contact" className="scroll-mt-24">
+                <ContactSection />
+              </div>
+            </main>
+          </motion.div>
+        )}
+      </motion.div>
+    </TranslationProvider>
   );
 }
