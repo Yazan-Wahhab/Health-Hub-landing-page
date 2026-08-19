@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+  AnimatePresence,
+} from "framer-motion";
 import { useTranslate } from "./translation-provider";
 
 // =========================================================================
@@ -17,7 +22,11 @@ const Falling3DShapes = React.memo(({ isMobile }: { isMobile: boolean }) => {
       <defs>
         <radialGradient id="sphereGrad" cx="35%" cy="35%" r="65%">
           <stop stopColor="var(--color-primary)" stopOpacity="0.5" />
-          <stop offset="1" stopColor="var(--color-primary-dark)" stopOpacity="0.1" />
+          <stop
+            offset="1"
+            stopColor="var(--color-primary-dark)"
+            stopOpacity="0.1"
+          />
         </radialGradient>
       </defs>
     </svg>
@@ -25,26 +34,90 @@ const Falling3DShapes = React.memo(({ isMobile }: { isMobile: boolean }) => {
 
   const Cube = () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 3L3.5 7.5L12 12L20.5 7.5L12 3Z" fill="var(--color-secondary)" fillOpacity="0.5" />
-      <path d="M3.5 7.5V16.5L12 21V12L3.5 7.5Z" fill="var(--color-secondary-dark)" fillOpacity="0.7" />
-      <path d="M20.5 7.5V16.5L12 21V12L20.5 7.5Z" fill="var(--color-secondary)" fillOpacity="0.2" />
+      <path
+        d="M12 3L3.5 7.5L12 12L20.5 7.5L12 3Z"
+        fill="var(--color-secondary)"
+        fillOpacity="0.5"
+      />
+      <path
+        d="M3.5 7.5V16.5L12 21V12L3.5 7.5Z"
+        fill="var(--color-secondary-dark)"
+        fillOpacity="0.7"
+      />
+      <path
+        d="M20.5 7.5V16.5L12 21V12L20.5 7.5Z"
+        fill="var(--color-secondary)"
+        fillOpacity="0.2"
+      />
     </svg>
   );
 
   const Pyramid = () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2L3 16H21L12 2Z" fill="var(--color-primary)" fillOpacity="0.15" />
-      <path d="M12 2L3 16L12 21V2Z" fill="var(--color-primary-dark)" fillOpacity="0.4" />
-      <path d="M12 2L21 16L12 21V2Z" fill="var(--color-primary)" fillOpacity="0.3" />
+      <path
+        d="M12 2L3 16H21L12 2Z"
+        fill="var(--color-primary)"
+        fillOpacity="0.15"
+      />
+      <path
+        d="M12 2L3 16L12 21V2Z"
+        fill="var(--color-primary-dark)"
+        fillOpacity="0.4"
+      />
+      <path
+        d="M12 2L21 16L12 21V2Z"
+        fill="var(--color-primary)"
+        fillOpacity="0.3"
+      />
     </svg>
   );
 
   const shapesData = [
-    { id: 1, Component: Cube, size: "w-8 h-8", left: "10%", delay: 0, duration: 15, xMove: 20 },
-    { id: 2, Component: Sphere, size: "w-10 h-10", left: "35%", delay: 4, duration: 22, xMove: -30 },
-    { id: 3, Component: Pyramid, size: "w-7 h-7", left: "60%", delay: 2, duration: 18, xMove: 15 },
-    { id: 4, Component: Cube, size: "w-9 h-9", left: "85%", delay: 8, duration: 25, xMove: -20 },
-    { id: 5, Component: Sphere, size: "w-6 h-6", left: "50%", delay: 12, duration: 20, xMove: 25 },
+    {
+      id: 1,
+      Component: Cube,
+      size: "w-8 h-8",
+      left: "10%",
+      delay: 0,
+      duration: 15,
+      xMove: 20,
+    },
+    {
+      id: 2,
+      Component: Sphere,
+      size: "w-10 h-10",
+      left: "35%",
+      delay: 4,
+      duration: 22,
+      xMove: -30,
+    },
+    {
+      id: 3,
+      Component: Pyramid,
+      size: "w-7 h-7",
+      left: "60%",
+      delay: 2,
+      duration: 18,
+      xMove: 15,
+    },
+    {
+      id: 4,
+      Component: Cube,
+      size: "w-9 h-9",
+      left: "85%",
+      delay: 8,
+      duration: 25,
+      xMove: -20,
+    },
+    {
+      id: 5,
+      Component: Sphere,
+      size: "w-6 h-6",
+      left: "50%",
+      delay: 12,
+      duration: 20,
+      xMove: 25,
+    },
   ];
 
   return (
@@ -330,6 +403,7 @@ export default function Header() {
   const isVertical = navState === "vertical";
   const isBall = navState === "ball";
   const isTopPosition = navState === "horizontal";
+  const mobileMenuAtTop = isMobile && (isTopPosition || isMenuOpen);
   const toggleLanguage = () => setLanguage(language === "en" ? "ar" : "en");
 
   return (
@@ -351,7 +425,7 @@ export default function Header() {
         <motion.nav
           variants={navVariants}
           initial="horizontal"
-          animate={navState}
+          animate={mobileMenuAtTop ? "horizontal" : navState}
           className={`absolute pointer-events-auto flex items-center justify-between bg-[#cbf0df]/85 ring-1 ring-[#0d9468]/20 overflow-hidden transform-gpu [-webkit-backface-visibility:hidden] ${
             isMobile
               ? "backdrop-blur-md shadow-[0_8px_20px_rgba(13,148,104,0.15)]"
@@ -391,11 +465,12 @@ export default function Header() {
                     />
                   </div>
                   <h1 className="ml-2 text-[18px] font-display font-extrabold tracking-tight text-[var(--color-text-main)]">
-                    Health-<span className="text-[var(--color-primary)]"> Hub</span>
+                    Health-
+                    <span className="text-[var(--color-primary)]"> Hub</span>
                   </h1>
                 </a>
               )}
-              
+
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className={`relative z-20 flex items-center justify-center w-11 h-11 rounded-full transition-all duration-300 ${isMenuOpen ? "bg-white/80 text-[var(--color-primary)] shadow-sm" : "bg-white/40 text-[var(--color-text-main)]"} hover:bg-white/90 ${!isTopPosition ? "w-14 h-14 bg-transparent hover:bg-white/20" : ""}`}
@@ -594,11 +669,30 @@ export default function Header() {
                         <>
                           {/* الكوكب (Planet Rings) - يظهر عند الهوفر فقط */}
                           <div className="absolute inset-0 rounded-full border border-[var(--color-primary)]/20 opacity-0 scale-75 group-hover:scale-110 group-hover:opacity-100 transition-all duration-500 ease-out"></div>
-                          <svg className="absolute w-[120%] h-[120%] text-[var(--color-primary)] opacity-0 group-hover:opacity-40 transition-all duration-700 ease-out group-hover:rotate-[180deg]" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <ellipse cx="50" cy="50" rx="42" ry="14" transform="rotate(-30 50 50)" strokeDasharray="4 4" />
-                            <ellipse cx="50" cy="50" rx="42" ry="14" transform="rotate(30 50 50)" />
+                          <svg
+                            className="absolute w-[120%] h-[120%] text-[var(--color-primary)] opacity-0 group-hover:opacity-40 transition-all duration-700 ease-out group-hover:rotate-[180deg]"
+                            viewBox="0 0 100 100"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                          >
+                            <ellipse
+                              cx="50"
+                              cy="50"
+                              rx="42"
+                              ry="14"
+                              transform="rotate(-30 50 50)"
+                              strokeDasharray="4 4"
+                            />
+                            <ellipse
+                              cx="50"
+                              cy="50"
+                              rx="42"
+                              ry="14"
+                              transform="rotate(30 50 50)"
+                            />
                           </svg>
-                          
+
                           {/* قلب الكوكب (حرف اللغة) */}
                           <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[14px] font-black text-[var(--color-primary)] shadow-inner transition-all duration-500 group-hover:bg-[var(--color-primary)] group-hover:text-white group-hover:shadow-[0_0_12px_rgba(17,79,209,0.6)]">
                             {language === "en" ? "ع" : "EN"}
@@ -611,7 +705,9 @@ export default function Header() {
                             {language === "en" ? "ع" : "EN"}
                           </span>
                           <span>
-                            {language === "en" ? t("language.ar") : t("language.en")}
+                            {language === "en"
+                              ? t("language.ar")
+                              : t("language.en")}
                           </span>
                         </>
                       )}
@@ -640,7 +736,7 @@ export default function Header() {
               }
               transition={{ type: "tween", duration: 0.2 }}
               className={`absolute pointer-events-auto left-4 right-4 bg-white/95 rounded-3xl p-3 border border-white/60 flex flex-col gap-1 z-[110] overflow-hidden transform-gpu [-webkit-backface-visibility:hidden] ${
-                isTopPosition
+                mobileMenuAtTop
                   ? "top-[90px] origin-top"
                   : "bottom-[100px] origin-bottom-right lg:origin-bottom-left"
               } backdrop-blur-md shadow-xl`}
@@ -748,8 +844,18 @@ export default function Header() {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm text-slate-500 group-hover:text-[var(--color-primary)] transition-colors">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.8}
+                        d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+                      />
                     </svg>
                   </div>
                   <span className="text-[15px] font-semibold text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors">
@@ -760,7 +866,6 @@ export default function Header() {
                   {language === "en" ? "ع" : "EN"}
                 </span>
               </button>
-
             </motion.div>
           )}
         </AnimatePresence>
