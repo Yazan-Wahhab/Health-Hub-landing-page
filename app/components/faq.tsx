@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslate } from "./translation-provider";
 
@@ -27,7 +27,7 @@ const faqs = [
     id: 4,
     question: "هل النظام مستقر للعمل في غرف العناية المركزة والطوارئ؟",
     answer:
-      "المنصة مبنية بهندسة معمارية عالية التوافر (High Availability) لضمان استقرار بنسبة 99.99%. الخوادم الاحتياطية تعمل تلقائياً في أجزاء من الثانية لضمان استمرار العمل بلا توقف.",
+      "المنصة مبنية بهندسة معمارية عالية التوافر (High Availability) لضمان استقرار بنسبة 92.5%. الخوادم الاحتياطية تعمل تلقائياً في أجزاء من الثانية لضمان استمرار العمل بلا توقف.",
   },
   {
     id: 5,
@@ -35,11 +35,14 @@ const faqs = [
     answer:
       "يتم الانتقال الكامل لمستشفى متوسط الحجم خلال 4 إلى 6 أسابيع فقط، مع توفير فريق دعم هندسي ميداني متخصص متواجد خلال مرحلة الإطلاق.",
   },
+  {
+    id: 6,
+    question: "سياسة الخصوصية، وكيف تحمون بيانات المرضى؟",
+    answer:
+      "نلتزم بالحفاظ على سرية بيانات المرضى بالكامل. لا نقوم بمشاركة أي معلومات طبية مع أطراف ثالثة دون موافقة صريحة، وجميع البيانات مخزنة في خوادم سحابية محمية ومشفّرة حسب المعايير الطبية الدولية وبنسخ احتياطية لحظية.",
+  },
 ];
 
-// ==========================================
-// 🌌 المجسمات الزرقاء الفاتحة
-// ==========================================
 function ElegantInnerShapes() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[20px] z-0">
@@ -62,20 +65,15 @@ function ElegantInnerShapes() {
   );
 }
 
-// ==========================================
-// 💎 مجسم الاستفهام الاحترافي (بدون أي تعديل)
-// ==========================================
 function PremiumQuestionMark() {
   return (
     <div className="relative w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[350px] lg:h-[350px] flex items-center justify-center mx-auto lg:mx-0 mb-8 lg:mb-10 select-none">
-      {/* التوهج الخلفي للمجسم */}
       <motion.div
         animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         className="absolute inset-4 sm:inset-10 bg-gradient-to-tr from-[#114fd1] to-[#0d9468] rounded-full blur-[40px] sm:blur-[60px]"
       />
 
-      {/* دائرة الاستفهام الرئيسية */}
       <div className="relative z-10 w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] lg:w-[240px] lg:h-[240px] rounded-full border border-white/80 shadow-[0_20px_40px_rgba(17,79,209,0.1),inset_0_0_30px_rgba(255,255,255,1)] backdrop-blur-3xl flex items-center justify-center overflow-hidden bg-gradient-to-br from-white/90 to-white/30">
         <div className="absolute top-0 left-1/4 w-1/2 h-1/3 bg-gradient-to-b from-white/90 to-transparent rounded-full blur-md opacity-80 transform -translate-y-4 pointer-events-none" />
         <motion.span
@@ -94,9 +92,6 @@ function PremiumQuestionMark() {
         </motion.span>
       </div>
 
-      {/* ======================================= */}
-      {/* 🚀 اللوغو العائم الأول (طوفان شفاف بالكامل) */}
-      {/* ======================================= */}
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
@@ -117,9 +112,6 @@ function PremiumQuestionMark() {
         </motion.div>
       </motion.div>
 
-      {/* ======================================= */}
-      {/* 🚀 اللوغو العائم الثاني (طوفان شفاف بالكامل) */}
-      {/* ======================================= */}
       <motion.div
         animate={{ rotate: -360 }}
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
@@ -147,6 +139,29 @@ export default function FAQSection() {
   const { t } = useTranslate();
   const [openId, setOpenId] = useState<number | null>(1);
 
+  useEffect(() => {
+    const handleOpenFaq = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.id) {
+        const targetId = customEvent.detail.id;
+        setOpenId(targetId);
+        
+        // استخدام مهلة قصيرة لإعطاء وقت لعنصر الـ FAQ ليفتح ثم الانتقال مباشرة وبدقة إلى مكانه على الشاشة
+        setTimeout(() => {
+          const element = document.getElementById(`faq-item-${targetId}`);
+          if (element) {
+            // الرقم 80 هنا يجعل الانتقال ينزل أكثر (بحيث العنصر يرتفع للأعلى)
+            const y = element.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 150);
+      }
+    };
+
+    window.addEventListener("open-faq", handleOpenFaq);
+    return () => window.removeEventListener("open-faq", handleOpenFaq);
+  }, []);
+
   return (
     <section
       className="relative py-16 sm:py-24 lg:py-32 bg-transparent z-10 overflow-x-clip"
@@ -157,7 +172,6 @@ export default function FAQSection() {
         dir="rtl"
       >
         <div className="flex flex-col lg:flex-row gap-12 sm:gap-16 lg:gap-24 items-stretch">
-          {/* الجانب الأيمن */}
           <div className="lg:w-[40%] xl:w-[35%] flex flex-col justify-center items-center lg:items-start text-center lg:text-right relative z-10 lg:sticky lg:top-32 h-fit pb-4 lg:pb-10">
             <div className="w-full flex justify-center lg:justify-start relative z-10">
               <PremiumQuestionMark />
@@ -172,13 +186,13 @@ export default function FAQSection() {
             </div>
           </div>
 
-          {/* الجانب الأيسر (حاويات الأسئلة) */}
           <div className="lg:w-[60%] xl:w-[65%] relative z-20 flex flex-col gap-4">
             {faqs.map((faq) => {
               const isOpen = openId === faq.id;
 
               return (
                 <div
+                  id={`faq-item-${faq.id}`}
                   key={faq.id}
                   onClick={() => setOpenId(isOpen ? null : faq.id)}
                   className={`group relative overflow-hidden rounded-[20px] cursor-pointer transition-all duration-300 ease-out select-none ${
@@ -187,10 +201,8 @@ export default function FAQSection() {
                       : "bg-white/50 backdrop-blur-sm border border-slate-200/60 shadow-[0_4px_15px_-10px_rgba(0,0,0,0.05)] hover:bg-white hover:shadow-[0_10px_25px_-10px_rgba(17,79,209,0.1)] hover:border-[#114fd1]/20 hover:-translate-y-0.5"
                   }`}
                 >
-                  {/* الأشكال الزرقاء الفاتحة تتحرك بالخلفية عند الفتح */}
                   {isOpen && <ElegantInnerShapes />}
 
-                  {/* الخط الجانبي المضيء - تم تبسيط حركته باستخدام CSS نقي للأداء */}
                   <div
                     className={`absolute top-0 right-0 h-full w-[4px] bg-gradient-to-b from-[#114fd1] to-[#0d9468] transition-all duration-300 ease-out origin-top z-10 ${
                       isOpen
@@ -211,7 +223,6 @@ export default function FAQSection() {
                         {t(faq.question)}
                       </h3>
 
-                      {/* زر الفتح والإغلاق */}
                       <div
                         className={`shrink-0 w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-500 ${
                           isOpen
@@ -229,7 +240,6 @@ export default function FAQSection() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2.5}
-                            // تحويل سلس بين أيقونة الزائد وأيقونة الناقص/الضرب
                             d={
                               isOpen ? "M6 18L18 6M6 6l12 12" : "M12 4v16m8-8H4"
                             }
@@ -239,24 +249,20 @@ export default function FAQSection() {
                       </div>
                     </div>
 
-                    {/* حركة فتح الجواب (الآن أصبحت فائقة السلاسة) */}
                     <AnimatePresence initial={false}>
                       {isOpen && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          // استخدام إيقاع (easing) مخصص يعطي نعومة وانسيابية مثل تطبيقات Apple
                           transition={{
                             duration: 0.35,
                             ease: [0.04, 0.62, 0.23, 0.98],
                           }}
                           className="overflow-hidden"
                         >
-                          {/* صندوق الإجابة بتصميم غائر أنيق ومريح للعين */}
                           <div className="pt-4 sm:pt-5 pb-1">
                             <div className="relative overflow-hidden rounded-xl bg-slate-50/70 border border-slate-200/50 p-4 sm:p-5 shadow-[inset_0_2px_8px_rgba(0,0,0,0.01)] backdrop-blur-sm">
-                              {/* شريط زينة جانبي صغير جداً */}
                               <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-[#114fd1]/20 to-[#0d9468]/20" />
                               <p className="text-slate-600 font-medium text-sm sm:text-base leading-relaxed relative z-10 pr-2">
                                 {t(faq.answer)}

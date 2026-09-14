@@ -493,7 +493,7 @@ export default function ZigZagSections() {
                       <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></div>
                     </div>
                     <h3 className="relative z-10 text-[16px] font-display font-extrabold text-[#022c22] mb-1.5 tracking-tight">
-                      {t("امتداد العمليات")}
+                      {t("التطبيق المساعد للاطباء")}
                     </h3>
                     <p className="relative z-10 text-[13px] font-bold text-[#064e3b] leading-relaxed">
                       {t("وصول مشفر وآني للمرضى.")}
@@ -980,7 +980,7 @@ export default function ZigZagSections() {
                     <FallingShapes />
                   </div>
                   <h3 className="relative z-10 text-xl lg:text-2xl font-display font-extrabold text-[#022c22] mb-2 tracking-tight">
-                    {t("امتداد العمليات")}
+                    {t("التطبيق المساعد للاطباء")}
                   </h3>
                   <p className="relative z-10 text-sm lg:text-base font-bold text-[#064e3b] leading-relaxed">
                     {t(

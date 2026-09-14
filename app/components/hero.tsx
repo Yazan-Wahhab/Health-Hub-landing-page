@@ -74,7 +74,9 @@ export default function HeroSection() {
           {/* 💡 تحسين: عكس الـ Padding بناءً على اللغة ليتناسب الموبايل */}
           <div className={`mt-10 flex flex-row items-center gap-3 lg:gap-5 w-full ${language === "ar" ? "pl-4 lg:pl-0" : "pr-4 lg:pr-0"}`}>
             <a
-              href="#explore"
+              href="https://newworkspace.health-hubs.net"
+              target="_blank"
+              
               className="inline-flex flex-1 lg:flex-none items-center justify-center rounded-full bg-[var(--color-primary)] px-9 py-4 text-[12px] lg:text-sm font-bold text-white whitespace-nowrap shadow-[0_10px_25px_rgba(17,79,209,0.25)] transition-all duration-300 hover:bg-[var(--color-primary-dark)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(17,79,209,0.35)]"
             >
               {t("hero.discover")}
@@ -197,7 +199,7 @@ export default function HeroSection() {
             Right Content (The Floating Logo)
             ========================================================================= */}
 
-        {/* 💻 Desktop Floating Logo */}
+        {/* 💻 Desktop Floating Logo (لم يتم تغيير أي شيء هنا) */}
         <motion.div
           className="hidden lg:flex relative right-auto top-auto items-center justify-end z-50 pointer-events-none will-change-transform transform-gpu [-webkit-backface-visibility:hidden]"
           style={{
@@ -234,9 +236,8 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* 📱 Mobile Floating Logo */}
+        {/* 📱 Mobile Floating Logo (تم حل التقطيع جذرياً هنا) */}
         <motion.div
-          // 💡 إصلاح: جعل موقع البداية ينعكس بناءً على اللغة ليعمل بشكل صحيح مع التمرير
           className={`flex lg:hidden absolute top-[10%] items-center justify-center z-0 pointer-events-none will-change-transform transform-gpu [-webkit-backface-visibility:hidden] ${language === "ar" ? "left-[-15%]" : "right-[-15%]"}`}
           style={{
             x: mLogoX,
@@ -246,28 +247,15 @@ export default function HeroSection() {
           }}
         >
           <motion.div
-            animate={{ y: [0, -15, 0] }}
+            animate={{ y: [0, -10, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center will-change-transform transform-gpu"
           >
-            <div
-              className="absolute w-[250%] h-[250%] rounded-full opacity-15"
-              style={{
-                background:
-                  "radial-gradient(circle, var(--color-secondary) 0%, transparent 60%)",
-              }}
-            ></div>
-            <div
-              className="absolute w-[280%] h-[280%] rounded-full opacity-15 translate-x-5"
-              style={{
-                background:
-                  "radial-gradient(circle, var(--color-primary) 0%, transparent 60%)",
-              }}
-            ></div>
+            {/* 💡 الأداء العالي: تم إزالة دوائر الـ radial-gradient الوهمية وفلتر الـ grayscale لأنها القاتل الأول لمعالجات الموبايل أثناء دمج الطفو مع التمرير */}
             <img
               src="https://newworkspace.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75"
               alt="Health Hub Logo"
-              className="relative z-10 w-72 h-72 object-contain grayscale-[10%]"
+              className="relative z-10 w-72 h-72 object-contain"
             />
           </motion.div>
         </motion.div>

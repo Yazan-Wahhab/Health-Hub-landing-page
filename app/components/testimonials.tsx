@@ -37,7 +37,7 @@ const testimonialsData = [
     role: "مدير قطاع تقنية المعلومات (CIO)",
     hospital: "مجموعة العيادات المتقدمة",
     metrics: [
-      { label: "استقرار النظام", value: "99.99%" },
+      { label: "استقرار النظام", value: "92.5%" },
       { label: "أمان البيانات", value: "A+" },
     ],
     avatar: "https://i.pravatar.cc/150?img=5",
@@ -115,13 +115,13 @@ const extendedTestimonials = [...testimonialsData, ...testimonialsData];
 function FallingShapes() {
   const shapes = Array.from({ length: 6 });
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-100">
+    <div className="hidden md:block absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-100">
       {shapes.map((_, i) => {
         const isCross = i % 2 === 0;
         return (
           <motion.div
             key={i}
-            className="absolute text-blue-500/60 drop-shadow-sm"
+            className="absolute text-blue-500/60 drop-shadow-sm transform-gpu"
             style={{ left: `${Math.random() * 80 + 10}%`, top: -50 }}
             animate={{
               y: [0, 600],
@@ -169,33 +169,32 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  function handleMouseMove({
-    currentTarget,
-    clientX,
-    clientY,
-  }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
+  // إيقاف تتبع الماوس على الأجهزة الصغيرة لتحسين الأداء
+  function handleMouseMove(e: React.MouseEvent) {
+    if (window.innerWidth < 768) return; 
+    const { left, top } = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - left);
+    mouseY.set(e.clientY - top);
   }
 
   const backgroundSpotlight = useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, var(--color-primary) 0%, transparent 80%)`;
   const borderSpotlight = useMotionTemplate`radial-gradient(300px circle at ${mouseX}px ${mouseY}px, var(--color-secondary) 0%, transparent 80%)`;
 
   return (
-    <motion.div
+    <div
       dir="rtl"
       onMouseMove={handleMouseMove}
+      // إضافة transform-gpu لمنع المتصفح من إعادة رسم الكرت بالكامل أثناء التحريك
       className="group relative flex shrink-0 flex-col justify-between overflow-hidden rounded-[1.5rem] md:rounded-[2rem] p-6 sm:p-8 text-right shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(13,148,104,0.08)] select-none
                  w-[85vw] max-w-[340px] h-auto min-h-[420px] md:max-w-[420px] md:h-[520px] md:min-h-[520px]
-                 bg-[#e6f7ec]/90 backdrop-blur-2xl border border-[#bce8d0]"
+                 bg-[#e6f7ec]/90 border border-[#bce8d0] transform-gpu"
     >
       <motion.div
-        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-[0.03]"
+        className="hidden md:block pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-[0.03] transform-gpu"
         style={{ background: backgroundSpotlight }}
       />
       <motion.div
-        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        className="hidden md:block pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 transform-gpu"
         style={{
           background: borderSpotlight,
           maskImage: "linear-gradient(white, white)",
@@ -204,7 +203,7 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
           padding: "1px",
         }}
       />
-      <div className="pointer-events-none absolute inset-[1px] rounded-[1.5rem] md:rounded-[2rem] bg-[#e6f7ec]/80 backdrop-blur-3xl z-0" />
+      <div className="pointer-events-none absolute inset-[1px] rounded-[1.5rem] md:rounded-[2rem] bg-[#e6f7ec]/80 backdrop-blur-md md:backdrop-blur-3xl z-0" />
 
       <svg
         className="absolute top-4 left-4 w-24 h-24 md:w-32 md:h-32 text-[var(--color-primary)] opacity-[0.04] z-0 pointer-events-none -scale-x-100"
@@ -287,6 +286,7 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
           <img
             src={item.avatar}
             alt={item.author}
+            loading="lazy"
             className="h-12 w-12 md:h-14 md:w-14 rounded-full object-cover border-2 border-white shadow-md pointer-events-auto shrink-0"
           />
           <div className="overflow-hidden flex-1">
@@ -305,7 +305,7 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
           </span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -317,15 +317,14 @@ export default function InteractiveTestimonials() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // إيقاف التشغيل التلقائي عند التفاعل
-  const stopAutoPlay = () => setIsAutoPlaying(false);
-
-  // دالة التحكم اليدوي الدقيقة
+  // دالة التحكم اليدوي الدقيقة (للأزرار فقط)
   const scrollExactly = (direction: "next" | "prev") => {
     if (!carouselRef.current) return;
     const container = carouselRef.current;
 
     const firstCard = container.children[0] as HTMLElement;
+    if (!firstCard) return;
+
     const gap = parseFloat(getComputedStyle(container).gap) || 0;
     const exactCardWidth = firstCard.offsetWidth + gap;
 
@@ -339,7 +338,6 @@ export default function InteractiveTestimonials() {
     container.scrollTo({ left: exactTargetScroll, behavior: "smooth" });
   };
 
-  // 🔥 التشغيل التلقائي اللانهائي والسريع (Seamless Infinite Scroll)
   useEffect(() => {
     if (!isAutoPlaying) return;
 
@@ -349,23 +347,20 @@ export default function InteractiveTestimonials() {
     const play = () => {
       if (carouselRef.current) {
         const container = carouselRef.current;
-
-        // حساب العرض الدقيق لمجموعة البطاقات الأصلية (بدون النسخ)
         const firstCard = container.children[0] as HTMLElement;
-        const gap = parseFloat(getComputedStyle(container).gap) || 0;
-        const exactSetWidth =
-          testimonialsData.length * (firstCard.offsetWidth + gap);
+        
+        if (firstCard) {
+          const gap = parseFloat(getComputedStyle(container).gap) || 0;
+          const exactSetWidth = testimonialsData.length * (firstCard.offsetWidth + gap);
 
-        // سرعة التمرير (تمت زيادتها لتكون أسرع)
-        currentScroll += 1.8;
+          currentScroll += 1.8;
 
-        // الخدعة السحرية للحلقة اللانهائية: عندما نقطع مسافة المجموعة الأصلية،
-        // نعيد التمرير للصفر بلمح البصر دون أن يلاحظ المستخدم.
-        if (currentScroll >= exactSetWidth) {
-          currentScroll -= exactSetWidth;
+          if (currentScroll >= exactSetWidth) {
+            currentScroll -= exactSetWidth;
+          }
+
+          container.scrollLeft = currentScroll;
         }
-
-        container.scrollLeft = currentScroll;
       }
       animationFrameId = requestAnimationFrame(play);
     };
@@ -375,13 +370,12 @@ export default function InteractiveTestimonials() {
     return () => cancelAnimationFrame(animationFrameId);
   }, [isAutoPlaying]);
 
-  // التحكم بالأزرار اليدوية
+  // إيقاف الحركة عند الضغط على الأسهم فقط
   const handleScrollClick = (direction: "next" | "prev") => {
-    stopAutoPlay();
+    setIsAutoPlaying(false);
     scrollExactly(direction);
   };
 
-  // شريط التقدم السفلي
   const { scrollXProgress } = useScroll({ container: carouselRef });
   const scaleX = useSpring(scrollXProgress, {
     stiffness: 100,
@@ -394,7 +388,6 @@ export default function InteractiveTestimonials() {
       className="relative py-20 bg-transparent overflow-hidden"
       id="testimonials"
     >
-      {/* الترويسة والأزرار */}
       <div
         className="mx-auto max-w-[1600px] px-4 md:px-6 lg:px-12 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6"
         dir="rtl"
@@ -404,7 +397,7 @@ export default function InteractiveTestimonials() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="font-display text-3xl md:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--color-text-main)] max-w-2xl"
+          className="font-display text-3xl md:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--color-text-main)] max-w-2xl transform-gpu"
         >
           {t("نظام يثق به")} <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] leading-tight">
@@ -417,7 +410,7 @@ export default function InteractiveTestimonials() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="flex gap-3"
+          className="flex gap-3 transform-gpu"
           dir="ltr"
         >
           <button
@@ -460,39 +453,32 @@ export default function InteractiveTestimonials() {
         </motion.div>
       </div>
 
-      {/* حاوية الـ Carousel */}
-      <div
+      {/* 
+        إزالة أحداث اللمس لإبقاء الحركة مستمرة، وإضافة will-change-scroll 
+        لجعل الـ Scroll أسرع بكثير عبر كرت الشاشة
+      */}
+      <motion.div
         ref={carouselRef}
         dir="ltr"
-        className={`flex gap-4 md:gap-8 overflow-x-auto px-4 md:px-6 lg:px-12 pb-8 pt-4 hide-scrollbar cursor-grab active:cursor-grabbing ${!isAutoPlaying ? "snap-x snap-mandatory" : ""}`}
-        // تم إزالة أحداث الإيقاف باللمس أو الماوس من هنا
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className={`flex gap-4 md:gap-8 overflow-x-auto px-4 md:px-6 lg:px-12 pb-8 pt-4 hide-scrollbar cursor-grab active:cursor-grabbing will-change-scroll ${!isAutoPlaying ? "snap-x snap-mandatory" : ""}`}
       >
-        {/* نستخدم المصفوفة المضاعفة لخلق تأثير الحلقة اللانهائية */}
         {extendedTestimonials.map((item, index) => (
           <div key={`${item.id}-${index}`} className="snap-center shrink-0">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                duration: 0.5,
-                delay: (index % testimonialsData.length) * 0.1,
-              }}
-            >
-              <TestimonialCard item={item} />
-            </motion.div>
+            <TestimonialCard item={item} />
           </div>
         ))}
-      </div>
+      </motion.div>
 
-      {/* شريط التمرير السفلي */}
       <div
         className="mx-auto flex flex-col items-center gap-2 w-[80%] max-w-[300px] mt-4"
         dir="ltr"
       >
-        <div className="w-full h-1.5 md:h-2 bg-gray-200/60 backdrop-blur-sm rounded-full overflow-hidden">
+        <div className="w-full h-1.5 md:h-2 bg-gray-200/60 backdrop-blur-sm rounded-full overflow-hidden transform-gpu">
           <motion.div
-            className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full origin-left"
+            className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full origin-left transform-gpu"
             style={{ scaleX }}
           />
         </div>

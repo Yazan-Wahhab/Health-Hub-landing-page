@@ -87,6 +87,7 @@ interface LogoFaceProps {
   rotation: [number, number, number];
   scale: [number, number, number];
   color: string;
+  lineColors: [string, string]; // [لون بداية الخط، لون نهاية الخط والصندوق]
   label: string;
   featureText: string;
   arrowDirection: "left" | "right";
@@ -101,6 +102,7 @@ const LogoFace = ({
   rotation,
   scale,
   color,
+  lineColors,
   label,
   featureText,
   arrowDirection,
@@ -111,6 +113,10 @@ const LogoFace = ({
   const i = initialPosition;
   const a1 = animatePosition;
   const a2 = [a1[0] * 1.5, a1[1] * 1.5, a1[2] * 1.5];
+
+  // الألوان الخاصة بالنصوص والخطوط المنبثقة
+  const startColor = lineColors[0];
+  const endColor = lineColors[1];
 
   return (
     <motion.group
@@ -137,6 +143,7 @@ const LogoFace = ({
           ease: "easeInOut",
         }}
       >
+        {/* 💡 ألوان القطع الـ 3D الأساسية بقيت كما هي دون تغيير (color) */}
         <mesh position={[0, -0.325, 0]}>
           <planeGeometry args={[0.9, 0.25]} />
           <meshBasicMaterial color={color} />
@@ -152,41 +159,51 @@ const LogoFace = ({
       </motion.group>
 
       <Html center zIndexRange={[100, 0]}>
-        {/* إجبار LTR هنا يضمن عدم انعكاس الخطوط والصناديق عند تغيير اللغة */}
         <div dir="ltr" className="relative w-0 h-0 flex items-center justify-center pointer-events-none">
+          
+          {/* Label الجانبي (DATA CORE, SECURITY, etc.) */}
           <motionHtml.div
             animate={{
               scale: [0, 0, 1, 1, 0, 0],
               opacity: [0, 0, 1, 1, 0, 0],
-              y: [20, 20, -45, -45, 20, 20],
+              y: [20, 20, -55, -55, 20, 20],
             }}
             transition={{
               duration: 9,
               times: [0, 0.44, 0.47, 0.57, 0.6, 1],
               ease: "backOut",
             }}
-            className="absolute flex items-center gap-2.5 px-4 py-2 rounded-full backdrop-blur-md whitespace-nowrap"
+            className="absolute flex items-center gap-2.5 px-5 py-2.5 rounded-full whitespace-nowrap"
             style={{
-              backgroundColor: `${color}15`,
-              border: `1px solid ${color}50`,
-              boxShadow: `0 10px 30px ${color}30, inset 0 0 15px ${color}20`,
+              background: `linear-gradient(135deg, rgba(2,6,23,0.8) 0%, rgba(2,6,23,0.5) 100%)`,
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: `1px solid ${startColor}40`,
+              boxShadow: `0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px ${startColor}15`,
             }}
           >
             <span className="relative flex h-2.5 w-2.5">
               <span
                 className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                style={{ backgroundColor: color }}
+                style={{ backgroundColor: startColor }}
               ></span>
               <span
-                className="relative inline-flex rounded-full h-2.5 w-2.5 shadow-sm"
-                style={{ backgroundColor: color }}
+                className="relative inline-flex rounded-full h-2.5 w-2.5 shadow-[0_0_8px_currentColor]"
+                style={{ backgroundColor: startColor, color: startColor }}
               ></span>
             </span>
-            <span className="text-white text-xs md:text-sm font-black uppercase tracking-[0.2em] drop-shadow-md">
+            <span 
+              className="text-transparent bg-clip-text text-xs md:text-[13px] font-black uppercase tracking-[0.25em]"
+              style={{ 
+                backgroundImage: `linear-gradient(to right, white, ${startColor})`,
+                filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.6))" 
+              }}
+            >
               {label}
             </span>
           </motionHtml.div>
 
+          {/* النقطة المركزية المشعة للخط */}
           <motionHtml.div
             animate={{ opacity: [0, 0, 1, 1, 0, 0], scale: [0, 0, 1, 1, 0, 0] }}
             transition={{
@@ -197,18 +214,19 @@ const LogoFace = ({
             className="absolute flex items-center justify-center"
           >
             <div
-              className={`rounded-full z-20 ${isMobile ? "w-1.5 h-1.5" : "w-2 h-2"}`}
+              className={`rounded-full z-20 ${isMobile ? "w-1.5 h-1.5" : "w-2.5 h-2.5"}`}
               style={{
-                backgroundColor: color,
-                boxShadow: `0 0 12px 2px ${color}`,
+                backgroundColor: startColor,
+                boxShadow: `0 0 15px 3px ${startColor}`,
               }}
             />
             <div
-              className={`absolute rounded-full opacity-40 animate-ping ${isMobile ? "w-4 h-4" : "w-6 h-6"}`}
-              style={{ backgroundColor: color }}
+              className={`absolute rounded-full opacity-40 animate-ping ${isMobile ? "w-5 h-5" : "w-8 h-8"}`}
+              style={{ backgroundColor: startColor }}
             />
           </motionHtml.div>
 
+          {/* الخط والصندوق الفخم (الأمان، السرعة، الخ) */}
           <motionHtml.div
             animate={{
               opacity: [0, 0, 1, 1, 0, 0],
@@ -237,48 +255,68 @@ const LogoFace = ({
                     ? "flex-col top-0 right-0 pt-2 items-end"
                     : "flex-col top-0 left-1/2 -translate-x-1/2 pt-2 items-center"
                 : arrowDirection === "left"
-                  ? "flex-row-reverse right-0 top-1/2 -translate-y-1/2 pr-2 md:pr-3 items-center"
-                  : "flex-row left-0 top-1/2 -translate-y-1/2 pl-2 md:pl-3 items-center"
+                  ? "flex-row-reverse right-0 top-1/2 -translate-y-1/2 pr-3 md:pr-4 items-center"
+                  : "flex-row left-0 top-1/2 -translate-y-1/2 pl-3 md:pl-4 items-center"
             }`}
           >
+            {/* الخط المتدرج بالألوان */}
             <div
-              className={`${isMobile ? "w-[1.5px] h-6 md:h-8" : "h-[1.5px] w-12 md:w-24"}`}
+              className={`${isMobile ? "w-[2px] h-8 md:h-10" : "h-[2px] w-16 md:w-28"}`}
               style={{
                 background: isMobile
-                  ? `linear-gradient(to bottom, ${color}ff, ${color}10)`
+                  ? `linear-gradient(to bottom, ${startColor}, ${endColor})`
                   : arrowDirection === "left"
-                    ? `linear-gradient(to left, ${color}ff, ${color}10)`
-                    : `linear-gradient(to right, ${color}ff, ${color}10)`,
+                    ? `linear-gradient(to left, ${startColor}, ${endColor})`
+                    : `linear-gradient(to right, ${startColor}, ${endColor})`,
+                boxShadow: `0 0 12px ${startColor}80`,
               }}
             />
 
+            {/* الصندوق الزجاجي الفخم (Premium Glassmorphism) */}
             <div
-              className={`relative backdrop-blur-xl rounded-md overflow-hidden border flex items-center justify-center ${
-                isMobile ? "px-4 py-1.5" : "px-6 py-2.5 mx-1"
+              className={`relative rounded-xl overflow-hidden flex items-center justify-center transition-all duration-300 ${
+                isMobile ? "px-5 py-2" : "px-8 py-3.5 mx-2"
               }`}
               style={{
-                backgroundColor: "rgba(2, 6, 23, 0.8)",
-                borderColor: `${color}40`,
-                boxShadow: `0 12px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px ${color}15`,
+                background: `linear-gradient(135deg, rgba(5, 10, 30, 0.65) 0%, rgba(2, 6, 23, 0.95) 100%)`,
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)",
+                border: `1px solid ${endColor}40`,
+                borderTop: `1px solid rgba(255,255,255,0.15)`,
+                borderLeft: `1px solid rgba(255,255,255,0.1)`,
+                boxShadow: `0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 25px ${endColor}15, 0 0 20px ${endColor}20`,
               }}
             >
+              {/* إضاءة داخلية متوهجة خلف النص */}
+              <div 
+                 className="absolute inset-0 opacity-40 pointer-events-none" 
+                 style={{ background: `radial-gradient(circle at center, ${endColor}60 0%, transparent 70%)`}} 
+              />
+
               <div
                 className={`absolute ${
                   isMobile
                     ? "top-0 left-0 w-full h-[2px]"
                     : arrowDirection === "left"
-                      ? "top-0 right-0 w-[2px] h-full"
-                      : "top-0 left-0 w-[2px] h-full"
+                      ? "top-0 right-0 w-[3px] h-full"
+                      : "top-0 left-0 w-[3px] h-full"
                 }`}
-                style={{ backgroundColor: color }}
+                style={{ 
+                  background: `linear-gradient(to bottom, ${endColor}, ${endColor}40)`,
+                  boxShadow: `0 0 12px ${endColor}`
+                }}
               />
 
               <span
-                className={`text-white font-black whitespace-nowrap drop-shadow-md ${
+                className={`relative z-10 text-transparent bg-clip-text font-black whitespace-nowrap ${
                   isMobile
-                    ? "text-[13px] tracking-[0.05em]"
-                    : "text-sm md:text-lg tracking-[0.1em]"
+                    ? "text-[14px] tracking-[0.05em]"
+                    : "text-base md:text-xl tracking-[0.1em]"
                 }`}
+                style={{ 
+                  backgroundImage: `linear-gradient(to bottom right, white, ${endColor})`,
+                  filter: `drop-shadow(0 2px 4px rgba(0,0,0,0.8))` 
+                }}
               >
                 {featureText}
               </span>
@@ -296,13 +334,16 @@ const LogoModel = ({ isMobile }: { isMobile: boolean }) => {
     ? [0, 0.75, 0.75, 0.35, 1.2]
     : [0, 1.3, 1.3, 0.5, 1.8];
 
+  // 💡 التعديل هنا: زيادة المسافة بشوي صغيرة للديسكتوب لتكون أبعد قليلاً عن المركز (بين المسافة القديمة المتباعدة جداً والمتقاربة)
   const pos1: [number, number, number] = isMobile
     ? [-1.4, -2.4, 1.5]
-    : [-3.8, -3.2, 2.2];
+    : [-3.2, -2.8, 1.9]; 
   const pos2: [number, number, number] = isMobile
     ? [1.4, -2.4, -1.5]
-    : [3.8, -3.2, -2.2];
-  const pos3: [number, number, number] = isMobile ? [0, 2.6, 0] : [0, 4.2, 0];
+    : [3.2, -2.8, -1.9]; 
+  const pos3: [number, number, number] = isMobile 
+    ? [0, 2.6, 0] 
+    : [0, 3.6, 0];       
 
   return (
     <motion.group
@@ -323,7 +364,8 @@ const LogoModel = ({ isMobile }: { isMobile: boolean }) => {
         animatePosition={pos1}
         rotation={[0, 0, 0]}
         scale={[1, 1, 1]}
-        color="#114FD1"
+        color="#114FD1" // 🔹 لون القطعة الأساسية الأزرق لم يتغير
+        lineColors={["#3b82f6", "#60a5fa"]} // ألوان الكلمة (أزرق)
         label={t("DATA CORE")}
         featureText={t("السرعة")}
         arrowDirection="left"
@@ -336,7 +378,8 @@ const LogoModel = ({ isMobile }: { isMobile: boolean }) => {
         animatePosition={pos2}
         rotation={[0, Math.PI / 2, 0]}
         scale={[-1, 1, 1]}
-        color="#5894F5"
+        color="#5894F5" // 🔹 لون القطعة الأساسية الأزرق الفاتح لم يتغير
+        lineColors={["#10B981", "#34d399"]} // ألوان الكلمة (أخضر)
         label={t("SECURITY")}
         featureText={t("المصداقية")}
         arrowDirection="right"
@@ -349,7 +392,8 @@ const LogoModel = ({ isMobile }: { isMobile: boolean }) => {
         animatePosition={pos3}
         rotation={[-Math.PI / 2, 0, 0]}
         scale={[1, -1, 1]}
-        color="#2B72E6"
+        color="#2B72E6" // 🔹 لون القطعة الأساسية الأزرق لم يتغير
+        lineColors={["#10B981", "#3b82f6"]} // ألوان الكلمة (دمج أخضر مع أزرق)
         label={t("SYNC")}
         featureText={t("الأمان")}
         arrowDirection="right"

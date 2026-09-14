@@ -1,24 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  /* 🔵 الأزرق المؤسساتي */
   --color-primary: #114fd1; 
   --color-primary-dark: #0c3ba6; 
   
-  /* 🟢 الأخضر الجراحي */
   --color-secondary: #0d9468; 
   --color-secondary-dark: #08704d; 
   
-  /* 🌌 ألوان الخلفية (لمسة زرقاء/خضراء خفيفة جداً - Mint/Ice Blue) */
-  --color-background: #eef8f9; /* لون فاتح يدمج بين السماوي والأخضر الفاتح */
+  --color-background: #eef8f9; 
   --color-surface: #ffffff; 
   --color-surface-hover: #e0f2f5; 
   
-  /* ✍️ ألوان النصوص */
   --color-text-main: #0f172a; 
   --color-text-muted: #475569; 
   
-  /* 🔲 ألوان الإطارات */
   --color-border: #cce9ec; 
 }
 

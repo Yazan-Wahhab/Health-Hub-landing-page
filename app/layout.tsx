@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     {
       rel: "icon",
       type: "image/png",
-      url: "https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75",
+      url: "https://newworkspace.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75",
     },
   ],
 };

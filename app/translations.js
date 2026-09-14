@@ -39,11 +39,14 @@ export const translations = {
     "contact.heading": "We are here to listen",
     "contact.system": "System",
     "contact.company": "Company",
-    "contact.address": "Riyadh, Saudi Arabia",
-    "contact.addressLine": "King Fahd Road, Business Tower",
+    "contact.address": "Syria, Aleppo",
+    "contact.addressLine": "Al-Jamiliyah, Nissan Street, in front of the Foreign Consulate",
     "contact.subscribe": "Subscribe",
     "contact.emailPlaceholder": "Enter your email...",
     "intro.subtitle": "The Smart Care Core Platform",
+    "building_api_desc": "Build the central API and secure sensitive data.",
+    "clever dashboards for real-time monitoring of hospital operations.": "Clever dashboards for real-time monitoring of hospital operations.",
+    "Automated integration of the medication dispensing system with medical records.": "Automated integration of the medication dispensing system with medical records.",
   },
   ar: {
     "language.ar": "العربية",
@@ -85,11 +88,14 @@ export const translations = {
     "contact.heading": "نحن هنا لنستمع إليك",
     "contact.system": "النظام",
     "contact.company": "الشركة",
-    "contact.address": "الرياض، السعودية",
-    "contact.addressLine": "طريق الملك فهد، برج الأعمال",
+    "contact.address": "سوريا, حلب",
+    "contact.addressLine": "الجميلية, شارع نيسان, اما القنصلية الخارجية",
     "contact.subscribe": "اشتراك",
     "contact.emailPlaceholder": "أدخل بريدك الإلكتروني...",
     "intro.subtitle": "منصة النواة للرعاية الذكية",
+    "clever dashboards for real-time monitoring of hospital operations.": "لوحات تحكم ذكية لرصد العمليات المستشفية في الوقت الحقيقي.",
+    "building_api_desc": "بناء الـ API المركزي وتأمين البيانات الحساسة.",
+    "Automated integration of the medication dispensing system with medical records.": "تكامل آلي لنظام صرف الأدوية مع السجلات الطبية.",
   },
 };
 
@@ -129,6 +135,8 @@ export const textTranslations = {
     "كطبيب جراح، أحتاج للمعلومات بشكل لحظي. النظام يوفر لي لوحة تحكم شاملة لحالة المريض قبل وأثناء العملية، وهذا رفع من معدلات النجاح وقلل من المفاجآت.":
       "As a surgeon, I need information in real time. The system gives me a complete view of the patient before and during surgery, improving success rates and reducing surprises.",
     "المدير الطبي التنفيذي": "Executive medical director",
+    "سياسة الخصوصية، وكيف تحمون بيانات المرضى؟": "?Privacy Policy: How do you protect patient data",
+"نلتزم بالحفاظ على سرية بيانات المرضى بالكامل. لا نقوم بمشاركة أي معلومات طبية مع أطراف ثالثة دون موافقة صريحة، وجميع البيانات مخزنة في خوادم سحابية محمية ومشفّرة حسب المعايير الطبية الدولية وبنسخ احتياطية لحظية.": "We are fully committed to maintaining patient data confidentiality. We do not share any medical information with third parties without explicit consent. All data is stored on secure, encrypted cloud servers according to international medical standards, with real-time backups.",
     "مدير قطاع تقنية المعلومات (CIO)": "Chief information officer (CIO)",
     "المدير المالي لقطاع الصحة": "Healthcare sector finance director",
     "رئيسة قسم الباطنية": "Head of internal medicine",
@@ -160,6 +168,7 @@ export const textTranslations = {
     "منهجية عمل": "A proven",
     "مضمونة النتائج": "delivery process",
     "نواة المؤسسة": "Enterprise core",
+    "التطبيق المساعد للاطباء": "Doctors' companion app",
     "إدارة شاملة للبيانات والموارد.":
       "Comprehensive data and resource management.",
     "تكامل بيئي شامل": "Complete ecosystem integration",
@@ -175,6 +184,7 @@ export const textTranslations = {
     "منصة إدارة العمليات المركزية": "Central operations management platform",
     "تطبيق وصول الأطباء": "Doctors access application",
     "إطلاق خوادم ASP.NET": "ASP.NET server launch",
+    "بناء الـ API المركزي وتأمين البيانات الحساسة.": "Build the central API and secure sensitive data.",
     "تصميم المخطط الهيكلي لقواعد البيانات المركزية لدعم العمليات السريرية المعقدة.":
       "Design the central database schema to support complex clinical operations.",
     "خوادم ASP.NET": "ASP.NET servers",
@@ -242,8 +252,8 @@ export const textTranslations = {
       "We apply strict HIPAA- and GDPR-aligned standards. All data is protected with end-to-end encryption and precise access controls that preserve record confidentiality.",
     "هل النظام مستقر للعمل في غرف العناية المركزة والطوارئ؟":
       "Is the system stable for intensive care and emergency rooms?",
-    "المنصة مبنية بهندسة معمارية عالية التوافر (High Availability) لضمان استقرار بنسبة 99.99%. الخوادم الاحتياطية تعمل تلقائياً في أجزاء من الثانية لضمان استمرار العمل بلا توقف.":
-      "The platform uses high-availability architecture for 99.99% stability. Backup servers activate automatically in fractions of a second to keep operations running without interruption.",
+    "المنصة مبنية بهندسة معمارية عالية التوافر (High Availability) لضمان استقرار بنسبة 92.5%. الخوادم الاحتياطية تعمل تلقائياً في أجزاء من الثانية لضمان استمرار العمل بلا توقف.":
+      "The platform uses high-availability architecture for 92.5% stability. Backup servers activate automatically in fractions of a second to keep operations running without interruption.",
     "كم يستغرق الوقت للتدريب والانتقال الكامل للمنصة؟":
       "How long does training and a full platform transition take?",
     "يتم الانتقال الكامل لمستشفى متوسط الحجم خلال 4 إلى 6 أسابيع فقط، مع توفير فريق دعم هندسي ميداني متخصص متواجد خلال مرحلة الإطلاق.":
@@ -269,7 +279,7 @@ export const textTranslations = {
     "بوابة المريض": "Patient portal",
     "من نحن": "About us",
     "آراء العملاء": "Customer reviews",
-    "شروط الاستخدام": "Terms of use",
+    "معايير الامان": "Security standards",
     "سياسة الخصوصية": "Privacy policy",
     "محادثة فورية": "Instant chat",
     "دعم واستفسارات": "Support and inquiries",
@@ -363,16 +373,16 @@ export const textTranslations = {
     "البيانات الضخمة (Big Data)": "Big data",
     "معالجة أكثر من 1.2 مليون سجل طبي بنجاح وتزامن.":
       "Successfully process more than 1.2 million medical records with synchronization.",
-    "الذكاء الاصطناعي": "Artificial intelligence",
-    "التشخيص الآلي السريع": "Rapid automated diagnosis",
-    "تحليل صور الأشعة وصور الرنين باستخدام AI.":
-      "Analyze radiology and MRI images using AI.",
-    "روبوت المحادثة الطبي": "Medical chatbot",
-    "مساعد آلي للرد على استفسارات المرضى الفورية.":
-      "An automated assistant for answering patient inquiries instantly.",
-    "التنبؤ بالحالات الحرجة": "Critical condition prediction",
-    "خوارزميات استباقية لدراسة الحالات قبل تدهورها.":
-      "Proactive algorithms that study cases before deterioration.",
+    "فريق الدعم والمساعدة": "Support and help team",
+    "نظام التذاكر المتقدم": "Advanced ticketing system",
+    "تتبع وحل الشكاوى والمشكلات التقنية للعملاء بكفاءة وسرعة.":
+      "Track and resolve customer complaints and technical issues efficiently and quickly.",
+    "الدعم الفني المتواصل": "Continuous technical support",
+    "فريق مخصص للرد على الاستفسارات وتقديم المساعدة على مدار الساعة.":
+      "A dedicated team to answer inquiries and provide assistance around the clock.",
+    "مركز التدريب والأدلة": "Training and guides center",
+    "مكتبة شاملة من الشروحات المرئية والمقالات لتسهيل استخدام النظام.":
+      "A comprehensive library of visual tutorials and articles to facilitate using the system.",
     "أتمتة الاستقبال والطباعة": "Reception and printing automation",
     "مجمع النخبة الطبي": "Elite Medical Complex",
     "دمج وحدة أتمتة لدعم الطباعة الحرارية المباشرة لإصدار التذاكر واللواصق المخبرية آلياً، مما أحدث ثورة في سرعة تدفق المرضى.":

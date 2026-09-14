@@ -8,7 +8,7 @@ const statsData = [
   {
     id: 1,
     title: "منشأة طبية",
-    value: 120,
+    value: 6,
     suffix: "+",
     description: "تعتمد على نظامنا لإدارة عملياتها اليومية",
     icon: (
@@ -30,9 +30,9 @@ const statsData = [
   {
     id: 2,
     title: "سجل طبي رقمي",
-    value: 2.5,
-    suffix: "M+",
-    isDecimal: true,
+    value: 150,
+    suffix: "K+",
+    isDecimal: false,
     description: "مؤرشف ومحمي بأعلى معايير التشفير",
     icon: (
       <svg
@@ -53,7 +53,7 @@ const statsData = [
   {
     id: 3,
     title: "استقرار النظام",
-    value: 99.9,
+    value: 92.5,
     suffix: "%",
     isDecimal: true,
     description: "بدون أي توقف (Zero Downtime) للبيئات الحرجة",
@@ -76,8 +76,10 @@ const statsData = [
   {
     id: 4,
     title: "مستخدم نشط",
-    value: 15,
+    value: 1.5,
     suffix: "K+",
+    isDecimal: true,
+
     description: "طبيب وممرض وإداري عبر المنصة",
     icon: (
       <svg

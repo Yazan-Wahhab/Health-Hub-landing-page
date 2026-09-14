@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useTranslate } from "./translation-provider";
+import { usePathname, useRouter } from "next/navigation";
 
 const socialChannels = [
   {
     name: "واتساب",
     desc: "محادثة فورية",
-    link: "https://wa.me/971501234567",
+    link: "https://wa.me/+963947956102",
     glowColor: "rgba(37, 211, 102, 0.4)",
     iconColor: "text-[#25D366]",
     icon: (
@@ -24,7 +25,7 @@ const socialChannels = [
   {
     name: "تليجرام",
     desc: "دعم واستفسارات",
-    link: "https://t.me/your_username",
+    link: "https://t.me/hussammorjan",
     glowColor: "rgba(34, 158, 217, 0.4)",
     iconColor: "text-[#229ED9]",
     icon: (
@@ -88,7 +89,7 @@ const socialChannels = [
   {
     name: "لينكد إن",
     desc: "تواصل مع الإدارة",
-    link: "https://linkedin.com/company/your_company",
+    link: "https://www.linkedin.com/company/arachnotech-fz-llc/",
     glowColor: "rgba(10, 102, 194, 0.4)",
     iconColor: "text-[#0A66C2]",
     icon: (
@@ -106,7 +107,6 @@ const socialChannels = [
 function ColorfulGlobalObjects({ isMobile }: { isMobile: boolean }) {
   return (
     <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden transform-gpu [-webkit-backface-visibility:hidden]">
-      {/* 💡 تحسين: تعطيل حركات العناصر المعلقة إذا كنا على الموبايل لتوفير الموارد */}
       <motion.div
         animate={
           isMobile
@@ -206,7 +206,7 @@ function ContactCard({
     clientX,
     clientY,
   }: React.MouseEvent) {
-    if (isMobile) return; // 💡 تحسين: تجاهل حسابات الماوس المعقدة في الموبايل
+    if (isMobile) return;
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -231,7 +231,6 @@ function ContactCard({
         target="_blank"
         rel="noopener noreferrer"
         onMouseMove={handleMouseMove}
-        // 💡 تحسين: تخفيف الـ backdrop-blur إلى md في الموبايل و xl للديسكتوب
         className="group relative flex flex-col items-center justify-center p-5 md:p-8 rounded-2xl md:rounded-[2rem] bg-[#eefaf2]/90 backdrop-blur-md md:backdrop-blur-xl border border-[#bbf7d0] shadow-[0_4px_20px_rgba(34,197,94,0.04)] overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_rgba(34,197,94,0.15)] hover:border-[#86efac] text-center h-[160px] md:h-[220px] w-full transform-gpu [-webkit-backface-visibility:hidden]"
       >
         <motion.div
@@ -240,7 +239,6 @@ function ContactCard({
         />
 
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-2xl md:rounded-[2rem] transform-gpu [-webkit-backface-visibility:hidden]">
-          {/* 💡 تحسين: تعطيل الدوران اللانهائي للأشكال المخفية في الموبايل */}
           <motion.svg
             animate={isMobile ? undefined : { rotate: 360 }}
             transition={
@@ -324,12 +322,76 @@ function ContactCard({
 
 function HealthHubFooter() {
   const { t } = useTranslate();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const scrollToSection = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string,
+    faqId?: number
+  ) => {
+    e.preventDefault();
+
+    if (pathname !== "/") {
+      router.push(`/#${targetId}`);
+      if (faqId) {
+        setTimeout(
+          () =>
+            window.dispatchEvent(
+              new CustomEvent("open-faq", { detail: { id: faqId } })
+            ),
+          800
+        );
+      }
+      return;
+    }
+
+    // إذا كان هناك سؤال FAQ نرسل الحدث فقط ليقوم الـ FAQSection بالتمرير الذكي
+    if (faqId) {
+      window.dispatchEvent(
+        new CustomEvent("open-faq", { detail: { id: faqId } })
+      );
+      return;
+    }
+
+    // الانتقال العادي لباقي الأقسام
+    const element = document.getElementById(targetId);
+    if (element) {
+      const offset =
+        targetId === "features"
+          ? -160
+          : targetId === "modules"
+          ? -20
+          : targetId === "partners"
+          ? -45
+          : targetId === "process"
+          ? -30
+          : 80;
+      const y = element.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
+  // المصفوفات محتفظة بالأسماء الأصلية بالضبط كما طلبت
+  const systemLinks = [
+    { name: "المميزات السريرية", target: "features" },
+    { name: "إدارة المواعيد", target: "features" },
+    { name: "الفوترة الإلكترونية", target: "features" },
+    { name: "بوابة المريض", target: "features" }, // ربطناها بالـ features كمثال دون المساس باسمها
+  ];
+
+  const companyLinks = [
+    { name: "من نحن", target: "home" },
+    { name: "آراء العملاء", target: "testimonials" },
+    { name: "معايير الامان", target: "faq", faqId: 3 }, // ستقوم بفتح معايير الأمان (ID 3)
+    { name: "سياسة الخصوصية", target: "faq", faqId: 6 }, // ستقوم بفتح سياسة الخصوصية (ID 6)
+  ];
+
   return (
     <footer
       className="relative bg-[#131b2b] border-t border-slate-800/80 pt-16 md:pt-24 pb-6 md:pb-10 overflow-hidden transform-gpu"
       dir="rtl"
     >
-      {/* 💡 تحسين: تصغير وتخفيف قطر التغبيش للكرات الخلفية في الموبايل لأن الـ blur العالي يدمر أداء الهواتف */}
       <div className="absolute top-0 right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-[#3b82f6]/5 rounded-full blur-[60px] md:blur-[120px] pointer-events-none transform-gpu" />
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-[#0d9468]/5 rounded-full blur-[60px] md:blur-[120px] pointer-events-none transform-gpu" />
 
@@ -338,7 +400,7 @@ function HealthHubFooter() {
           <div className="w-full lg:w-[35%]">
             <div className="mb-6 flex items-center gap-3">
               <img
-                src="https://my.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75"
+                src="https://newworkspace.health-hubs.net/_next/image?url=%2Fassets%2Fimages%2Ffacicon.png&w=1080&q=75"
                 alt="Health-Hub Logo"
                 className="w-10 h-10 object-contain drop-shadow-lg"
               />
@@ -372,18 +434,14 @@ function HealthHubFooter() {
                   {t("contact.system")}
                 </h4>
                 <ul className="space-y-3.5">
-                  {[
-                    "المميزات السريرية",
-                    "إدارة المواعيد",
-                    "الفوترة الإلكترونية",
-                    "بوابة المريض",
-                  ].map((link, i) => (
+                  {systemLinks.map((link, i) => (
                     <li key={i}>
                       <a
-                        href="#"
-                        className="text-slate-400 hover:text-[#3b82f6] transition-colors duration-300 text-sm font-medium"
+                        href={`/#${link.target}`}
+                        onClick={(e) => scrollToSection(e, link.target)}
+                        className="text-slate-400 hover:text-[#3b82f6] transition-colors duration-300 text-sm font-medium cursor-pointer"
                       >
-                        {t(link)}
+                        {t(link.name)}
                       </a>
                     </li>
                   ))}
@@ -394,18 +452,16 @@ function HealthHubFooter() {
                   {t("contact.company")}
                 </h4>
                 <ul className="space-y-3.5">
-                  {[
-                    "من نحن",
-                    "آراء العملاء",
-                    "شروط الاستخدام",
-                    "سياسة الخصوصية",
-                  ].map((link, i) => (
+                  {companyLinks.map((link, i) => (
                     <li key={i}>
                       <a
-                        href="#"
-                        className="text-slate-400 hover:text-[#3b82f6] transition-colors duration-300 text-sm font-medium"
+                        href={`/#${link.target}`}
+                        onClick={(e) =>
+                          scrollToSection(e, link.target, link.faqId)
+                        }
+                        className="text-slate-400 hover:text-[#3b82f6] transition-colors duration-300 text-sm font-medium cursor-pointer"
                       >
-                        {t(link)}
+                        {t(link.name)}
                       </a>
                     </li>
                   ))}
@@ -458,7 +514,7 @@ function HealthHubFooter() {
                       d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                     />
                   </svg>
-                  <span dir="ltr">+966 50 123 4567</span>
+                  <span dir="ltr">+963947956102</span>
                 </li>
                 <li className="flex items-center gap-3 text-slate-400 text-sm font-medium px-3">
                   <svg
@@ -528,7 +584,6 @@ function HealthHubFooter() {
 
 export default function ContactAndFooterSection() {
   const { t } = useTranslate();
-  // 💡 إضافة كاشف الشاشات
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -545,7 +600,6 @@ export default function ContactAndFooterSection() {
         id="contact"
         dir="rtl"
       >
-        {/* تمرير isMobile لتخفيف الرندر بالخلفية */}
         <ColorfulGlobalObjects isMobile={isMobile} />
 
         <div className="mx-auto w-full max-w-[1400px] px-5 sm:px-8 lg:px-12 relative z-10">
