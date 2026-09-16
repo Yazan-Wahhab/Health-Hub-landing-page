@@ -410,15 +410,16 @@ export default function InteractiveTestimonials() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="flex gap-3 transform-gpu"
+          className="flex items-center gap-2 sm:gap-3 transform-gpu"
           dir="ltr"
         >
+          {/* زر السهم السابق */}
           <button
             onClick={() => handleScrollClick("prev")}
-            className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
+            className="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 md:w-6 md:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -432,12 +433,38 @@ export default function InteractiveTestimonials() {
             </svg>
           </button>
 
+          {/* زر التوقف/التشغيل المضاف */}
+          <button
+            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+            className="h-12 md:h-14 px-3 sm:px-4 md:px-6 shrink-0 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center gap-1.5 sm:gap-2 text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
+            dir="rtl"
+          >
+            {isAutoPlaying ? (
+              <>
+                {/* أيقونة مربع التوقف */}
+                <svg className="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="7" y="7" width="10" height="10" rx="1.5" />
+                </svg>
+                <span className="text-sm md:text-base font-bold">{t("توقف")}</span>
+              </>
+            ) : (
+              <>
+                {/* أيقونة مثلث التشغيل */}
+                <svg className="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <span className="text-sm md:text-base font-bold">{t("تشغيل")}</span>
+              </>
+            )}
+          </button>
+
+          {/* زر السهم التالي */}
           <button
             onClick={() => handleScrollClick("next")}
-            className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
+            className="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full border-2 border-[var(--color-primary)]/20 bg-white/50 backdrop-blur-sm flex items-center justify-center text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95 z-10"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 md:w-6 md:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
