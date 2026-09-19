@@ -41,8 +41,7 @@ export function TranslationProvider({
           string,
           Record<string, string>
         >;
-        const namedTranslation =
-          translations[language][keyOrText as keyof typeof translations.en];
+const namedTranslation = (translations[language] as Record<string, string>)[keyOrText];
         if (namedTranslation) return namedTranslation;
 
         if (language === "ar") {
