@@ -8,7 +8,6 @@ import {
   useScroll,
   useSpring,
 } from "framer-motion";
-import { useTranslate } from "./translation-provider";
 
 // ==========================================
 // 📊 بيانات آراء العملاء
@@ -165,7 +164,6 @@ function FallingShapes() {
 // ✨ مكون البطاقة
 // ==========================================
 function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
-  const { t } = useTranslate();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -184,7 +182,6 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
     <div
       dir="rtl"
       onMouseMove={handleMouseMove}
-      // إضافة transform-gpu لمنع المتصفح من إعادة رسم الكرت بالكامل أثناء التحريك
       className="group relative flex shrink-0 flex-col justify-between overflow-hidden rounded-[1.5rem] md:rounded-[2rem] p-6 sm:p-8 text-right shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(13,148,104,0.08)] select-none
                  w-[85vw] max-w-[340px] h-auto min-h-[420px] md:max-w-[420px] md:h-[520px] md:min-h-[520px]
                  bg-[#e6f7ec]/90 border border-[#bce8d0] transform-gpu"
@@ -240,7 +237,7 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
                   {metric.value}
                 </span>
                 <span className="text-[10px] md:text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
-                  {t(metric.label)}
+                  {metric.label}
                 </span>
               </div>
             ))}
@@ -274,12 +271,12 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            {t("تقييم موثق")}
+            تقييم موثق
           </span>
         </div>
 
         <p className="mb-8 text-[14px] sm:text-base md:text-lg lg:text-xl font-medium leading-[1.8] md:leading-[1.9] text-[var(--color-text-main)]">
-          &quot;{t(item.quote)}&quot;
+          &quot;{item.quote}&quot;
         </p>
 
         <div className="mt-auto flex items-center gap-3 md:gap-4 pt-4 md:pt-6 border-t border-[#bce8d0]">
@@ -294,14 +291,14 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
               {item.author}
             </h4>
             <p className="text-xs md:text-sm font-medium text-[var(--color-secondary-dark)] truncate">
-              {t(item.role)}
+              {item.role}
             </p>
             <p className="text-[10px] md:text-xs text-[var(--color-text-muted)] truncate">
-              {t(item.hospital)}
+              {item.hospital}
             </p>
           </div>
           <span className="text-[10px] md:text-xs font-medium text-gray-400 shrink-0">
-            {t(item.date)}
+            {item.date}
           </span>
         </div>
       </div>
@@ -313,7 +310,6 @@ function TestimonialCard({ item }: { item: (typeof testimonialsData)[0] }) {
 // 🚀 المكون الرئيسي
 // ==========================================
 export default function InteractiveTestimonials() {
-  const { t } = useTranslate();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -399,9 +395,9 @@ export default function InteractiveTestimonials() {
           transition={{ delay: 0.1 }}
           className="font-display text-3xl md:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--color-text-main)] max-w-2xl transform-gpu"
         >
-          {t("نظام يثق به")} <br />
+          نظام يثق به <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] leading-tight">
-            {t("روّاد الرعاية الصحية.")}
+            روّاد الرعاية الصحية.
           </span>
         </motion.h2>
 
@@ -445,7 +441,7 @@ export default function InteractiveTestimonials() {
                 <svg className="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <rect x="7" y="7" width="10" height="10" rx="1.5" />
                 </svg>
-                <span className="text-sm md:text-base font-bold">{t("توقف")}</span>
+                <span className="text-sm md:text-base font-bold">توقف</span>
               </>
             ) : (
               <>
@@ -453,7 +449,7 @@ export default function InteractiveTestimonials() {
                 <svg className="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                <span className="text-sm md:text-base font-bold">{t("تشغيل")}</span>
+                <span className="text-sm md:text-base font-bold">تشغيل</span>
               </>
             )}
           </button>
@@ -513,7 +509,7 @@ export default function InteractiveTestimonials() {
           className="text-[10px] lg:text-xs font-bold text-[var(--color-text-muted)] tracking-widest uppercase opacity-60"
           dir="rtl"
         >
-          {t("مرر للتصفح")}
+          مرر للتصفح
         </span>
       </div>
 
